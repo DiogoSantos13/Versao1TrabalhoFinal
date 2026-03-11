@@ -1,0 +1,25 @@
+﻿@page "{id:int}"
+@model Versao1TrabalhoFinal.Pages.Servicos.DeleteModel
+@{
+    ViewData["Title"] = "Eliminar Serviço";
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h2 class="text-danger">Eliminar serviço</h2>
+        <p>Tens a certeza que queres eliminar este serviço?</p>
+
+        <dl class="row">
+            <dt class="col-sm-3">Nome</dt>
+            <dd class="col-sm-9">@Model.Servico.Nome</dd>
+
+            <dt class="col-sm-3">Preço Base</dt>
+            <dd class="col-sm-9">€ @Model.Servico.PrecoBase</dd>
+        </dl>
+
+        <form method="post">
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+            <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>

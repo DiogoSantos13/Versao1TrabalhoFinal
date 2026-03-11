@@ -1,0 +1,37 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.ClienteArea.HistoricoModel
+@{
+    ViewData["Title"] = "Histórico";
+}
+
+<h2 class="mb-4">Histórico de reparações</h2>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Veículo</th>
+                        <th>Problema</th>
+                        <th>Solução</th>
+                        <th>Custo</th>
+                        <th>Tempo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Historico)
+                    {
+                        <tr>
+                            <td>@item.Veiculo?.Marca @item.Veiculo?.Modelo</td>
+                            <td>@item.Problema</td>
+                            <td>@item.Solucao</td>
+                            <td>€ @item.Custo</td>
+                            <td>@item.TempoHoras h</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,47 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.OrdensReparacao.IndexModel
+@{
+    ViewData["Title"] = "Ordens de Reparação";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Ordens de Reparação</h2>
+    <a asp-page="/OrdensReparacao/Create" class="btn btn-primary">Nova Ordem</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Veículo</th>
+                        <th>Data Entrada</th>
+                        <th>Estado</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var ordem in Model.Ordens)
+                    {
+                        <tr>
+                            <td>@ordem.Id</td>
+                            <td>@ordem.Cliente?.Nome</td>
+                            <td>@ordem.Veiculo?.Marca @ordem.Veiculo?.Modelo</td>
+                            <td>@ordem.DataEntrada.ToString("dd/MM/yyyy")</td>
+                            <td>@ordem.Estado</td>
+                            <td>€ @ordem.Total</td>
+                            <td class="text-end">
+                                <a asp-page="/OrdensReparacao/Edit" asp-route-id="@ordem.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                                <a asp-page="/OrdensReparacao/Delete" asp-route-id="@ordem.Id" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

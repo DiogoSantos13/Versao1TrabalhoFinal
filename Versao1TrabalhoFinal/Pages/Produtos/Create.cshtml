@@ -1,0 +1,84 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.Produtos.CreateModel
+@{
+    ViewData["Title"] = "Novo Produto";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="mb-4">Criar produto</h2>
+
+                <form method="post">
+                    <div class="mb-3">
+                        <label asp-for="Produto.Nome" class="form-label"></label>
+                        <input asp-for="Produto.Nome" class="form-control" />
+                        <span asp-validation-for="Produto.Nome" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Produto.Descricao" class="form-label"></label>
+                        <textarea asp-for="Produto.Descricao" class="form-control"></textarea>
+                        <span asp-validation-for="Produto.Descricao" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Produto.Preco" class="form-label"></label>
+                            <input asp-for="Produto.Preco" class="form-control" />
+                            <span asp-validation-for="Produto.Preco" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Produto.Stock" class="form-label"></label>
+                            <input asp-for="Produto.Stock" class="form-control" />
+                            <span asp-validation-for="Produto.Stock" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Produto.Categoria" class="form-label"></label>
+                            <input asp-for="Produto.Categoria" class="form-control" />
+                            <span asp-validation-for="Produto.Categoria" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Produto.MarcaVeiculo" class="form-label"></label>
+                            <input asp-for="Produto.MarcaVeiculo" class="form-control" />
+                            <span asp-validation-for="Produto.MarcaVeiculo" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Produto.ModeloVeiculo" class="form-label"></label>
+                            <input asp-for="Produto.ModeloVeiculo" class="form-control" />
+                            <span asp-validation-for="Produto.ModeloVeiculo" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Produto.FornecedorId" class="form-label">Fornecedor</label>
+                            <select asp-for="Produto.FornecedorId" asp-items="Model.FornecedoresSelect" class="form-select"></select>
+                            <span asp-validation-for="Produto.FornecedorId" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Produto.ImagemUrl" class="form-label"></label>
+                        <input asp-for="Produto.ImagemUrl" class="form-control" />
+                        <span asp-validation-for="Produto.ImagemUrl" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,54 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.OrdensReparacao.CreateModel
+@{
+    ViewData["Title"] = "Nova Ordem";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="mb-4">Criar ordem de reparação</h2>
+
+                <form method="post">
+                    <div class="mb-3">
+                        <label asp-for="OrdemReparacao.ClienteId" class="form-label">Cliente</label>
+                        <select asp-for="OrdemReparacao.ClienteId" asp-items="Model.ClientesSelect" class="form-select"></select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="OrdemReparacao.VeiculoId" class="form-label">Veículo</label>
+                        <select asp-for="OrdemReparacao.VeiculoId" asp-items="Model.VeiculosSelect" class="form-select"></select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="OrdemReparacao.DescricaoProblema" class="form-label"></label>
+                        <textarea asp-for="OrdemReparacao.DescricaoProblema" class="form-control"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="OrdemReparacao.DataEntrada" class="form-label"></label>
+                            <input asp-for="OrdemReparacao.DataEntrada" class="form-control" />
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="OrdemReparacao.Estado" class="form-label"></label>
+                            <input asp-for="OrdemReparacao.Estado" class="form-control" />
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="OrdemReparacao.Total" class="form-label"></label>
+                            <input asp-for="OrdemReparacao.Total" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" type="submit">Guardar</button>
+                        <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,41 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.Vendas.IndexModel
+@{
+    ViewData["Title"] = "Vendas";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Vendas</h2>
+    <a asp-page="./Create" class="btn btn-primary">Nova Venda</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Data</th>
+                    <th>Total</th>
+                    <th>Tipo</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var venda in Model.Vendas)
+                {
+                    <tr>
+                        <td>@venda.Cliente?.Nome</td>
+                        <td>@venda.DataVenda.ToString("dd/MM/yyyy")</td>
+                        <td>€ @venda.Total</td>
+                        <td>@venda.Tipo</td>
+                        <td class="text-end">
+                            <a asp-page="./Edit" asp-route-id="@venda.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                            <a asp-page="./Delete" asp-route-id="@venda.Id" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

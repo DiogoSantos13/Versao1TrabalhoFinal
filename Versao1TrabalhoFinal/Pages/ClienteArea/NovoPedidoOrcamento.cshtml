@@ -1,0 +1,32 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.ClienteArea.NovoPedidoOrcamentoModel
+@{
+    ViewData["Title"] = "Novo Pedido de Orçamento";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="mb-4">Novo pedido de orçamento</h2>
+
+                <form method="post">
+                    <div class="mb-3">
+                        <label asp-for="Orcamento.VeiculoId" class="form-label">Veículo</label>
+                        <select asp-for="Orcamento.VeiculoId" asp-items="Model.VeiculosSelect" class="form-select"></select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Orcamento.Descricao" class="form-label">Descrição do pedido</label>
+                        <textarea asp-for="Orcamento.Descricao" class="form-control" rows="5"></textarea>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Submeter pedido</button>
+                        <a asp-page="/ClienteArea/Orcamentos" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

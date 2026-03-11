@@ -1,0 +1,75 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.Veiculos.CreateModel
+@{
+    ViewData["Title"] = "Novo Veículo";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="mb-4">Criar veículo</h2>
+
+                <form method="post">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Veiculo.Marca" class="form-label"></label>
+                            <input asp-for="Veiculo.Marca" class="form-control" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Veiculo.Modelo" class="form-label"></label>
+                            <input asp-for="Veiculo.Modelo" class="form-control" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Veiculo.Ano" class="form-label"></label>
+                            <input asp-for="Veiculo.Ano" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Veiculo.Tipo" class="form-label"></label>
+                            <input asp-for="Veiculo.Tipo" class="form-control" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Veiculo.Cilindrada" class="form-label"></label>
+                            <input asp-for="Veiculo.Cilindrada" class="form-control" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Veiculo.Combustivel" class="form-label"></label>
+                            <input asp-for="Veiculo.Combustivel" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Veiculo.Matricula" class="form-label"></label>
+                            <input asp-for="Veiculo.Matricula" class="form-control" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Veiculo.VIN" class="form-label"></label>
+                            <input asp-for="Veiculo.VIN" class="form-control" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Veiculo.Cor" class="form-label"></label>
+                            <input asp-for="Veiculo.Cor" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Veiculo.ImagemUrl" class="form-label"></label>
+                        <input asp-for="Veiculo.ImagemUrl" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Veiculo.ClienteId" class="form-label">Cliente</label>
+                        <select asp-for="Veiculo.ClienteId" asp-items="Model.ClientesSelect" class="form-select"></select>
+                    </div>
+
+                    <button class="btn btn-primary" type="submit">Guardar</button>
+                    <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

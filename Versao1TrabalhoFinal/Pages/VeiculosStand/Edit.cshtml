@@ -1,0 +1,52 @@
+﻿@page "{id:int}"
+@model Versao1TrabalhoFinal.Pages.VeiculosStand.EditModel
+@{
+    ViewData["Title"] = "Editar Veículo Stand";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="mb-4">Editar veículo do stand</h2>
+
+                <form method="post">
+                    <input type="hidden" asp-for="VeiculoStand.Id" />
+
+                    <div class="mb-3">
+                        <label asp-for="VeiculoStand.VeiculoId" class="form-label">Veículo</label>
+                        <select asp-for="VeiculoStand.VeiculoId" asp-items="Model.VeiculosSelect" class="form-select"></select>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="VeiculoStand.Preco" class="form-label"></label>
+                            <input asp-for="VeiculoStand.Preco" class="form-control" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="VeiculoStand.Estado" class="form-label"></label>
+                            <input asp-for="VeiculoStand.Estado" class="form-control" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="VeiculoStand.Quilometros" class="form-label"></label>
+                            <input asp-for="VeiculoStand.Quilometros" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="VeiculoStand.Descricao" class="form-label"></label>
+                        <textarea asp-for="VeiculoStand.Descricao" class="form-control"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="VeiculoStand.ImagemUrl" class="form-label"></label>
+                        <input asp-for="VeiculoStand.ImagemUrl" class="form-control" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Guardar alterações</button>
+                    <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

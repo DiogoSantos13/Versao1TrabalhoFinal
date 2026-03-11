@@ -1,0 +1,31 @@
+﻿@page "{id:int}"
+@model Versao1TrabalhoFinal.Pages.OrdensReparacao.DeleteModel
+@{
+    ViewData["Title"] = "Eliminar Ordem";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h2 class="text-danger mb-3">Eliminar ordem de reparação</h2>
+                <p class="mb-4">Tens a certeza que queres eliminar esta ordem?</p>
+
+                <div class="border rounded p-3 bg-light mb-4">
+                    <p><strong>Cliente:</strong> @Model.OrdemReparacao.Cliente?.Nome</p>
+                    <p><strong>Veículo:</strong> @Model.OrdemReparacao.Veiculo?.Marca @Model.OrdemReparacao.Veiculo?.Modelo</p>
+                    <p><strong>Estado:</strong> @Model.OrdemReparacao.Estado</p>
+                    <p><strong>Total:</strong> € @Model.OrdemReparacao.Total</p>
+                </div>
+
+                <form method="post">
+                    <input type="hidden" asp-for="OrdemReparacao.Id" />
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                        <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

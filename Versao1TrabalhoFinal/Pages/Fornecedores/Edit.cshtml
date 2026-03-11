@@ -1,0 +1,42 @@
+﻿@page "{id:int}"
+@model Versao1TrabalhoFinal.Pages.Fornecedores.EditModel
+@{
+    ViewData["Title"] = "Editar Fornecedor";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="mb-4">Editar fornecedor</h2>
+
+                <form method="post">
+                    <input type="hidden" asp-for="Fornecedor.Id" />
+
+                    <div class="mb-3">
+                        <label asp-for="Fornecedor.Nome" class="form-label"></label>
+                        <input asp-for="Fornecedor.Nome" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Fornecedor.Telefone" class="form-label"></label>
+                        <input asp-for="Fornecedor.Telefone" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Fornecedor.Email" class="form-label"></label>
+                        <input asp-for="Fornecedor.Email" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Fornecedor.Morada" class="form-label"></label>
+                        <input asp-for="Fornecedor.Morada" class="form-control" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Guardar alterações</button>
+                    <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,112 @@
+﻿<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - StandOficina</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="app-body">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark app-navbar shadow-sm">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand fw-bold" asp-page="/Index">
+                    <i class="bi bi-car-front-fill me-2"></i>StandOficina
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-page="/Index">Início</a>
+                        </li>
+
+                        @if (User.Identity?.IsAuthenticated ?? false)
+                        {
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item"><a class="nav-link" asp-page="/Dashboard/Index">Dashboard</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Clientes/Index">Clientes</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Veiculos/Index">Veículos</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/OrdensReparacao/Index">Ordens</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Servicos/Index">Serviços</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Produtos/Index">Produtos</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Fornecedores/Index">Fornecedores</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Vendas/Index">Vendas</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/VendaItens/Index">Itens Venda</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/OrdemProdutos/Index">Produtos Ordem</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/VeiculosStand/Index">Stand</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Admin/Users">Utilizadores</a></li>
+                            }
+                            else if (User.IsInRole("Rececionista"))
+                            {
+                                <li class="nav-item"><a class="nav-link" asp-page="/Clientes/Index">Clientes</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Veiculos/Index">Veículos</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/OrdensReparacao/Index">Ordens</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/OrdemProdutos/Index">Produtos Ordem</a></li>
+                            }
+                            else if (User.IsInRole("Mecanico"))
+                            {
+                                <li class="nav-item"><a class="nav-link" asp-page="/Servicos/Index">Serviços</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/OrdensReparacao/Index">Ordens</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/OrdemProdutos/Index">Produtos Ordem</a></li>
+                            }
+                            else if (User.IsInRole("Vendedor"))
+                            {
+                                <li class="nav-item"><a class="nav-link" asp-page="/Produtos/Index">Produtos</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Fornecedores/Index">Fornecedores</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/Vendas/Index">Vendas</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/VendaItens/Index">Itens Venda</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/VeiculosStand/Index">Stand</a></li>
+                            }
+                            else if (User.IsInRole("Cliente"))
+                            {
+                                <li class="nav-item"><a class="nav-link" asp-page="/ClienteArea/Veiculos">Meus Veículos</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-page="/ClienteArea/Historico">Histórico</a></li>
+                            }
+                        }
+                    </ul>
+
+                    <ul class="navbar-nav ms-auto align-items-lg-center">
+                        @if (User.Identity?.IsAuthenticated ?? false)
+                        {
+                            <li class="nav-item me-lg-2">
+                                <span class="nav-link user-badge">
+                                    <i class="bi bi-person-circle me-1"></i>@User.Identity!.Name
+                                </span>
+                            </li>
+                            <li class="nav-item">
+                                <form method="post" asp-page="/Account/Logout" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-light px-3">Sair</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="btn btn-primary px-3" asp-page="/Account/Login">Iniciar sessão</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container-fluid px-4 py-4">
+        @RenderBody()
+    </main>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

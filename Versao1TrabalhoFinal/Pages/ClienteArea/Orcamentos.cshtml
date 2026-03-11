@@ -1,0 +1,40 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.ClienteArea.OrcamentosModel
+@{
+    ViewData["Title"] = "Pedidos de Orçamento";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Os meus pedidos de orçamento</h2>
+    <a asp-page="/ClienteArea/NovoPedidoOrcamento" class="btn btn-primary">Novo Pedido</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Veículo</th>
+                        <th>Descrição</th>
+                        <th>Valor Estimado</th>
+                        <th>Estado</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Orcamentos)
+                    {
+                        <tr>
+                            <td>@item.Veiculo?.Marca @item.Veiculo?.Modelo</td>
+                            <td>@item.Descricao</td>
+                            <td>€ @item.ValorEstimado</td>
+                            <td>@item.Estado</td>
+                            <td>@item.DataCriacao.ToString("dd/MM/yyyy")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

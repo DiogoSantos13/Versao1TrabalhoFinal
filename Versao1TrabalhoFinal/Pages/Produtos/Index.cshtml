@@ -1,0 +1,83 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.Produtos.IndexModel
+@{
+    ViewData["Title"] = "Produtos";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Produtos</h2>
+    <a asp-page="/Produtos/Create" class="btn btn-primary">Novo Produto</a>
+</div>
+
+<div class="row">
+    <div class="col-lg-3 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="mb-3">Filtros</h5>
+
+                <form method="get">
+                    <div class="mb-3">
+                        <label class="form-label">Marca</label>
+                        <select asp-for="MarcaFiltro" asp-items="Model.Marcas" class="form-select">
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Modelo</label>
+                        <select asp-for="ModeloFiltro" asp-items="Model.Modelos" class="form-select">
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Pesquisar</label>
+                        <input asp-for="Pesquisa" class="form-control" placeholder="Nome, descrição ou categoria" />
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" type="submit">Filtrar</button>
+                        <a asp-page="./Index" class="btn btn-outline-secondary">Limpar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-9">
+        <div class="row g-4">
+            @if (!Model.Produtos.Any())
+            {
+                <div class="col-12">
+                    <div class="alert alert-warning">Não foram encontrados produtos.</div>
+                </div>
+            }
+
+            @foreach (var produto in Model.Produtos)
+            {
+                <div class="col-md-6 col-xl-4">
+                    <div class="card h-100 shadow-sm">
+                        @if (!string.IsNullOrWhiteSpace(produto.ImagemUrl))
+                        {
+                            <img src="@produto.ImagemUrl" class="card-img-top" style="height:220px; object-fit:cover;" alt="@produto.Nome" />
+                        }
+                        <div class="card-body">
+                            <h5>@produto.Nome</h5>
+                            <p class="text-muted">@produto.Categoria</p>
+                            <p>@produto.Descricao</p>
+                            <p><strong>Compatível:</strong> @produto.MarcaVeiculo @produto.ModeloVeiculo</p>
+                            <p><strong>Fornecedor:</strong> @produto.Fornecedor?.Nome</p>
+                            <p><strong>Stock:</strong> @produto.Stock</p>
+                            <p class="fw-bold text-success">€ @produto.Preco</p>
+
+                            <div class="d-flex gap-2">
+                                <a asp-page="/Produtos/Edit" asp-route-id="@produto.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                                <a asp-page="/Produtos/Delete" asp-route-id="@produto.Id" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

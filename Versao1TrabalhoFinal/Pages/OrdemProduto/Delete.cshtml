@@ -1,0 +1,25 @@
+﻿@page "{id:int}"
+@model Versao1TrabalhoFinal.Pages.OrdemProdutos.DeleteModel
+@{
+    ViewData["Title"] = "Eliminar Produto da Ordem";
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h2 class="text-danger">Eliminar produto da ordem</h2>
+        <p>Tens a certeza que queres eliminar este registo?</p>
+
+        <dl class="row">
+            <dt class="col-sm-3">Produto</dt>
+            <dd class="col-sm-9">@Model.OrdemProduto.Produto?.Nome</dd>
+
+            <dt class="col-sm-3">Quantidade</dt>
+            <dd class="col-sm-9">@Model.OrdemProduto.Quantidade</dd>
+        </dl>
+
+        <form method="post">
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+            <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>

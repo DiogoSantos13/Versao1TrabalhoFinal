@@ -1,0 +1,55 @@
+﻿@page
+@{
+    ViewData["Title"] = "Início";
+}
+
+<div class="row align-items-center py-5">
+    <div class="col-lg-6">
+        <span class="badge bg-warning text-dark mb-3">Oficina & Stand</span>
+        <h1 class="display-5 fw-bold">Reparação automóvel com confiança</h1>
+        <p class="lead text-muted">
+            Fazemos revisões, travões, diagnóstico eletrónico, baterias, filtros, pneus e manutenção geral.
+        </p>
+        <div class="d-flex gap-3">
+            <a asp-page="/Account/Login" class="btn btn-primary btn-lg">Iniciar sessão</a>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <img src="https://images.unsplash.com/photo-1487754180451-c456f719a1fc?q=80&w=1200&auto=format&fit=crop"
+             class="img-fluid rounded-4 shadow"
+             alt="Oficina automóvel" />
+    </div>
+</div>
+
+<div class="row g-4 mt-4">
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <img src="https://images.unsplash.com/photo-1613214149922-f1809c99b414?q=80&w=1200&auto=format&fit=crop" class="card-img-top" alt="Óleo">
+            <div class="card-body">
+                <h5>Mudança de óleo</h5>
+                <p class="text-muted">Substituição de óleo e filtros com controlo de níveis.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200&auto=format&fit=crop" class="card-img-top" alt="Travões">
+            <div class="card-body">
+                <h5>Travões e segurança</h5>
+                <p class="text-muted">Pastilhas, discos e verificação do sistema de travagem.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <img src="https://images.unsplash.com/photo-1511919884226-fd3cad34687c?q=80&w=1200&auto=format&fit=crop" class="card-img-top" alt="Diagnóstico">
+            <div class="card-body">
+                <h5>Diagnóstico eletrónico</h5>
+                <p class="text-muted">Leitura de erros, apoio técnico e manutenção preventiva.</p>
+            </div>
+        </div>
+    </div>
+</div>

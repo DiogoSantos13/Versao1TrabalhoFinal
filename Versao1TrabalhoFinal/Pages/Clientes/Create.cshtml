@@ -1,0 +1,52 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.Clientes.CreateModel
+@{
+    ViewData["Title"] = "Novo Cliente";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="mb-4">Criar cliente</h2>
+
+                <form method="post">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Cliente.Nome" class="form-label"></label>
+                            <input asp-for="Cliente.Nome" class="form-control" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Cliente.Telefone" class="form-label"></label>
+                            <input asp-for="Cliente.Telefone" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Cliente.Email" class="form-label"></label>
+                        <input asp-for="Cliente.Email" class="form-control" />
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Cliente.NIF" class="form-label"></label>
+                            <input asp-for="Cliente.NIF" class="form-control" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Cliente.ImagemUrl" class="form-label"></label>
+                            <input asp-for="Cliente.ImagemUrl" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Cliente.Morada" class="form-label"></label>
+                        <input asp-for="Cliente.Morada" class="form-control" />
+                    </div>
+
+                    <button class="btn btn-primary" type="submit">Guardar</button>
+                    <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

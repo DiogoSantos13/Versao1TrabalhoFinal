@@ -1,0 +1,25 @@
+﻿@page "{id:int}"
+@model Versao1TrabalhoFinal.Pages.VeiculosStand.DeleteModel
+@{
+    ViewData["Title"] = "Eliminar Veículo Stand";
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h2 class="text-danger">Eliminar veículo do stand</h2>
+        <p>Tens a certeza que queres eliminar este registo?</p>
+
+        <dl class="row">
+            <dt class="col-sm-3">Veículo</dt>
+            <dd class="col-sm-9">@Model.VeiculoStand.Veiculo?.Marca @Model.VeiculoStand.Veiculo?.Modelo</dd>
+
+            <dt class="col-sm-3">Preço</dt>
+            <dd class="col-sm-9">€ @Model.VeiculoStand.Preco</dd>
+        </dl>
+
+        <form method="post">
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+            <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>

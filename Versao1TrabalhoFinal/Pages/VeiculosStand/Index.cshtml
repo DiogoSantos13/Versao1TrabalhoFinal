@@ -1,0 +1,34 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.VeiculosStand.IndexModel
+@{
+    ViewData["Title"] = "Veículos Stand";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Veículos do Stand</h2>
+    <a asp-page="./Create" class="btn btn-primary">Novo Veículo Stand</a>
+</div>
+
+<div class="row g-4">
+    @foreach (var item in Model.VeiculosStand)
+    {
+        <div class="col-md-6 col-xl-4">
+            <div class="card h-100 shadow-sm">
+                @if (!string.IsNullOrWhiteSpace(item.ImagemUrl))
+                {
+                    <img src="@item.ImagemUrl" class="card-img-top" style="height:220px; object-fit:cover;" alt="Veículo stand" />
+                }
+                <div class="card-body">
+                    <h5>@item.Veiculo?.Marca @item.Veiculo?.Modelo</h5>
+                    <p class="text-muted">@item.Estado</p>
+                    <p><strong>Preço:</strong> € @item.Preco</p>
+                    <p><strong>Km:</strong> @item.Quilometros</p>
+                    <div class="d-flex gap-2">
+                        <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                        <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

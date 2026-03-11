@@ -1,0 +1,42 @@
+﻿@page "{id:int}"
+@model Versao1TrabalhoFinal.Pages.Vendas.EditModel
+@{
+    ViewData["Title"] = "Editar Venda";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="mb-4">Editar venda</h2>
+
+                <form method="post">
+                    <input type="hidden" asp-for="Venda.Id" />
+
+                    <div class="mb-3">
+                        <label asp-for="Venda.ClienteId" class="form-label">Cliente</label>
+                        <select asp-for="Venda.ClienteId" asp-items="Model.ClientesSelect" class="form-select"></select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Venda.DataVenda" class="form-label"></label>
+                        <input asp-for="Venda.DataVenda" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Venda.Total" class="form-label"></label>
+                        <input asp-for="Venda.Total" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Venda.Tipo" class="form-label"></label>
+                        <input asp-for="Venda.Tipo" class="form-control" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Guardar alterações</button>
+                    <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

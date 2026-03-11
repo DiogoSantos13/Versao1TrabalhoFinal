@@ -1,0 +1,35 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.Veiculos.IndexModel
+@{
+    ViewData["Title"] = "Veículos";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Veículos</h2>
+    <a asp-page="/Veiculos/Create" class="btn btn-primary">Novo Veículo</a>
+</div>
+
+<div class="row g-4">
+    @foreach (var veiculo in Model.Veiculos)
+    {
+        <div class="col-md-6 col-xl-4">
+            <div class="card h-100 shadow-sm">
+                @if (!string.IsNullOrWhiteSpace(veiculo.ImagemUrl))
+                {
+                    <img src="@veiculo.ImagemUrl" class="card-img-top" style="height:220px; object-fit:cover;" alt="@veiculo.Marca @veiculo.Modelo" />
+                }
+                <div class="card-body">
+                    <h5>@veiculo.Marca @veiculo.Modelo</h5>
+                    <p class="text-muted">@veiculo.Matricula</p>
+                    <p><strong>Cliente:</strong> @veiculo.Cliente?.Nome</p>
+                    <p><strong>Ano:</strong> @veiculo.Ano</p>
+                    <p><strong>Combustível:</strong> @veiculo.Combustivel</p>
+                    <div class="d-flex gap-2">
+                        <a asp-page="/Veiculos/Edit" asp-route-id="@veiculo.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                        <a asp-page="/Veiculos/Delete" asp-route-id="@veiculo.Id" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

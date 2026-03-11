@@ -1,0 +1,48 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.Admin.UsersModel
+@{
+    ViewData["Title"] = "Utilizadores";
+}
+
+<h2 class="mb-4">Gestão de utilizadores</h2>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Role Atual</th>
+                        <th>Nova Role</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.Users)
+                    {
+                        <tr>
+                            <td>@user.Email</td>
+                            <td>@user.CurrentRole</td>
+                            <td>
+                                <form method="post" asp-page-handler="ChangeRole" class="d-flex gap-2">
+                                    <input type="hidden" name="UserId" value="@user.UserId" />
+
+                                    <select name="SelectedRole" class="form-select">
+                                        @foreach (var role in Model.AvailableRoles)
+                                        {
+                                            <option value="@role">@role</option>
+                                        }
+                                    </select>
+
+                                    <button type="submit" class="btn btn-primary">Alterar</button>
+                                </form>
+                            </td>
+                            <td></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

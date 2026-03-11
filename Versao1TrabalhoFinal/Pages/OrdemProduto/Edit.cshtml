@@ -1,0 +1,42 @@
+﻿@page "{id:int}"
+@model Versao1TrabalhoFinal.Pages.OrdemProdutos.EditModel
+@{
+    ViewData["Title"] = "Editar Produto em Ordem";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="mb-4">Editar produto da ordem</h2>
+
+                <form method="post">
+                    <input type="hidden" asp-for="OrdemProduto.Id" />
+
+                    <div class="mb-3">
+                        <label asp-for="OrdemProduto.OrdemId" class="form-label">Ordem</label>
+                        <select asp-for="OrdemProduto.OrdemId" asp-items="Model.OrdensSelect" class="form-select"></select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="OrdemProduto.ProdutoId" class="form-label">Produto</label>
+                        <select asp-for="OrdemProduto.ProdutoId" asp-items="Model.ProdutosSelect" class="form-select"></select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="OrdemProduto.Quantidade" class="form-label"></label>
+                        <input asp-for="OrdemProduto.Quantidade" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="OrdemProduto.Preco" class="form-label"></label>
+                        <input asp-for="OrdemProduto.Preco" class="form-control" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Guardar alterações</button>
+                    <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

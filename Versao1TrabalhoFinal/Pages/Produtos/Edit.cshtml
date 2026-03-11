@@ -1,0 +1,73 @@
+﻿@page "{id:int}"
+@model Versao1TrabalhoFinal.Pages.Produtos.EditModel
+@{
+    ViewData["Title"] = "Editar Produto";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="mb-4">Editar produto</h2>
+
+                <form method="post">
+                    <input type="hidden" asp-for="Produto.Id" />
+
+                    <div class="mb-3">
+                        <label asp-for="Produto.Nome" class="form-label"></label>
+                        <input asp-for="Produto.Nome" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Produto.Descricao" class="form-label"></label>
+                        <textarea asp-for="Produto.Descricao" class="form-control"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Produto.Preco" class="form-label"></label>
+                            <input asp-for="Produto.Preco" class="form-control" />
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Produto.Stock" class="form-label"></label>
+                            <input asp-for="Produto.Stock" class="form-control" />
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Produto.Categoria" class="form-label"></label>
+                            <input asp-for="Produto.Categoria" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Produto.MarcaVeiculo" class="form-label"></label>
+                            <input asp-for="Produto.MarcaVeiculo" class="form-control" />
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Produto.ModeloVeiculo" class="form-label"></label>
+                            <input asp-for="Produto.ModeloVeiculo" class="form-control" />
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Produto.FornecedorId" class="form-label">Fornecedor</label>
+                            <select asp-for="Produto.FornecedorId" asp-items="Model.FornecedoresSelect" class="form-select"></select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Produto.ImagemUrl" class="form-label"></label>
+                        <input asp-for="Produto.ImagemUrl" class="form-control" />
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Guardar alterações</button>
+                        <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
