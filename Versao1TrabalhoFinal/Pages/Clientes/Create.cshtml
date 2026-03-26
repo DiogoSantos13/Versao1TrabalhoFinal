@@ -4,49 +4,129 @@
     ViewData["Title"] = "Novo Cliente";
 }
 
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h2 class="mb-4">Criar cliente</h2>
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="page-header-block">
+            <p class="page-eyebrow">Administração</p>
+            <h1 class="page-title">Criar cliente</h1>
+            <p class="page-subtitle">Adicione um novo cliente e crie a respetiva conta de acesso à plataforma.</p>
+        </div>
 
-                <form method="post">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="Cliente.Nome" class="form-label"></label>
-                            <input asp-for="Cliente.Nome" class="form-control" />
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="Cliente.Telefone" class="form-label"></label>
-                            <input asp-for="Cliente.Telefone" class="form-control" />
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="Cliente.Email" class="form-label"></label>
-                        <input asp-for="Cliente.Email" class="form-control" />
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="Cliente.NIF" class="form-label"></label>
-                            <input asp-for="Cliente.NIF" class="form-control" />
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="Cliente.ImagemUrl" class="form-label"></label>
-                            <input asp-for="Cliente.ImagemUrl" class="form-control" />
+        <div class="client-edit-layout">
+            <div class="client-edit-main">
+                <div class="client-form-card">
+                    <div class="client-form-card-header">
+                        <div>
+                            <h2 class="client-form-title">Novo registo</h2>
+                            <p class="client-form-subtitle">Preencha os dados principais do cliente e da conta associada.</p>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Cliente.Morada" class="form-label"></label>
-                        <input asp-for="Cliente.Morada" class="form-control" />
-                    </div>
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="auth-validation mb-4"></div>
 
-                    <button class="btn btn-primary" type="submit">Guardar</button>
-                    <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
-                </form>
+                        <div class="client-form-grid">
+                            <div class="client-field">
+                                <label asp-for="Input.Nome" class="client-label"></label>
+                                <input asp-for="Input.Nome" class="client-input" placeholder="Nome completo" />
+                                <span asp-validation-for="Input.Nome" class="text-danger"></span>
+                            </div>
+
+                            <div class="client-field">
+                                <label asp-for="Input.Telefone" class="client-label"></label>
+                                <input asp-for="Input.Telefone" class="client-input" placeholder="Número de telefone" />
+                                <span asp-validation-for="Input.Telefone" class="text-danger"></span>
+                            </div>
+
+                            <div class="client-field client-field-full">
+                                <label asp-for="Input.Email" class="client-label"></label>
+                                <input asp-for="Input.Email" class="client-input" placeholder="email@exemplo.pt" />
+                                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="client-field">
+                                <label asp-for="Input.Password" class="client-label"></label>
+                                <input asp-for="Input.Password" class="client-input" placeholder="Palavra-passe" />
+                                <span asp-validation-for="Input.Password" class="text-danger"></span>
+                            </div>
+
+                            <div class="client-field">
+                                <label asp-for="Input.ConfirmPassword" class="client-label"></label>
+                                <input asp-for="Input.ConfirmPassword" class="client-input" placeholder="Confirmar palavra-passe" />
+                                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                            </div>
+
+                            <div class="client-field">
+                                <label asp-for="Input.NIF" class="client-label"></label>
+                                <input asp-for="Input.NIF" class="client-input" placeholder="Número de contribuinte" />
+                                <span asp-validation-for="Input.NIF" class="text-danger"></span>
+                            </div>
+
+                            <div class="client-field">
+                                <label asp-for="Input.ImagemUrl" class="client-label"></label>
+                                <input asp-for="Input.ImagemUrl" class="client-input" placeholder="/images/users/default-avatar.jpg" />
+                                <span asp-validation-for="Input.ImagemUrl" class="text-danger"></span>
+                            </div>
+
+                            <div class="client-field client-field-full">
+                                <label asp-for="Input.Morada" class="client-label"></label>
+                                <input asp-for="Input.Morada" class="client-input" placeholder="Morada completa" />
+                                <span asp-validation-for="Input.Morada" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="client-form-actions">
+                            <button class="auth-button" type="submit">
+                                <i class="fa-solid fa-user-plus"></i>
+                                <span>Criar cliente</span>
+                            </button>
+
+                            <a asp-page="./Index" class="auth-button auth-button-secondary">
+                                <i class="fa-solid fa-arrow-left"></i>
+                                <span>Cancelar</span>
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
+
+            <aside class="client-edit-side">
+                <div class="client-summary-card">
+                    <div class="client-summary-avatar">
+                        <img src="@(string.IsNullOrWhiteSpace(Model.Input.ImagemUrl) ? "/images/users/default-avatar.jpg" : Model.Input.ImagemUrl)"
+                             alt="Avatar do cliente" />
+                    </div>
+
+                    <h3 class="client-summary-name">
+                        @(string.IsNullOrWhiteSpace(Model.Input.Nome) ? "Novo cliente" : Model.Input.Nome)
+                    </h3>
+
+                    <p class="client-summary-email">
+                        @(string.IsNullOrWhiteSpace(Model.Input.Email) ? "Conta ainda não definida" : Model.Input.Email)
+                    </p>
+
+                    <div class="client-summary-divider"></div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">Telefone</span>
+                        <strong>@(string.IsNullOrWhiteSpace(Model.Input.Telefone) ? "Não definido" : Model.Input.Telefone)</strong>
+                    </div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">NIF</span>
+                        <strong>@(string.IsNullOrWhiteSpace(Model.Input.NIF) ? "Não definido" : Model.Input.NIF)</strong>
+                    </div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">Estado</span>
+                        <strong>Conta por criar</strong>
+                    </div>
+                </div>
+            </aside>
         </div>
     </div>
-</div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

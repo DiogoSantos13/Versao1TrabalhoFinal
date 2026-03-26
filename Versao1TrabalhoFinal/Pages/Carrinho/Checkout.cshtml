@@ -1,0 +1,59 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.Carrinho.CheckoutModel
+@{
+    ViewData["Title"] = "Confirmar pedido";
+}
+
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="page-header-block">
+            <p class="page-eyebrow">Área do cliente</p>
+            <h1 class="page-title">Confirmar pedido</h1>
+            <p class="page-subtitle">Verifique os veículos do carrinho antes de confirmar.</p>
+        </div>
+
+        @if (Model.Itens.Any())
+        {
+            <div class="form-card">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Veículo</th>
+                                <th>Preço</th>
+                                <th>Quilómetros</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Itens)
+                            {
+                                <tr>
+                                    <td>@(item.VeiculoStand.Veiculo?.Marca ?? "Marca") @(item.VeiculoStand.Veiculo?.Modelo ?? "Modelo")</td>
+                                    <td>€ @item.PrecoNoMomento.ToString("N2")</td>
+                                    <td>@item.VeiculoStand.Quilometros.ToString("N0")</td>
+                                    <td>@(string.IsNullOrWhiteSpace(item.VeiculoStand.Estado) ? EstadoVeiculoStand.Disponivel : item.VeiculoStand.Estado)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <div>
+                        <h3 class="vehicle-admin-title">Total</h3>
+                        <p class="page-subtitle mb-0">Valor total atual do pedido.</p>
+                    </div>
+                    <div>
+                        <strong style="font-size: 1.4rem;">€ @Model.Total.ToString("N2")</strong>
+                    </div>
+                </div>
+
+                <form method="post" class="mt-4 d-flex gap-2">
+                    <button type="submit" class="auth-button">Confirmar pedido</button>
+                    <a asp-page="/Carrinho/Index" class="auth-button auth-button-secondary">Voltar ao carrinho</a>
+                </form>
+            </div>
+        }
+    </div>
+</section>

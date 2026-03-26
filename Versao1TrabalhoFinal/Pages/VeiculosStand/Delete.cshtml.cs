@@ -7,10 +7,7 @@ using Versao1TrabalhoFinal.Models;
 
 namespace Versao1TrabalhoFinal.Pages.VeiculosStand
 {
-    /// <summary>
-    /// Página de eliminação de veículos do stand.
-    /// </summary>
-    [Authorize(Roles = "Admin,Vendedor")]
+    [Authorize(Roles = "Admin")]
     public class DeleteModel : PageModel
     {
         private readonly StandDbContext _context;
@@ -26,11 +23,14 @@ namespace Versao1TrabalhoFinal.Pages.VeiculosStand
         public async Task<IActionResult> OnGetAsync(int id)
         {
             var item = await _context.VeiculosStand
+                .AsNoTracking()
                 .Include(v => v.Veiculo)
                 .FirstOrDefaultAsync(v => v.Id == id);
 
             if (item == null)
+            {
                 return NotFound();
+            }
 
             VeiculoStand = item;
             return Page();
@@ -38,14 +38,18 @@ namespace Versao1TrabalhoFinal.Pages.VeiculosStand
 
         public async Task<IActionResult> OnPostAsync(int id)
         {
-            var item = await _context.VeiculosStand.FindAsync(id);
+            var item = await _context.VeiculosStand
+                .FirstOrDefaultAsync(v => v.Id == id);
 
-            if (item != null)
+            if (item == null)
             {
-                _context.VeiculosStand.Remove(item);
-                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
             }
 
+            _context.VeiculosStand.Remove(item);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Veículo do stand eliminado com sucesso.";
             return RedirectToPage("./Index");
         }
     }

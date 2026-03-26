@@ -48,7 +48,7 @@ namespace Versao1TrabalhoFinal.Pages.VendaItens
         /// <returns>Página ou NotFound.</returns>
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var item = await _context.VendaItens.FindAsync(id);
+            var item = await _context.Set<VendaItem>().FindAsync(id);
 
             if (item == null)
                 return NotFound();

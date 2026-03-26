@@ -4,51 +4,120 @@
     ViewData["Title"] = "Editar Cliente";
 }
 
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h2 class="mb-4">Editar cliente</h2>
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="page-header-block">
+            <p class="page-eyebrow">Administração</p>
+            <h1 class="page-title">Editar cliente</h1>
+            <p class="page-subtitle">Atualize os dados do cliente e mantenha a conta associada sincronizada.</p>
+        </div>
 
-                <form method="post">
-                    <input type="hidden" asp-for="Cliente.Id" />
-                    <input type="hidden" asp-for="Cliente.DataRegisto" />
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="Cliente.Nome" class="form-label"></label>
-                            <input asp-for="Cliente.Nome" class="form-control" />
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="Cliente.Telefone" class="form-label"></label>
-                            <input asp-for="Cliente.Telefone" class="form-control" />
+        <div class="client-edit-layout">
+            <div class="client-edit-main">
+                <div class="client-form-card">
+                    <div class="client-form-card-header">
+                        <div>
+                            <h2 class="client-form-title">Dados do cliente</h2>
+                            <p class="client-form-subtitle">Edite a informação principal apresentada no sistema.</p>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Cliente.Email" class="form-label"></label>
-                        <input asp-for="Cliente.Email" class="form-control" />
-                    </div>
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="auth-validation mb-4"></div>
 
-                    <div class="mb-3">
-                        <label asp-for="Cliente.NIF" class="form-label"></label>
-                        <input asp-for="Cliente.NIF" class="form-control" />
-                    </div>
+                        <input type="hidden" asp-for="Input.Id" />
+                        <input type="hidden" asp-for="Input.IdentityUserId" />
 
-                    <div class="mb-3">
-                        <label asp-for="Cliente.Morada" class="form-label"></label>
-                        <input asp-for="Cliente.Morada" class="form-control" />
-                    </div>
+                        <div class="client-form-grid">
+                            <div class="client-field">
+                                <label asp-for="Input.Nome" class="client-label"></label>
+                                <input asp-for="Input.Nome" class="client-input" placeholder="Nome completo" />
+                                <span asp-validation-for="Input.Nome" class="text-danger"></span>
+                            </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Cliente.ImagemUrl" class="form-label"></label>
-                        <input asp-for="Cliente.ImagemUrl" class="form-control" />
-                    </div>
+                            <div class="client-field">
+                                <label asp-for="Input.Telefone" class="client-label"></label>
+                                <input asp-for="Input.Telefone" class="client-input" placeholder="Número de telefone" />
+                                <span asp-validation-for="Input.Telefone" class="text-danger"></span>
+                            </div>
 
-                    <button class="btn btn-primary" type="submit">Guardar alterações</button>
-                    <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
-                </form>
+                            <div class="client-field client-field-full">
+                                <label asp-for="Input.Email" class="client-label"></label>
+                                <input asp-for="Input.Email" class="client-input" placeholder="email@exemplo.pt" />
+                                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="client-field">
+                                <label asp-for="Input.NIF" class="client-label"></label>
+                                <input asp-for="Input.NIF" class="client-input" placeholder="Número de contribuinte" />
+                                <span asp-validation-for="Input.NIF" class="text-danger"></span>
+                            </div>
+
+                            <div class="client-field">
+                                <label asp-for="Input.ImagemUrl" class="client-label"></label>
+                                <input asp-for="Input.ImagemUrl" class="client-input" placeholder="/images/users/default-avatar.jpg" />
+                                <span asp-validation-for="Input.ImagemUrl" class="text-danger"></span>
+                            </div>
+
+                            <div class="client-field client-field-full">
+                                <label asp-for="Input.Morada" class="client-label"></label>
+                                <input asp-for="Input.Morada" class="client-input" placeholder="Morada completa" />
+                                <span asp-validation-for="Input.Morada" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="client-form-actions">
+                            <button class="auth-button" type="submit">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                <span>Guardar alterações</span>
+                            </button>
+
+                            <a asp-page="./Index" class="auth-button auth-button-secondary">
+                                <i class="fa-solid fa-arrow-left"></i>
+                                <span>Cancelar</span>
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
+
+            <aside class="client-edit-side">
+                <div class="client-summary-card">
+                    <div class="client-summary-avatar">
+                        <img src="@(string.IsNullOrWhiteSpace(Model.Input.ImagemUrl) ? "/images/users/default-avatar.jpg" : Model.Input.ImagemUrl)"
+                             alt="Avatar do cliente" />
+                    </div>
+
+                    <h3 class="client-summary-name">
+                        @(string.IsNullOrWhiteSpace(Model.Input.Nome) ? "Cliente" : Model.Input.Nome)
+                    </h3>
+
+                    <p class="client-summary-email">
+                        @(string.IsNullOrWhiteSpace(Model.Input.Email) ? "Sem email definido" : Model.Input.Email)
+                    </p>
+
+                    <div class="client-summary-divider"></div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">Telefone</span>
+                        <strong>@(string.IsNullOrWhiteSpace(Model.Input.Telefone) ? "Não definido" : Model.Input.Telefone)</strong>
+                    </div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">NIF</span>
+                        <strong>@(string.IsNullOrWhiteSpace(Model.Input.NIF) ? "Não definido" : Model.Input.NIF)</strong>
+                    </div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">Conta associada</span>
+                        <strong>@(string.IsNullOrWhiteSpace(Model.Input.IdentityUserId) ? "Sem ligação" : "Ligada ao Identity")</strong>
+                    </div>
+                </div>
+            </aside>
         </div>
     </div>
-</div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

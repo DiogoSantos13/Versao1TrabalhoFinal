@@ -25,7 +25,7 @@ namespace Versao1TrabalhoFinal.Pages.ClienteArea
         /// <summary>
         /// Lista de orçamentos do cliente autenticado.
         /// </summary>
-        public List<Orcamento> Orcamentos { get; set; } = new();
+        public List<Versao1TrabalhoFinal.Models.Orcamento> Orcamentos { get; set; } = new();
 
         /// <summary>
         /// Carrega os orçamentos do cliente atual.
@@ -38,7 +38,7 @@ namespace Versao1TrabalhoFinal.Pages.ClienteArea
                 .Include(o => o.Cliente)
                 .Include(o => o.Veiculo)
                 .Where(o => o.Cliente != null && o.Cliente.Email == email)
-                .OrderByDescending(o => o.DataCriacao)
+                //.OrderByDescending(o => o.DataPedido)
                 .ToListAsync();
         }
     }

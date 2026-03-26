@@ -33,7 +33,7 @@ namespace Versao1TrabalhoFinal.Pages.VendaItens
         /// </summary>
         public async Task OnGetAsync()
         {
-            Itens = await _context.VendaItens
+            Itens = await _context.Set<VendaItem>()
                 .Include(v => v.Venda)
                 .Include(v => v.Produto)
                 .OrderByDescending(v => v.Id)

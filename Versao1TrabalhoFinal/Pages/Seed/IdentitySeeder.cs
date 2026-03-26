@@ -2,21 +2,14 @@
 
 namespace Versao1TrabalhoFinal.Seed
 {
-    /// <summary>
-    /// Classe responsável por criar roles e utilizadores iniciais.
-    /// </summary>
     public static class IdentitySeeder
     {
-        /// <summary>
-        /// Executa o seed de roles e utilizadores.
-        /// </summary>
-        /// <param name="serviceProvider">Service provider da aplicação.</param>
         public static async Task SeedAsync(IServiceProvider serviceProvider)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
-            string[] roles = { "Admin", "Mecanico", "Vendedor", "Rececionista", "Cliente" };
+            string[] roles = { "Admin", "Mecanico", "Colaborador", "Cliente" };
 
             foreach (var role in roles)
             {
@@ -28,18 +21,10 @@ namespace Versao1TrabalhoFinal.Seed
 
             await CreateUserIfNotExists(userManager, "admin@stand.pt", "Admin123!", "Admin");
             await CreateUserIfNotExists(userManager, "mecanico@stand.pt", "Mecanico123!", "Mecanico");
-            await CreateUserIfNotExists(userManager, "vendedor@stand.pt", "Vendedor123!", "Vendedor");
-            await CreateUserIfNotExists(userManager, "Rececionista@stand.pt", "Rececionista123!", "Rececionista");
-            await CreateUserIfNotExists(userManager, "carlos.silva@email.pt", "Cliente123!", "Cliente");
+            await CreateUserIfNotExists(userManager, "colaborador@stand.pt", "Colaborador123!", "Colaborador");
+            await CreateUserIfNotExists(userManager, "cliente@stand.pt", "Cliente123!", "Cliente");
         }
 
-        /// <summary>
-        /// Cria um utilizador caso não exista e atribui-lhe a role indicada.
-        /// </summary>
-        /// <param name="userManager">User manager do Identity.</param>
-        /// <param name="email">Email do utilizador.</param>
-        /// <param name="password">Password inicial.</param>
-        /// <param name="role">Role a atribuir.</param>
         private static async Task CreateUserIfNotExists(
             UserManager<IdentityUser> userManager,
             string email,
@@ -59,17 +44,21 @@ namespace Versao1TrabalhoFinal.Seed
 
                 var result = await userManager.CreateAsync(user, password);
 
-                if (result.Succeeded)
+                if (!result.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(user, role);
+                    var errors = string.Join(" | ", result.Errors.Select(e => e.Description));
+                    throw new Exception($"Erro ao criar utilizador {email}: {errors}");
                 }
             }
-            else
+
+            if (!await userManager.IsInRoleAsync(user, role))
             {
-                var roles = await userManager.GetRolesAsync(user);
-                if (!roles.Contains(role))
+                var roleResult = await userManager.AddToRoleAsync(user, role);
+
+                if (!roleResult.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(user, role);
+                    var errors = string.Join(" | ", roleResult.Errors.Select(e => e.Description));
+                    throw new Exception($"Erro ao atribuir role {role} a {email}: {errors}");
                 }
             }
         }

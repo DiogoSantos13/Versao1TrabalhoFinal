@@ -1,20 +1,28 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using Versao1TrabalhoFinal.Data;
+using Versao1TrabalhoFinal.Models;
 
 namespace Versao1TrabalhoFinal.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
+        private readonly StandDbContext _context;
 
-        public IndexModel(ILogger<IndexModel> logger)
+        public IndexModel(StandDbContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
-        public void OnGet()
-        {
+        public List<VeiculoStand> VeiculosDestaque { get; set; } = new();
 
+        public async Task OnGetAsync()
+        {
+            VeiculosDestaque = await _context.VeiculosStand
+                .AsNoTracking()
+                .OrderByDescending(v => v.DataEntrada)
+                .Take(6)
+                .ToListAsync();
         }
     }
 }

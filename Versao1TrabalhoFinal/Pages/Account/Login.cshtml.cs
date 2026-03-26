@@ -5,19 +5,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Versao1TrabalhoFinal.Pages.Account
 {
-    /// <summary>
-    /// Página responsável pela autenticação de utilizadores.
-    /// </summary>
     public class LoginModel : PageModel
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
 
-        /// <summary>
-        /// Inicializa uma nova instância da página de login.
-        /// </summary>
-        /// <param name="signInManager">Gestor de autenticação.</param>
-        /// <param name="userManager">Gestor de utilizadores.</param>
         public LoginModel(
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager)
@@ -26,58 +18,58 @@ namespace Versao1TrabalhoFinal.Pages.Account
             _userManager = userManager;
         }
 
-        /// <summary>
-        /// Dados introduzidos no formulário.
-        /// </summary>
         [BindProperty]
         public InputModel Input { get; set; } = new();
 
-        /// <summary>
-        /// Modelo do formulário de autenticação.
-        /// </summary>
+        [BindProperty(SupportsGet = true)]
+        public string? ReturnUrl { get; set; }
+
         public class InputModel
         {
-            /// <summary>
-            /// Email do utilizador.
-            /// </summary>
-            [Required]
-            [EmailAddress]
+            [Required(ErrorMessage = "O email é obrigatório.")]
+            [EmailAddress(ErrorMessage = "Introduza um email válido.")]
             [Display(Name = "Email")]
             public string Email { get; set; } = string.Empty;
 
-            /// <summary>
-            /// Palavra-passe do utilizador.
-            /// </summary>
-            [Required]
+            [Required(ErrorMessage = "A palavra-passe é obrigatória.")]
             [DataType(DataType.Password)]
             [Display(Name = "Palavra-passe")]
             public string Password { get; set; } = string.Empty;
 
-            /// <summary>
-            /// Indica se a sessão deve ser memorizada.
-            /// </summary>
             [Display(Name = "Lembrar sessão")]
             public bool RememberMe { get; set; }
         }
 
-        /// <summary>
-        /// Carrega a página de login.
-        /// </summary>
-        public void OnGet()
+        public IActionResult OnGet(string? returnUrl = null)
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return RedirectToPage("/Index");
+            }
+
+            ReturnUrl = returnUrl;
+            return Page();
         }
 
-        /// <summary>
-        /// Processa o pedido de autenticação do utilizador.
-        /// </summary>
-        /// <returns>Redireciona para a área correta conforme a role.</returns>
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
         {
+            ReturnUrl = returnUrl;
+
             if (!ModelState.IsValid)
+            {
                 return Page();
+            }
+
+            var user = await _userManager.FindByEmailAsync(Input.Email);
+
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "Login inválido.");
+                return Page();
+            }
 
             var result = await _signInManager.PasswordSignInAsync(
-                Input.Email,
+                user.UserName!,
                 Input.Password,
                 Input.RememberMe,
                 lockoutOnFailure: false);
@@ -88,12 +80,9 @@ namespace Versao1TrabalhoFinal.Pages.Account
                 return Page();
             }
 
-            var user = await _userManager.FindByEmailAsync(Input.Email);
-
-            if (user == null)
+            if (!string.IsNullOrWhiteSpace(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
             {
-                await _signInManager.SignOutAsync();
-                return RedirectToPage("/Account/Login");
+                return LocalRedirect(ReturnUrl);
             }
 
             if (await _userManager.IsInRoleAsync(user, "Admin"))

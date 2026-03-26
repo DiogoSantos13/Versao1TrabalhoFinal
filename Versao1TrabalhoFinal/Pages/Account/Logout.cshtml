@@ -1,25 +1,32 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿@page
+@model Versao1TrabalhoFinal.Areas.Identity.Pages.Account.LogoutModel
+@{
+    ViewData["Title"] = "Terminar sessão";
+}
 
-namespace Versao1TrabalhoFinal.Pages.Account
-{
-    public class LogoutModel : PageModel
-    {
-        private readonly SignInManager<IdentityUser>
-    _signInManager;
+<section class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card auth-card-sm">
+            <div class="auth-brand">
+                <a asp-page="/Index" class="auth-logo-link">
+                    <img src="https://www.hsn-automoveis.pt/images/logo.png" alt="Logo Stand Premium" class="auth-logo" />
+                </a>
 
-    public LogoutModel(SignInManager<IdentityUser>
-        signInManager)
-        {
-        _signInManager = signInManager;
-        }
+                <h1 class="auth-title">Terminar sessão</h1>
+                <p class="auth-subtitle">Tem a certeza que pretende terminar a sessão?</p>
+            </div>
 
-        public async Task<IActionResult>
-            OnPostAsync()
-            {
-            await _signInManager.SignOutAsync();
-            return RedirectToPage("/Index");
-            }
-            }
-            }
+            <form method="post" class="auth-form">
+                <input type="hidden" asp-for="ReturnUrl" />
+
+                <button type="submit" class="auth-button auth-button-danger">
+                    Sair
+                </button>
+
+                <a asp-page="/Index" class="auth-button auth-button-secondary text-center">
+                    Cancelar
+                </a>
+            </form>
+        </div>
+    </div>
+</section>

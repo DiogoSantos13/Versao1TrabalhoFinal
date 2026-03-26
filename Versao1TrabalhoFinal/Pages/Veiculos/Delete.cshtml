@@ -1,39 +1,50 @@
 ﻿@page "{id:int}"
 @model Versao1TrabalhoFinal.Pages.Veiculos.DeleteModel
 @{
-    ViewData["Title"] = "Eliminar Veículo";
+    ViewData["Title"] = "Eliminar veículo";
 }
 
-<div class="row justify-content-center">
-    <div class="col-lg-7">
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <h2 class="text-danger mb-3">Eliminar veículo</h2>
-                <p class="mb-4">Tens a certeza que queres eliminar este veículo?</p>
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="page-header-block">
+            <p class="page-eyebrow">Área de veículos</p>
+            <h1 class="page-title">Eliminar veículo</h1>
+            <p class="page-subtitle">Confirme a remoção do veículo associado à conta.</p>
+        </div>
 
-                <div class="border rounded p-3 bg-light mb-4">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p><strong>Marca:</strong> @Model.Veiculo.Marca</p>
-                            <p><strong>Modelo:</strong> @Model.Veiculo.Modelo</p>
-                            <p><strong>Matrícula:</strong> @Model.Veiculo.Matricula</p>
-                        </div>
-                        <div class="col-md-6">
-                            <p><strong>Ano:</strong> @Model.Veiculo.Ano</p>
-                            <p><strong>Cliente:</strong> @Model.Veiculo.Cliente?.Nome</p>
-                            <p><strong>Combustível:</strong> @Model.Veiculo.Combustivel</p>
-                        </div>
-                    </div>
+        <div class="delete-card">
+            <div class="delete-alert">
+                <h2>Tem a certeza que quer eliminar este veículo?</h2>
+                <p>Esta ação remove o veículo da sua lista.</p>
+            </div>
+
+            <div class="delete-summary">
+                <div class="delete-summary-row">
+                    <span class="delete-summary-label">Marca</span>
+                    <strong>@Model.Veiculo.Marca</strong>
                 </div>
 
-                <form method="post">
-                    <input type="hidden" asp-for="Veiculo.Id" />
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-danger">Eliminar</button>
-                        <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
-                    </div>
-                </form>
+                <div class="delete-summary-row">
+                    <span class="delete-summary-label">Modelo</span>
+                    <strong>@Model.Veiculo.Modelo</strong>
+                </div>
+
+                <div class="delete-summary-row">
+                    <span class="delete-summary-label">Matrícula</span>
+                    <strong>@(string.IsNullOrWhiteSpace(Model.Veiculo.Matricula) ? "-" : Model.Veiculo.Matricula)</strong>
+                </div>
+
+                <div class="delete-summary-row">
+                    <span class="delete-summary-label">Combustível</span>
+                    <strong>@(string.IsNullOrWhiteSpace(Model.Veiculo.Combustivel) ? "-" : Model.Veiculo.Combustivel)</strong>
+                </div>
             </div>
+
+            <form method="post" asp-route-id="@Model.Veiculo.Id" class="form-actions">
+                <input type="hidden" asp-for="Veiculo.Id" />
+                <button type="submit" class="auth-button auth-button-danger">Eliminar</button>
+                <a asp-page="./Index" class="auth-button auth-button-secondary">Cancelar</a>
+            </form>
         </div>
     </div>
-</div>
+</section>

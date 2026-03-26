@@ -37,7 +37,7 @@ namespace Versao1TrabalhoFinal.Pages.VendaItens
         /// <returns>Página ou NotFound.</returns>
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var item = await _context.VendaItens
+            var item = await _context.Set<VendaItem>()
                 .Include(v => v.Produto)
                 .FirstOrDefaultAsync(v => v.Id == id);
 
@@ -55,11 +55,11 @@ namespace Versao1TrabalhoFinal.Pages.VendaItens
         /// <returns>Redireciona para a listagem.</returns>
         public async Task<IActionResult> OnPostAsync(int id)
         {
-            var item = await _context.VendaItens.FindAsync(id);
+            var item = await _context.Set<VendaItem>().FindAsync(id);
 
             if (item != null)
             {
-                _context.VendaItens.Remove(item);
+                _context.Set<VendaItem>().Remove(item);
                 await _context.SaveChangesAsync();
             }
 

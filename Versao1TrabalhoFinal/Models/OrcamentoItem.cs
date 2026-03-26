@@ -14,4 +14,5 @@ namespace Versao1TrabalhoFinal.Models
         public Servico? Servico { get; set; }
         public Produto? Produto { get; set; }
     }
+
 }

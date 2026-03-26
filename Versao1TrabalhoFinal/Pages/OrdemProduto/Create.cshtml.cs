@@ -63,7 +63,7 @@ namespace Versao1TrabalhoFinal.Pages.OrdemProdutos
                 return Page();
             }
 
-            _context.OrdemProdutos.Add(OrdemProduto);
+            _context.Set<global::Versao1TrabalhoFinal.Models.OrdemProduto>().Add(OrdemProduto);
             await _context.SaveChangesAsync();
             return RedirectToPage("./Index");
         }

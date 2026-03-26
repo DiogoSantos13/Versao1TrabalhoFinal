@@ -1,193 +1,177 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 using Versao1TrabalhoFinal.Models;
 
 namespace Versao1TrabalhoFinal.Data
 {
     /// <summary>
-    /// Contexto principal da aplicação.
-    /// Inclui as tabelas do Identity e as tabelas de negócio.
+    /// Contexto principal da base de dados da aplicação.
     /// </summary>
-    public class StandDbContext : IdentityDbContext<IdentityUser>
+    public class StandDbContext : IdentityDbContext
     {
         /// <summary>
-        /// Inicializa uma nova instância do contexto da aplicação.
+        /// Inicializa uma nova instância do contexto da base de dados.
         /// </summary>
         /// <param name="options">Opções de configuração do contexto.</param>
-        public StandDbContext(DbContextOptions<StandDbContext> options)
-            : base(options)
+        public StandDbContext(DbContextOptions<StandDbContext> options) : base(options)
         {
         }
 
         /// <summary>
-        /// Tabela de clientes.
+        /// Clientes registados na aplicação.
         /// </summary>
         public DbSet<Cliente> Clientes { get; set; }
 
         /// <summary>
-        /// Tabela de fornecedores.
-        /// </summary>
-        public DbSet<Fornecedor> Fornecedores { get; set; }
-
-        /// <summary>
-        /// Tabela de histórico de reparações.
-        /// </summary>
-        public DbSet<HistoricoReparacao> HistoricoReparacoes { get; set; }
-
-        /// <summary>
-        /// Tabela de itens de orçamento.
-        /// </summary>
-        public DbSet<OrcamentoItem> OrcamentoItens { get; set; }
-
-        /// <summary>
-        /// Tabela de orçamentos.
-        /// </summary>
-        public DbSet<Orcamento> Orcamentos { get; set; }
-
-        /// <summary>
-        /// Tabela de associação entre ordens e produtos.
-        /// </summary>
-        public DbSet<OrdemProduto> OrdemProdutos { get; set; }
-
-        /// <summary>
-        /// Tabela de ordens de reparação.
-        /// </summary>
-        public DbSet<OrdemReparacao> OrdensReparacao { get; set; }
-
-        /// <summary>
-        /// Tabela de produtos.
-        /// </summary>
-        public DbSet<Produto> Produtos { get; set; }
-
-        /// <summary>
-        /// Tabela de serviços.
-        /// </summary>
-        public DbSet<Servico> Servicos { get; set; }
-
-        /// <summary>
-        /// Tabela de veículos.
+        /// Veículos associados aos clientes.
         /// </summary>
         public DbSet<Veiculo> Veiculos { get; set; }
 
         /// <summary>
-        /// Tabela de veículos do stand.
+        /// Veículos disponíveis no stand.
         /// </summary>
         public DbSet<VeiculoStand> VeiculosStand { get; set; }
 
         /// <summary>
-        /// Tabela de itens de venda.
+        /// Orçamentos registados na aplicação.
         /// </summary>
-        public DbSet<VendaItem> VendaItens { get; set; }
+        public DbSet<Orcamento> Orcamentos { get; set; }
 
         /// <summary>
-        /// Tabela de vendas.
+        /// Histórico de mensagens do chat de orçamentos.
+        /// </summary>
+        public DbSet<HistoricoChatOrcamento> HistoricoChatOrcamentos { get; set; }
+
+        /// <summary>
+        /// Histórico de reparações efetuadas.
+        /// </summary>
+        public DbSet<HistoricoReparacao> HistoricoReparacoes { get; set; }
+
+        /// <summary>
+        /// Produtos disponíveis na aplicação.
+        /// </summary>
+        public DbSet<Produto> Produtos { get; set; }
+
+        /// <summary>
+        /// Vendas registadas.
         /// </summary>
         public DbSet<Venda> Vendas { get; set; }
 
         /// <summary>
-        /// Configura as relações entre entidades.
+        /// Serviços disponíveis.
         /// </summary>
-        /// <param name="modelBuilder">Builder do modelo.</param>
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        public DbSet<Servico> Servicos { get; set; }
+
+        /// <summary>
+        /// Ordens de reparação registadas.
+        /// </summary>
+        public DbSet<OrdemReparacao> OrdensReparacao { get; set; }
+
+        /// <summary>
+        /// Fornecedores registados na aplicação.
+        /// </summary>
+        public DbSet<Fornecedor> Fornecedores { get; set; }
+
+        /// <summary>
+        /// Carrinhos dos clientes.
+        /// </summary>
+        public DbSet<Carrinho> Carrinhos { get; set; }
+
+        /// <summary>
+        /// Itens dos carrinhos.
+        /// </summary>
+        public DbSet<CarrinhoItem> CarrinhoItens { get; set; }
+
+        /// <summary>
+        /// Itens dos carrinhos serviços.
+        /// </summary>
+        public DbSet<CarrinhoServico> CarrinhoServicos { get; set; }
+
+
+        /// <summary>
+        /// Configura o modelo da base de dados e os relacionamentos entre entidades.
+        /// </summary>
+        /// <param name="builder">Construtor do modelo.</param>
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(builder);
 
-            modelBuilder.Entity<Veiculo>()
-                .HasOne(v => v.Cliente)
-                .WithMany(c => c.Veiculos)
-                .HasForeignKey(v => v.ClienteId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<Veiculo>().ToTable("Veiculos", "dbo");
+            builder.Entity<VeiculoStand>().ToTable("VeiculosStand", "dbo");
+            builder.Entity<Cliente>().ToTable("Clientes", "dbo");
+            builder.Entity<Orcamento>().ToTable("Orcamentos", "dbo");
+            builder.Entity<HistoricoChatOrcamento>().ToTable("HistoricoChatOrcamentos", "dbo");
+            builder.Entity<HistoricoReparacao>().ToTable("HistoricoReparacoes", "dbo");
+            builder.Entity<Produto>().ToTable("Produtos", "dbo");
+            builder.Entity<Venda>().ToTable("Vendas", "dbo");
+            builder.Entity<Servico>().ToTable("Servicos", "dbo");
+            builder.Entity<OrdemReparacao>().ToTable("OrdensReparacao", "dbo");
+            builder.Entity<Fornecedor>().ToTable("Fornecedores", "dbo");
+            builder.Entity<Carrinho>().ToTable("Carrinhos", "dbo");
+            builder.Entity<CarrinhoItem>().ToTable("CarrinhoItens", "dbo");
 
-            modelBuilder.Entity<VeiculoStand>()
+            builder.Entity<VeiculoStand>()
+                .Property(v => v.Preco)
+                .HasColumnType("decimal(18,2)");
+
+            builder.Entity<CarrinhoItem>()
+                .Property(ci => ci.PrecoNoMomento)
+                .HasColumnType("decimal(18,2)");
+
+            builder.Entity<VeiculoStand>()
                 .HasOne(vs => vs.Veiculo)
-                .WithMany(v => v.VeiculosStand)
+                .WithMany()
                 .HasForeignKey(vs => vs.VeiculoId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Produto>()
-                .HasOne(p => p.Fornecedor)
-                .WithMany(f => f.Produtos)
-                .HasForeignKey(p => p.FornecedorId)
-                .OnDelete(DeleteBehavior.Restrict);
+           
 
-            modelBuilder.Entity<OrdemReparacao>()
-                .HasOne(o => o.Cliente)
-                .WithMany(c => c.OrdensReparacao)
-                .HasForeignKey(o => o.ClienteId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<OrdemReparacao>()
-                .HasOne(o => o.Veiculo)
-                .WithMany(v => v.OrdensReparacao)
-                .HasForeignKey(o => o.VeiculoId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<OrdemProduto>()
-                .HasOne(op => op.OrdemReparacao)
-                .WithMany(o => o.OrdemProdutos)
-                .HasForeignKey(op => op.OrdemId)
+            builder.Entity<Carrinho>()
+                .HasOne(c => c.Cliente)
+                .WithOne(c => c.Carrinho)
+                .HasForeignKey<Carrinho>(c => c.ClienteId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<OrdemProduto>()
-                .HasOne(op => op.Produto)
-                .WithMany(p => p.OrdemProdutos)
-                .HasForeignKey(op => op.ProdutoId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<Carrinho>()
+                .HasIndex(c => c.ClienteId)
+                .IsUnique();
 
-            modelBuilder.Entity<Orcamento>()
-                .HasOne(o => o.Cliente)
-                .WithMany(c => c.Orcamentos)
-                .HasForeignKey(o => o.ClienteId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Orcamento>()
-                .HasOne(o => o.Veiculo)
-                .WithMany(v => v.Orcamentos)
-                .HasForeignKey(o => o.VeiculoId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<OrcamentoItem>()
-                .HasOne(oi => oi.Orcamento)
-                .WithMany(o => o.Itens)
-                .HasForeignKey(oi => oi.OrcamentoId)
+            builder.Entity<CarrinhoItem>()
+                .HasOne(ci => ci.Carrinho)
+                .WithMany(c => c.Itens)
+                .HasForeignKey(ci => ci.CarrinhoId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<OrcamentoItem>()
-                .HasOne(oi => oi.Servico)
-                .WithMany(s => s.OrcamentoItens)
-                .HasForeignKey(oi => oi.ServicoId)
+            builder.Entity<CarrinhoItem>()
+                .HasOne(ci => ci.VeiculoStand)
+                .WithMany(vs => vs.CarrinhoItens)
+                .HasForeignKey(ci => ci.VeiculoStandId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<OrcamentoItem>()
-                .HasOne(oi => oi.Produto)
-                .WithMany(p => p.OrcamentoItens)
-                .HasForeignKey(oi => oi.ProdutoId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<CarrinhoItem>()
+                .HasIndex(ci => new { ci.CarrinhoId, ci.VeiculoStandId })
+                .IsUnique();
 
-            modelBuilder.Entity<Venda>()
-                .HasOne(v => v.Cliente)
-                .WithMany(c => c.Vendas)
-                .HasForeignKey(v => v.ClienteId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<CarrinhoServico>()
+    .HasKey(cs => cs.Id);
 
-            modelBuilder.Entity<VendaItem>()
-                .HasOne(vi => vi.Venda)
-                .WithMany(v => v.Itens)
-                .HasForeignKey(vi => vi.VendaId)
+            builder.Entity<CarrinhoServico>()
+                .HasOne(cs => cs.Carrinho)
+                .WithMany(c => c.Servicos)
+                .HasForeignKey(cs => cs.CarrinhoId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<VendaItem>()
-                .HasOne(vi => vi.Produto)
-                .WithMany(p => p.VendaItens)
-                .HasForeignKey(vi => vi.ProdutoId)
+            builder.Entity<CarrinhoServico>()
+                .HasOne(cs => cs.Servico)
+                .WithMany(s => s.CarrinhoServicos)
+                .HasForeignKey(cs => cs.ServicoId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<HistoricoReparacao>()
-                .HasOne(h => h.Veiculo)
-                .WithMany(v => v.HistoricoReparacoes)
-                .HasForeignKey(h => h.VeiculoId)
-                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<CarrinhoServico>()
+                .HasIndex(cs => new { cs.CarrinhoId, cs.ServicoId })
+                .IsUnique();
+
         }
     }
 }

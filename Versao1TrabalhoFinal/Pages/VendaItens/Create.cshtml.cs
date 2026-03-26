@@ -62,7 +62,7 @@ namespace Versao1TrabalhoFinal.Pages.VendaItens
                 return Page();
             }
 
-            _context.VendaItens.Add(VendaItem);
+            _context.Set<VendaItem>().Add(VendaItem);
             await _context.SaveChangesAsync();
             return RedirectToPage("./Index");
         }

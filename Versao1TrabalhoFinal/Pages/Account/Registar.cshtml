@@ -1,0 +1,66 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Criar conta";
+}
+
+<section class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-brand">
+                <a asp-page="/Index" class="auth-logo-link">
+                    <img src="https://www.hsn-automoveis.pt/images/logo.png" alt="Logo Stand Premium" class="auth-logo" />
+                </a>
+                <h1 class="auth-title">Criar conta</h1>
+                <p class="auth-subtitle">Registe-se para gerir os seus veículos e orçamentos.</p>
+            </div>
+
+            <form method="post" class="auth-form">
+                <input type="hidden" asp-for="ReturnUrl" />
+
+                <div asp-validation-summary="ModelOnly" class="auth-validation"></div>
+
+                <div class="auth-field">
+                    <label asp-for="Input.Nome" class="auth-label"></label>
+                    <input asp-for="Input.Nome" class="auth-input" placeholder="Nome completo" />
+                    <span asp-validation-for="Input.Nome" class="auth-error"></span>
+                </div>
+
+                <div class="auth-field">
+                    <label asp-for="Input.Email" class="auth-label"></label>
+                    <input asp-for="Input.Email" class="auth-input" placeholder="email@exemplo.com" />
+                    <span asp-validation-for="Input.Email" class="auth-error"></span>
+                </div>
+
+                <div class="auth-field">
+                    <label asp-for="Input.Telefone" class="auth-label"></label>
+                    <input asp-for="Input.Telefone" class="auth-input" placeholder="912 345 678" />
+                    <span asp-validation-for="Input.Telefone" class="auth-error"></span>
+                </div>
+
+                <div class="auth-field">
+                    <label asp-for="Input.Password" class="auth-label"></label>
+                    <input asp-for="Input.Password" class="auth-input" placeholder="Mínimo 6 caracteres" />
+                    <span asp-validation-for="Input.Password" class="auth-error"></span>
+                </div>
+
+                <div class="auth-field">
+                    <label asp-for="Input.ConfirmPassword" class="auth-label"></label>
+                    <input asp-for="Input.ConfirmPassword" class="auth-input" placeholder="Repita a password" />
+                    <span asp-validation-for="Input.ConfirmPassword" class="auth-error"></span>
+                </div>
+
+                <button type="submit" class="auth-button">Registar</button>
+
+                <div class="auth-links">
+                    <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Já tem conta? Inicie sessão</a>
+                    <a asp-page="/Index">Voltar ao início</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

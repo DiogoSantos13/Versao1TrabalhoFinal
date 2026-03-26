@@ -1,55 +1,164 @@
 ﻿@page
+@model Versao1TrabalhoFinal.Pages.IndexModel
 @{
-    ViewData["Title"] = "Início";
+    ViewData["Title"] = "Stand e Ofinica Automóvel - Stand Premium";
 }
 
-<div class="row align-items-center py-5">
-    <div class="col-lg-6">
-        <span class="badge bg-warning text-dark mb-3">Oficina & Stand</span>
-        <h1 class="display-5 fw-bold">Reparação automóvel com confiança</h1>
-        <p class="lead text-muted">
-            Fazemos revisões, travões, diagnóstico eletrónico, baterias, filtros, pneus e manutenção geral.
-        </p>
-        <div class="d-flex gap-3">
-            <a asp-page="/Account/Login" class="btn btn-primary btn-lg">Iniciar sessão</a>
+<section class="hero">
+    <h1>
+        SOMOS <span>ESPECIALISTAS EM OPORTUNIDADES</span>,<br />
+        COM UM SERVIÇO DE QUALIDADE COMPLETO.
+    </h1>
+    <p class="hero-subtitle">
+        Descubra as últimas entradas em stock e encontre a viatura certa para si.
+    </p>
+</section>
+
+<section class="stock-section">
+    <div class="section-title">
+        <p>Os mais recentes</p>
+        <h2>Últimas Entradas</h2>
+    </div>
+
+    <div class="swiper swiper-container-stock">
+        <div class="swiper-wrapper">
+            @if (Model.VeiculosDestaque != null && Model.VeiculosDestaque.Any())
+            {
+                foreach (var veiculo in Model.VeiculosDestaque)
+                {
+                    <div class="swiper-slide">
+                        <a asp-page="/VeiculosStand/Details" asp-route-id="@veiculo.Id" class="stock-card-link">
+                            <div class="destaques_box">
+                                <div class="image-container">
+                                    <img src="@(string.IsNullOrWhiteSpace(veiculo.ImagemUrl) ? "/images/cars/default-car.jpg" : veiculo.ImagemUrl)"
+                                         alt="Veículo @veiculo.Id" />
+
+                                    <div class="carro_listagem_specs">
+                                        <div class="destaques_listagem_specs_item">
+                                            <i class="fa-regular fa-calendar"></i>
+                                            @veiculo.DataEntrada.ToString("MMM. yyyy")
+                                        </div>
+
+                                        <div class="destaques_listagem_specs_item">
+                                            <i class="fa-solid fa-circle-check"></i>
+                                            @(string.IsNullOrWhiteSpace(veiculo.Estado) ? "Disponível" : veiculo.Estado)
+                                        </div>
+
+                                        <div class="destaques_listagem_specs_item">
+                                            <i class="fa-solid fa-road"></i>
+                                            @veiculo.Quilometros.ToString("N0") KM
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="listagem_info">
+                                    <div class="destaques_texto_listagem_marca">Viatura</div>
+                                    <div class="destaques_texto_listagem_modelo">
+                                        @(string.IsNullOrWhiteSpace(veiculo.Descricao) ? $"Stock #{veiculo.Id}" : veiculo.Descricao)
+                                    </div>
+                                    <div class="destaques_nocampanha">Preço</div>
+                                    <div class="boxPrecoFicha">
+                                        <span>@veiculo.Preco.ToString("N0")</span> €
+                                    </div>
+                                    <div class="carro_Mais">
+                                        <svg width="22" height="4" fill="#ccc" aria-hidden="true">
+                                            <circle cx="2" cy="2" r="2"></circle>
+                                            <circle cx="11" cy="2" r="2"></circle>
+                                            <circle cx="20" cy="2" r="2"></circle>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="swiper-slide">
+                    <div class="destaques_box">
+                        <div class="image-container">
+                            <img src="/images/cars/default-car.jpg" alt="Sem veículos" />
+                        </div>
+                        <div class="listagem_info">
+                            <div class="destaques_texto_listagem_marca">Sem stock</div>
+                            <div class="destaques_texto_listagem_modelo">
+                                Não existem viaturas disponíveis para mostrar neste momento.
+                            </div>
+                            <div class="destaques_nocampanha">Informação</div>
+                            <div class="boxPrecoFicha">
+                                <span>0</span> €
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
-    </div>
 
-    <div class="col-lg-6">
-        <img src="https://images.unsplash.com/photo-1487754180451-c456f719a1fc?q=80&w=1200&auto=format&fit=crop"
-             class="img-fluid rounded-4 shadow"
-             alt="Oficina automóvel" />
+        <div class="swiper-pagination"></div>
     </div>
-</div>
+</section>
 
-<div class="row g-4 mt-4">
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-            <img src="https://images.unsplash.com/photo-1613214149922-f1809c99b414?q=80&w=1200&auto=format&fit=crop" class="card-img-top" alt="Óleo">
-            <div class="card-body">
-                <h5>Mudança de óleo</h5>
-                <p class="text-muted">Substituição de óleo e filtros com controlo de níveis.</p>
+<section class="map-section">
+    <div class="map-card">
+        <iframe class="map-iframe"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3083.473534575!2d-8.4116!3d39.6015!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMznCsDM2JzA1LjQiTiA4wrAyNCc0MS44Ilc!5e0!3m2!1spt-PT!2spt!4v1700000000000"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+
+        <div class="map-info">
+            <h3>Onde estamos?</h3>
+
+            <div class="contact-row">
+                <i class="fa-solid fa-location-dot"></i>
+                <div>
+                    <span>Morada</span>
+                    <p>Av. Dr. Aurélio Ribeiro, 42-A, 2300-305 Tomar</p>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-            <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200&auto=format&fit=crop" class="card-img-top" alt="Travões">
-            <div class="card-body">
-                <h5>Travões e segurança</h5>
-                <p class="text-muted">Pastilhas, discos e verificação do sistema de travagem.</p>
+            <div class="contact-row">
+                <i class="fa-solid fa-phone"></i>
+                <div>
+                    <span>Telefone</span>
+                    <p>+351 968 XXX XXX</p>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-            <img src="https://images.unsplash.com/photo-1511919884226-fd3cad34687c?q=80&w=1200&auto=format&fit=crop" class="card-img-top" alt="Diagnóstico">
-            <div class="card-body">
-                <h5>Diagnóstico eletrónico</h5>
-                <p class="text-muted">Leitura de erros, apoio técnico e manutenção preventiva.</p>
+            <div class="contact-row">
+                <i class="fa-solid fa-clock"></i>
+                <div>
+                    <span>Horário</span>
+                    <p>Seg - Sex: 09:00 - 19:00</p>
+                </div>
             </div>
+
+            <a href="https://maps.google.com/?q=Av.+Dr.+Aurélio+Ribeiro,+42-A,+2300-305+Tomar"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="btn-map">
+                OBTER DIREÇÕES
+            </a>
         </div>
     </div>
-</div>
+</section>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new Swiper('.swiper-container-stock', {
+                slidesPerView: 1,
+                spaceBetween: 20,
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true
+                },
+                breakpoints: {
+                    768: { slidesPerView: 2 },
+                    1100: { slidesPerView: 3 }
+                }
+            });
+        });
+    </script>
+}

@@ -31,10 +31,12 @@ namespace Versao1TrabalhoFinal.Pages.OrdemProdutos
 
         /// <summary>
         /// Carrega os registos existentes.
+        /// Correção: usa DbContext.Set&lt;T&gt;() em vez de uma propriedade DbSet que pode não existir no contexto.
         /// </summary>
         public async Task OnGetAsync()
         {
-            OrdemProdutos = await _context.OrdemProdutos
+            OrdemProdutos = await _context
+                .Set<global::Versao1TrabalhoFinal.Models.OrdemProduto>()
                 .Include(o => o.OrdemReparacao)
                 .Include(o => o.Produto)
                 .OrderByDescending(o => o.Id)

@@ -1,35 +1,86 @@
 ﻿@page
 @model Versao1TrabalhoFinal.Pages.Veiculos.IndexModel
 @{
-    ViewData["Title"] = "Veículos";
+    ViewData["Title"] = "Os Meus Veículos";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Veículos</h2>
-    <a asp-page="/Veiculos/Create" class="btn btn-primary">Novo Veículo</a>
-</div>
-
-<div class="row g-4">
-    @foreach (var veiculo in Model.Veiculos)
-    {
-        <div class="col-md-6 col-xl-4">
-            <div class="card h-100 shadow-sm">
-                @if (!string.IsNullOrWhiteSpace(veiculo.ImagemUrl))
-                {
-                    <img src="@veiculo.ImagemUrl" class="card-img-top" style="height:220px; object-fit:cover;" alt="@veiculo.Marca @veiculo.Modelo" />
-                }
-                <div class="card-body">
-                    <h5>@veiculo.Marca @veiculo.Modelo</h5>
-                    <p class="text-muted">@veiculo.Matricula</p>
-                    <p><strong>Cliente:</strong> @veiculo.Cliente?.Nome</p>
-                    <p><strong>Ano:</strong> @veiculo.Ano</p>
-                    <p><strong>Combustível:</strong> @veiculo.Combustivel</p>
-                    <div class="d-flex gap-2">
-                        <a asp-page="/Veiculos/Edit" asp-route-id="@veiculo.Id" class="btn btn-sm btn-outline-primary">Editar</a>
-                        <a asp-page="/Veiculos/Delete" asp-route-id="@veiculo.Id" class="btn btn-sm btn-outline-danger">Eliminar</a>
-                    </div>
-                </div>
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="list-header">
+            <div>
+                <p class="page-eyebrow">Área do cliente</p>
+                <h1 class="page-title">Os meus veículos</h1>
+                <p class="page-subtitle">Consulte e gira os veículos associados à sua conta.</p>
             </div>
+
+            <a asp-page="./Create" class="auth-button list-header-button">
+                Novo veículo
+            </a>
         </div>
-    }
-</div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="success-banner">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+
+        @if (Model.Veiculos != null && Model.Veiculos.Any())
+        {
+            <div class="vehicle-grid">
+                @foreach (var item in Model.Veiculos)
+                {
+                    <div class="vehicle-admin-card">
+                        <div class="vehicle-admin-image-wrap">
+                            <img src="@(string.IsNullOrWhiteSpace(item.ImagemUrl) ? "/images/cars/default-car.jpg" : item.ImagemUrl)"
+                                 class="vehicle-admin-image"
+                                 alt="@item.Marca @item.Modelo" />
+                        </div>
+
+                        <div class="vehicle-admin-body">
+                            <h3 class="vehicle-admin-title">@item.Marca @item.Modelo</h3>
+
+                            <p class="vehicle-admin-status">
+                                @(string.IsNullOrWhiteSpace(item.Combustivel) ? "Veículo" : item.Combustivel)
+                            </p>
+
+                            <div class="vehicle-admin-meta">
+                                <div class="vehicle-admin-meta-item">
+                                    <span class="vehicle-admin-meta-label">Ano</span>
+                                    <strong>@item.Ano</strong>
+                                </div>
+
+                                <div class="vehicle-admin-meta-item">
+                                    <span class="vehicle-admin-meta-label">Matrícula</span>
+                                    <strong>@(string.IsNullOrWhiteSpace(item.Matricula) ? "-" : item.Matricula)</strong>
+                                </div>
+                            </div>
+
+                            <div class="vehicle-admin-actions">
+                                <a asp-page="./Details" asp-route-id="@item.Id" class="action-link action-link-primary">
+                                    Ver
+                                </a>
+
+                                <a asp-page="./Edit" asp-route-id="@item.Id" class="action-link action-link-primary">
+                                    Editar
+                                </a>
+
+                                <a asp-page="./Delete" asp-route-id="@item.Id" class="action-link action-link-danger">
+                                    Eliminar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state-card">
+                <h3>Sem veículos registados</h3>
+                <p>Ainda não tem veículos associados à sua conta.</p>
+                <a asp-page="./Create" class="auth-button">Adicionar primeiro veículo</a>
+            </div>
+        }
+    </div>
+</section>

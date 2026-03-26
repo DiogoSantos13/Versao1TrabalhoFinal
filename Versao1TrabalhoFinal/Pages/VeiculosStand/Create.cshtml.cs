@@ -2,15 +2,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Versao1TrabalhoFinal.Data;
 using Versao1TrabalhoFinal.Models;
 
 namespace Versao1TrabalhoFinal.Pages.VeiculosStand
 {
-    /// <summary>
-    /// Página de criação de veículos do stand.
-    /// </summary>
-    [Authorize(Roles = "Admin,Vendedor")]
+    [Authorize(Roles = "Admin")]
     public class CreateModel : PageModel
     {
         private readonly StandDbContext _context;
@@ -25,23 +23,49 @@ namespace Versao1TrabalhoFinal.Pages.VeiculosStand
 
         public SelectList VeiculosSelect { get; set; } = default!;
 
-        public void OnGet()
+        public async Task OnGetAsync()
         {
             VeiculoStand.DataEntrada = DateTime.Now;
-            VeiculosSelect = new SelectList(_context.Veiculos.OrderBy(v => v.Marca).ThenBy(v => v.Modelo).ToList(), "Id", "Modelo");
+            await LoadVeiculosAsync();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            var veiculoExiste = await _context.Veiculos
+                .AsNoTracking()
+                .AnyAsync(v => v.Id == VeiculoStand.VeiculoId);
+
+            if (!veiculoExiste)
+            {
+                ModelState.AddModelError("VeiculoStand.VeiculoId", "Selecione um veículo válido.");
+            }
+
             if (!ModelState.IsValid)
             {
-                VeiculosSelect = new SelectList(_context.Veiculos.OrderBy(v => v.Marca).ThenBy(v => v.Modelo).ToList(), "Id", "Modelo");
+                await LoadVeiculosAsync();
                 return Page();
             }
 
             _context.VeiculosStand.Add(VeiculoStand);
             await _context.SaveChangesAsync();
+
             return RedirectToPage("./Index");
+        }
+
+        private async Task LoadVeiculosAsync()
+        {
+            var veiculos = await _context.Veiculos
+                .AsNoTracking()
+                .OrderBy(v => v.Marca)
+                .ThenBy(v => v.Modelo)
+                .Select(v => new
+                {
+                    v.Id,
+                    NomeCompleto = v.Marca + " " + v.Modelo
+                })
+                .ToListAsync();
+
+            VeiculosSelect = new SelectList(veiculos, "Id", "NomeCompleto");
         }
     }
 }

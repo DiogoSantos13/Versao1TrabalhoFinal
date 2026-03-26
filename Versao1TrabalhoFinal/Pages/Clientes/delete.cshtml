@@ -4,22 +4,107 @@
     ViewData["Title"] = "Eliminar Cliente";
 }
 
-<div class="card shadow-sm">
-    <div class="card-body">
-        <h2 class="text-danger">Eliminar cliente</h2>
-        <p>Tens a certeza que queres eliminar este cliente?</p>
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="page-header-block">
+            <p class="page-eyebrow">Administração</p>
+            <h1 class="page-title">Eliminar cliente</h1>
+            <p class="page-subtitle">Confirme a remoção do cliente e valide os dados antes de continuar.</p>
+        </div>
 
-        <dl class="row">
-            <dt class="col-sm-2">Nome</dt>
-            <dd class="col-sm-10">@Model.Cliente.Nome</dd>
+        <div class="client-edit-layout">
+            <div class="client-edit-main">
+                <div class="client-form-card client-danger-card">
+                    <div class="client-danger-banner">
+                        <div class="client-danger-icon">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
 
-            <dt class="col-sm-2">Email</dt>
-            <dd class="col-sm-10">@Model.Cliente.Email</dd>
-        </dl>
+                        <div>
+                            <h2 class="client-form-title mb-1">Ação irreversível</h2>
+                            <p class="client-form-subtitle mb-0">
+                                Esta operação pode remover definitivamente o cliente e a conta associada, caso não existam dependências.
+                            </p>
+                        </div>
+                    </div>
 
-        <form method="post">
-            <button type="submit" class="btn btn-danger">Eliminar</button>
-            <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
-        </form>
+                    <div class="client-delete-section">
+                        <h3 class="client-delete-title">Confirmação</h3>
+                        <p class="client-delete-text">
+                            Tem a certeza que pretende eliminar este cliente?
+                        </p>
+                    </div>
+
+                    <div class="client-details-grid">
+                        <div class="client-detail-item">
+                            <span class="client-detail-label">Nome</span>
+                            <strong>@Model.Cliente.Nome</strong>
+                        </div>
+
+                        <div class="client-detail-item">
+                            <span class="client-detail-label">Email</span>
+                            <strong>@Model.Cliente.Email</strong>
+                        </div>
+
+                        <div class="client-detail-item">
+                            <span class="client-detail-label">Telefone</span>
+                            <strong>@(string.IsNullOrWhiteSpace(Model.Cliente.Telefone) ? "Não definido" : Model.Cliente.Telefone)</strong>
+                        </div>
+
+                        <div class="client-detail-item">
+                            <span class="client-detail-label">NIF</span>
+                            <strong>@(string.IsNullOrWhiteSpace(Model.Cliente.NIF) ? "Não definido" : Model.Cliente.NIF)</strong>
+                        </div>
+
+                        <div class="client-detail-item client-detail-item-full">
+                            <span class="client-detail-label">Morada</span>
+                            <strong>@(string.IsNullOrWhiteSpace(Model.Cliente.Morada) ? "Não definida" : Model.Cliente.Morada)</strong>
+                        </div>
+                    </div>
+
+                    <form method="post" asp-route-id="@Model.Cliente.Id" class="client-form-actions">
+                        <button type="submit" class="danger-action-button">
+                            <i class="fa-solid fa-trash"></i>
+                            <span>Eliminar cliente</span>
+                        </button>
+
+                        <a asp-page="./Index" class="auth-button auth-button-secondary">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <span>Cancelar</span>
+                        </a>
+                    </form>
+
+                </div>
+            </div>
+
+            <aside class="client-edit-side">
+                <div class="client-summary-card">
+                    <div class="client-summary-avatar">
+                        <img src="@(string.IsNullOrWhiteSpace(Model.Cliente.ImagemUrl) ? "/images/users/default-avatar.jpg" : Model.Cliente.ImagemUrl)"
+                             alt="Avatar do cliente" />
+                    </div>
+
+                    <h3 class="client-summary-name">@Model.Cliente.Nome</h3>
+                    <p class="client-summary-email">@Model.Cliente.Email</p>
+
+                    <div class="client-summary-divider"></div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">Telefone</span>
+                        <strong>@(string.IsNullOrWhiteSpace(Model.Cliente.Telefone) ? "Não definido" : Model.Cliente.Telefone)</strong>
+                    </div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">NIF</span>
+                        <strong>@(string.IsNullOrWhiteSpace(Model.Cliente.NIF) ? "Não definido" : Model.Cliente.NIF)</strong>
+                    </div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">Conta associada</span>
+                        <strong>@(string.IsNullOrWhiteSpace(Model.Cliente.IdentityUserId) ? "Sem ligação" : "Ligada ao Identity")</strong>
+                    </div>
+                </div>
+            </aside>
+        </div>
     </div>
-</div>
+</section>

@@ -38,7 +38,9 @@ namespace Versao1TrabalhoFinal.Pages.OrdemProdutos
         /// <returns>Página ou NotFound.</returns>
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var item = await _context.OrdemProdutos
+            // Qualificar o tipo para evitar conflito com um namespace chamado 'OrdemProduto'
+            var item = await _context
+                .Set<Versao1TrabalhoFinal.Models.OrdemProduto>()
                 .Include(o => o.Produto)
                 .FirstOrDefaultAsync(o => o.Id == id);
 
@@ -56,11 +58,11 @@ namespace Versao1TrabalhoFinal.Pages.OrdemProdutos
         /// <returns>Redireciona para a listagem.</returns>
         public async Task<IActionResult> OnPostAsync(int id)
         {
-            var item = await _context.OrdemProdutos.FindAsync(id);
+            var item = await _context.Set<global::Versao1TrabalhoFinal.Models.OrdemProduto>().FindAsync(id);
 
             if (item != null)
             {
-                _context.OrdemProdutos.Remove(item);
+                _context.Set<global::Versao1TrabalhoFinal.Models.OrdemProduto>().Remove(item);
                 await _context.SaveChangesAsync();
             }
 

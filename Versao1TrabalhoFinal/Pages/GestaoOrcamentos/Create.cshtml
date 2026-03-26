@@ -1,0 +1,91 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.GestaoOrcamentos.CreateModel
+@{
+    ViewData["Title"] = "Novo Pedido de Orçamento";
+}
+
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="page-header-block">
+            <p class="page-eyebrow">Área do cliente</p>
+            <h1 class="page-title">Pedir orçamento</h1>
+            <p class="page-subtitle">Selecione o veículo e descreva o problema para análise da nossa equipa.</p>
+        </div>
+
+        <div class="client-edit-layout">
+            <div class="client-edit-main">
+                <div class="client-form-card">
+                    <div class="client-form-card-header">
+                        <div>
+                            <h2 class="client-form-title">Novo pedido</h2>
+                            <p class="client-form-subtitle">Indique o veículo e explique o problema com o maior detalhe possível.</p>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="auth-validation mb-4"></div>
+
+                        <div class="client-form-grid">
+                            <div class="client-field client-field-full">
+                                <label asp-for="Input.VeiculoId" class="client-label"></label>
+                                <select asp-for="Input.VeiculoId" asp-items="Model.VeiculosOptions" class="client-input">
+                                    <option value="">Selecione um veículo</option>
+                                </select>
+                                <span asp-validation-for="Input.VeiculoId" class="text-danger"></span>
+                            </div>
+
+                            <div class="client-field client-field-full">
+                                <label asp-for="Input.Descricao" class="client-label"></label>
+                                <textarea asp-for="Input.Descricao"
+                                          class="client-input client-textarea"
+                                          rows="7"
+                                          placeholder="Ex.: O carro faz um barulho metálico ao travar, principalmente em andamento lento."></textarea>
+                                <span asp-validation-for="Input.Descricao" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="client-form-actions">
+                            <button class="auth-button" type="submit">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span>Submeter pedido</span>
+                            </button>
+
+                            <a asp-page="./Index" class="auth-button auth-button-secondary">
+                                <i class="fa-solid fa-arrow-left"></i>
+                                <span>Cancelar</span>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <aside class="client-edit-side">
+                <div class="client-summary-card">
+                    <h3 class="client-summary-name">Informação</h3>
+                    <p class="client-summary-email">O pedido ficará pendente até análise por um colaborador ou administrador.</p>
+
+                    <div class="client-summary-divider"></div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">Estado inicial</span>
+                        <strong>Pendente</strong>
+                    </div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">IA</span>
+                        <strong>Desativada nesta fase</strong>
+                    </div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">Valor</span>
+                        <strong>Definido posteriormente</strong>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

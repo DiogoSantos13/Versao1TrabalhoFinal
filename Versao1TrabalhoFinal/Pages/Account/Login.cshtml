@@ -4,39 +4,53 @@
     ViewData["Title"] = "Iniciar sessão";
 }
 
-<div class="auth-wrapper">
-    <div class="card auth-card">
-        <div class="card-body p-4 p-md-5">
-            <div class="text-center mb-4">
+<section class="auth-page">
+    <div class="auth-overlay"></div>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-brand">
+                <a asp-page="/Index" class="auth-logo-link">
+                    <img src="https://www.hsn-automoveis.pt/images/logo.png" alt="Logo Stand Premium" class="auth-logo" />
+                </a>
                 <h1 class="auth-title">Iniciar sessão</h1>
-                <p class="text-muted mb-0">Acede ao sistema do stand e oficina.</p>
+                <p class="auth-subtitle">Acede ao sistema do stand e oficina.</p>
             </div>
 
-            <form method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <form method="post" class="auth-form">
+                <input type="hidden" asp-for="ReturnUrl" />
 
-                <div class="mb-3">
-                    <label asp-for="Input.Email" class="form-label"></label>
-                    <input asp-for="Input.Email" class="form-control" placeholder="exemplo@email.pt" />
-                    <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                <div asp-validation-summary="ModelOnly" class="auth-validation"></div>
+
+                <div class="auth-field">
+                    <label asp-for="Input.Email" class="auth-label"></label>
+                    <input asp-for="Input.Email" class="auth-input" placeholder="exemplo@email.pt" />
+                    <span asp-validation-for="Input.Email" class="auth-error"></span>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="Input.Password" class="form-label"></label>
-                    <input asp-for="Input.Password" class="form-control" placeholder="Introduza a palavra-passe" />
-                    <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                <div class="auth-field">
+                    <label asp-for="Input.Password" class="auth-label"></label>
+                    <input asp-for="Input.Password" class="auth-input" placeholder="Introduza a palavra-passe" />
+                    <span asp-validation-for="Input.Password" class="auth-error"></span>
                 </div>
 
-                <div class="form-check mb-4">
-                    <input asp-for="Input.RememberMe" class="form-check-input" />
-                    <label asp-for="Input.RememberMe" class="form-check-label"></label>
+                <div class="auth-options">
+                    <div class="auth-check">
+                        <input asp-for="Input.RememberMe" class="auth-check-input" />
+                        <label asp-for="Input.RememberMe" class="auth-check-label"></label>
+                    </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100 py-2">Entrar</button>
+                <button type="submit" class="auth-button">Entrar</button>
+
+                <div class="auth-links">
+                    <a asp-page="/Account/Registar">Criar conta</a>
+                    <a asp-page="/Index">Voltar ao início</a>
+                </div>
             </form>
         </div>
     </div>
-</div>
+</section>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

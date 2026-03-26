@@ -10,7 +10,7 @@ namespace Versao1TrabalhoFinal.Models
         public string? Solucao { get; set; }
         public decimal Custo { get; set; }
         public int TempoHoras { get; set; }
-
+        public DateTime DataReparacao { get; set; }
         public Veiculo? Veiculo { get; set; }
     }
 }

@@ -13,5 +13,11 @@ namespace Versao1TrabalhoFinal.Models
         public string? ImagemUrl { get; set; }
 
         public ICollection<OrcamentoItem> OrcamentoItens { get; set; } = new List<OrcamentoItem>();
+
+        /// <summary>
+        /// Registos de serviços associados a carrinhos.
+        /// </summary>
+        public ICollection<CarrinhoServico> CarrinhoServicos { get; set; } = new List<CarrinhoServico>();
+
     }
 }

@@ -1,34 +1,133 @@
 ﻿@page
 @model Versao1TrabalhoFinal.Pages.VeiculosStand.IndexModel
 @{
-    ViewData["Title"] = "Veículos Stand";
+    ViewData["Title"] = "Veículos do Stand";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Veículos do Stand</h2>
-    <a asp-page="./Create" class="btn btn-primary">Novo Veículo Stand</a>
-</div>
-
-<div class="row g-4">
-    @foreach (var item in Model.VeiculosStand)
-    {
-        <div class="col-md-6 col-xl-4">
-            <div class="card h-100 shadow-sm">
-                @if (!string.IsNullOrWhiteSpace(item.ImagemUrl))
-                {
-                    <img src="@item.ImagemUrl" class="card-img-top" style="height:220px; object-fit:cover;" alt="Veículo stand" />
-                }
-                <div class="card-body">
-                    <h5>@item.Veiculo?.Marca @item.Veiculo?.Modelo</h5>
-                    <p class="text-muted">@item.Estado</p>
-                    <p><strong>Preço:</strong> € @item.Preco</p>
-                    <p><strong>Km:</strong> @item.Quilometros</p>
-                    <div class="d-flex gap-2">
-                        <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Editar</a>
-                        <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Eliminar</a>
-                    </div>
-                </div>
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="list-header">
+            <div>
+                <p class="page-eyebrow">Stand automóvel</p>
+                <h1 class="page-title">Veículos disponíveis</h1>
+                <p class="page-subtitle">Explore o stock atualmente disponível no stand.</p>
             </div>
+
+            @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+            {
+                <a asp-page="/VeiculosStand/Create" class="auth-button list-header-button">
+                    Novo veículo do stand
+                </a>
+            }
         </div>
-    }
-</div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="success-banner">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+
+        @if (Model.VeiculosStand != null && Model.VeiculosStand.Any())
+        {
+            <div class="vehicle-grid">
+                @foreach (var item in Model.VeiculosStand)
+                {
+                    <div class="vehicle-admin-card">
+                        <div class="vehicle-admin-image-wrap">
+                            <img src="@(string.IsNullOrWhiteSpace(item.ImagemUrl) ? "/images/cars/default-car.jpg" : item.ImagemUrl)"
+                                 class="vehicle-admin-image"
+                                 alt="@(item.Veiculo?.Marca ?? "Veículo") @(item.Veiculo?.Modelo ?? "")" />
+                        </div>
+
+                        <div class="vehicle-admin-body">
+                            <h3 class="vehicle-admin-title">
+                                @(item.Veiculo?.Marca ?? "Marca") @(item.Veiculo?.Modelo ?? "Modelo")
+                            </h3>
+
+                            <p class="vehicle-admin-status">
+                                @(string.IsNullOrWhiteSpace(item.Estado) ? "Disponível" : item.Estado)
+                            </p>
+
+                            <div class="vehicle-admin-meta">
+                                <div class="vehicle-admin-meta-item">
+                                    <span class="vehicle-admin-meta-label">Preço</span>
+                                    <strong>€ @item.Preco.ToString("N2")</strong>
+                                </div>
+
+                                <div class="vehicle-admin-meta-item">
+                                    <span class="vehicle-admin-meta-label">Quilómetros</span>
+                                    <strong>@item.Quilometros.ToString("N0")</strong>
+                                </div>
+                            </div>
+
+                            <div class="vehicle-admin-meta">
+                                <div class="vehicle-admin-meta-item">
+                                    <span class="vehicle-admin-meta-label">Ano</span>
+                                    <strong>@(item.Veiculo?.Ano)</strong>
+                                </div>
+
+                                <div class="vehicle-admin-meta-item">
+                                    <span class="vehicle-admin-meta-label">Combustível</span>
+                                    <strong>@(string.IsNullOrWhiteSpace(item.Veiculo?.Combustivel) ? "-" : item.Veiculo?.Combustivel)</strong>
+                                </div>
+                            </div>
+
+                            <div class="vehicle-admin-actions">
+                                <a asp-page="/VeiculosStand/Details" asp-route-id="@item.Id" class="action-link action-link-primary">
+                                    Ver detalhes
+                                </a>
+
+                                @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                                {
+                                    <a asp-page="/VeiculosStand/Edit" asp-route-id="@item.Id" class="action-link action-link-primary">
+                                        Editar
+                                    </a>
+
+                                    <a asp-page="/VeiculosStand/Delete" asp-route-id="@item.Id" class="action-link action-link-danger">
+                                        Eliminar
+                                    </a>
+                                }
+                                else
+                                {
+
+                                    if (User.Identity != null && User.Identity.IsAuthenticated)
+                                    {
+                                        <a asp-page="/Carrinho/Adicionar"
+                                           asp-route-veiculoStandId="@item.Id"
+                                           class="action-link action-link-primary">
+                                            Adicionar ao carrinho
+                                        </a>
+
+                                    }
+                                    else
+                                    {
+                                        <a asp-page="/Account/Login"
+                                        asp-route-returnUrl="@Url.Page("/VeiculosStand/Index")"
+                                        class="action-link action-link-primary">
+                                            Iniciar sessão
+                                        </a>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state-card">
+                <h3>Sem veículos em stock</h3>
+                <p>Não existem viaturas disponíveis para mostrar neste momento.</p>
+
+                @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                {
+                    <a asp-page="/VeiculosStand/Create" class="auth-button">
+                        Adicionar veículo ao stand
+                    </a>
+                }
+            </div>
+        }
+    </div>
+</section>

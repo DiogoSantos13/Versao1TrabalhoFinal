@@ -1,24 +1,37 @@
-﻿namespace Versao1TrabalhoFinal.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Versao1TrabalhoFinal.Models
 {
+    [Table("Veiculos")]
     public class Veiculo
     {
+        [Key]
         public int Id { get; set; }
-        public string? Marca { get; set; }
-        public string? Modelo { get; set; }
+
+        [Required]
+        public string Marca { get; set; } = string.Empty;
+
+        [Required]
+        public string Modelo { get; set; } = string.Empty;
+
         public int Ano { get; set; }
+
         public string? Tipo { get; set; }
+
         public int Cilindrada { get; set; }
+
         public string? Combustivel { get; set; }
+
         public string? Matricula { get; set; }
-        public string? VIN { get; set; }
-        public string? Cor { get; set; }
-        public int ClienteId { get; set; }
+
         public string? ImagemUrl { get; set; }
 
-        public Cliente? Cliente { get; set; }
-        public ICollection<VeiculoStand> VeiculosStand { get; set; } = new List<VeiculoStand>();
-        public ICollection<OrdemReparacao> OrdensReparacao { get; set; } = new List<OrdemReparacao>();
-        public ICollection<Orcamento> Orcamentos { get; set; } = new List<Orcamento>();
-        public ICollection<HistoricoReparacao> HistoricoReparacoes { get; set; } = new List<HistoricoReparacao>();
+        public int ClienteId { get; set; }
+
+        [ForeignKey(nameof(ClienteId))]
+        public Cliente? Cliente { get; set; } //algo que não é necessário para criar um veículo, mas que pode ser útil para exibir informações do cliente associado ao veículo<
+        
+        public string? VIN { get; set; }
     }
 }

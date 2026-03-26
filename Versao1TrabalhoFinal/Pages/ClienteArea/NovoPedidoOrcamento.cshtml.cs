@@ -28,7 +28,7 @@ namespace Versao1TrabalhoFinal.Pages.ClienteArea
         /// Pedido de orçamento ligado ao formulário.
         /// </summary>
         [BindProperty]
-        public Orcamento Orcamento { get; set; } = new();
+        public Versao1TrabalhoFinal.Models.Orcamento Orcamento { get; set; } = new();
 
         /// <summary>
         /// Lista de veículos do cliente autenticado.
@@ -80,9 +80,9 @@ namespace Versao1TrabalhoFinal.Pages.ClienteArea
             }
 
             Orcamento.ClienteId = cliente.Id;
-            Orcamento.DataCriacao = DateTime.Now;
+           // Orcamento.DataPedido = DateTime.Now;
             Orcamento.Estado = "Pedido Submetido";
-            Orcamento.GeradoPorIA = false;
+            //Orcamento.GeradoComAI = false;
             Orcamento.ValorEstimado = 0;
 
             _context.Orcamentos.Add(Orcamento);

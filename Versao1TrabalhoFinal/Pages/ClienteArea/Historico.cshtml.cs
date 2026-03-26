@@ -22,12 +22,19 @@ namespace Versao1TrabalhoFinal.Pages.ClienteArea
         {
             var email = User.Identity?.Name;
 
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                Historico = new List<HistoricoReparacao>();
+                return;
+            }
+
             Historico = await _context.HistoricoReparacoes
                 .Include(h => h.Veiculo)
-                .ThenInclude(v => v!.Cliente)
+                .ThenInclude(v => v.ClienteId)
                 .Where(h => h.Veiculo != null &&
                             h.Veiculo.Cliente != null &&
                             h.Veiculo.Cliente.Email == email)
+                .OrderByDescending(h => h.DataReparacao)
                 .ToListAsync();
         }
     }

@@ -1,33 +1,51 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Logging;
 
-namespace Versao1TrabalhoFinal.Pages.Account
+namespace Versao1TrabalhoFinal.Areas.Identity.Pages.Account
 {
-    /// <summary>
-    /// Página responsável pelo logout do utilizador autenticado.
-    /// </summary>
+    [AllowAnonymous]
     public class LogoutModel : PageModel
     {
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly ILogger<LogoutModel> _logger;
 
-        /// <summary>
-        /// Construtor da página de logout.
-        /// </summary>
-        public LogoutModel(SignInManager<IdentityUser> signInManager)
+        public LogoutModel(
+            SignInManager<IdentityUser> signInManager,
+            ILogger<LogoutModel> logger)
         {
             _signInManager = signInManager;
+            _logger = logger;
         }
 
-        /// <summary>
-        /// Termina a sessão e redireciona para a página inicial.
-        /// </summary>
-        /// <returns>Redirecionamento para a homepage.</returns>
-        public async Task<IActionResult> OnPostAsync()
+        [BindProperty(SupportsGet = true)]
+        public string? ReturnUrl { get; set; }
+
+        public IActionResult OnGet(string? returnUrl = null)
+        {
+            ReturnUrl = returnUrl;
+
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToPage("/Index");
+            }
+
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
         {
             await _signInManager.SignOutAsync();
+            _logger.LogInformation("Utilizador terminou a sessão.");
+
+            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return LocalRedirect(returnUrl);
+            }
+
             return RedirectToPage("/Index");
         }
     }
 }
-

@@ -48,7 +48,8 @@ namespace Versao1TrabalhoFinal.Pages.OrdemProdutos
         /// <returns>Página ou NotFound.</returns>
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var item = await _context.OrdemProdutos.FindAsync(id);
+            // Usar Set<OrdemProduto>() para evitar depender de uma propriedade DbSet nomeada no contexto
+            var item = await _context.Set<global::Versao1TrabalhoFinal.Models.OrdemProduto>().FindAsync(id);
 
             if (item == null)
                 return NotFound();

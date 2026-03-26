@@ -4,22 +4,26 @@
     ViewData["Title"] = "Eliminar Serviço";
 }
 
-<div class="card shadow-sm">
-    <div class="card-body">
-        <h2 class="text-danger">Eliminar serviço</h2>
-        <p>Tens a certeza que queres eliminar este serviço?</p>
+<h2 class="mb-4">Eliminar Serviço</h2>
 
-        <dl class="row">
-            <dt class="col-sm-3">Nome</dt>
-            <dd class="col-sm-9">@Model.Servico.Nome</dd>
-
-            <dt class="col-sm-3">Preço Base</dt>
-            <dd class="col-sm-9">€ @Model.Servico.PrecoBase</dd>
-        </dl>
-
-        <form method="post">
-            <button type="submit" class="btn btn-danger">Eliminar</button>
-            <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
-        </form>
+@if (Model.Servico != null)
+{
+    <div class="alert alert-warning">
+        Tem a certeza que pretende eliminar este serviço?
     </div>
-</div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h4>@Model.Servico.Nome</h4>
+            <p class="text-muted">@Model.Servico.Descricao</p>
+            <p><strong>Preço base:</strong> € @Model.Servico.PrecoBase</p>
+            <p><strong>Tempo estimado:</strong> @Model.Servico.TempoEstimado min</p>
+        </div>
+    </div>
+
+    <form method="post">
+        <input type="hidden" asp-for="Servico.Id" />
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+        <a asp-page="/Servicos/Index" class="btn btn-secondary">Cancelar</a>
+    </form>
+}

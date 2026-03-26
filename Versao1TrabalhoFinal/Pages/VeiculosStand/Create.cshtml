@@ -4,47 +4,79 @@
     ViewData["Title"] = "Novo Veículo Stand";
 }
 
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h2 class="mb-4">Criar veículo do stand</h2>
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="page-header-block">
+            <p class="page-eyebrow">Gestão de stock</p>
+            <h1 class="page-title">Criar veículo do stand</h1>
+            <p class="page-subtitle">Adicione uma nova viatura ao stock disponível.</p>
+        </div>
 
-                <form method="post">
-                    <div class="mb-3">
-                        <label asp-for="VeiculoStand.VeiculoId" class="form-label">Veículo</label>
-                        <select asp-for="VeiculoStand.VeiculoId" asp-items="Model.VeiculosSelect" class="form-select"></select>
+        <div class="form-card">
+            <form method="post" class="modern-form">
+                <div asp-validation-summary="ModelOnly" class="auth-validation"></div>
+
+                <div class="form-grid form-grid-1">
+                    <div class="form-field">
+                        <label asp-for="VeiculoStand.VeiculoId" class="auth-label">Veículo</label>
+                        <select asp-for="VeiculoStand.VeiculoId" asp-items="Model.VeiculosSelect" class="auth-input form-select-modern">
+                            <option value="">Selecione um veículo</option>
+                        </select>
+                        <span asp-validation-for="VeiculoStand.VeiculoId" class="auth-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-grid form-grid-3">
+                    <div class="form-field">
+                        <label asp-for="VeiculoStand.Preco" class="auth-label"></label>
+                        <input asp-for="VeiculoStand.Preco" class="auth-input" />
+                        <span asp-validation-for="VeiculoStand.Preco" class="auth-error"></span>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label asp-for="VeiculoStand.Preco" class="form-label"></label>
-                            <input asp-for="VeiculoStand.Preco" class="form-control" />
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label asp-for="VeiculoStand.Estado" class="form-label"></label>
-                            <input asp-for="VeiculoStand.Estado" class="form-control" />
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label asp-for="VeiculoStand.Quilometros" class="form-label"></label>
-                            <input asp-for="VeiculoStand.Quilometros" class="form-control" />
-                        </div>
+                    <div class="form-field">
+                        <label asp-for="VeiculoStand.Estado" class="auth-label"></label>
+                        <input asp-for="VeiculoStand.Estado" class="auth-input" placeholder="Disponível" />
+                        <span asp-validation-for="VeiculoStand.Estado" class="auth-error"></span>
                     </div>
 
-                    <div class="mb-3">
-                        <label asp-for="VeiculoStand.Descricao" class="form-label"></label>
-                        <textarea asp-for="VeiculoStand.Descricao" class="form-control"></textarea>
+                    <div class="form-field">
+                        <label asp-for="VeiculoStand.Quilometros" class="auth-label"></label>
+                        <input asp-for="VeiculoStand.Quilometros" class="auth-input" />
+                        <span asp-validation-for="VeiculoStand.Quilometros" class="auth-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-grid form-grid-2">
+                    <div class="form-field">
+                        <label asp-for="VeiculoStand.DataEntrada" class="auth-label"></label>
+                        <input asp-for="VeiculoStand.DataEntrada" class="auth-input" type="datetime-local" />
+                        <span asp-validation-for="VeiculoStand.DataEntrada" class="auth-error"></span>
                     </div>
 
-                    <div class="mb-3">
-                        <label asp-for="VeiculoStand.ImagemUrl" class="form-label"></label>
-                        <input asp-for="VeiculoStand.ImagemUrl" class="form-control" />
+                    <div class="form-field">
+                        <label asp-for="VeiculoStand.ImagemUrl" class="auth-label"></label>
+                        <input asp-for="VeiculoStand.ImagemUrl" class="auth-input" placeholder="https://..." />
+                        <span asp-validation-for="VeiculoStand.ImagemUrl" class="auth-error"></span>
                     </div>
+                </div>
 
-                    <button type="submit" class="btn btn-primary">Guardar</button>
-                    <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
-                </form>
-            </div>
+                <div class="form-grid form-grid-1">
+                    <div class="form-field">
+                        <label asp-for="VeiculoStand.Descricao" class="auth-label"></label>
+                        <textarea asp-for="VeiculoStand.Descricao" class="auth-input auth-textarea" placeholder="Descrição do veículo"></textarea>
+                        <span asp-validation-for="VeiculoStand.Descricao" class="auth-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="auth-button">Guardar</button>
+                    <a asp-page="./Index" class="auth-button auth-button-secondary">Cancelar</a>
+                </div>
+            </form>
         </div>
     </div>
-</div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

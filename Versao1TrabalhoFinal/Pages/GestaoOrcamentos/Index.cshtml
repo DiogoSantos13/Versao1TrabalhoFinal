@@ -1,0 +1,119 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.GestaoOrcamentos.IndexModel
+@{
+    ViewData["Title"] = "Os Meus Pedidos de Orçamento";
+}
+
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="page-header-block">
+            <p class="page-eyebrow">Área do cliente</p>
+            <h1 class="page-title">Os meus pedidos de orçamento</h1>
+            <p class="page-subtitle">Consulte o estado dos pedidos submetidos para os seus veículos.</p>
+        </div>
+
+        <div class="page-actions-bar mb-4">
+            <a asp-page="./Create" class="auth-button">
+                <i class="fa-solid fa-plus"></i>
+                <span>Novo pedido</span>
+            </a>
+        </div>
+
+        <div class="client-form-card">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success mb-3">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger mb-3">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+
+            @if (Model.Orcamentos != null && Model.Orcamentos.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle custom-orcamentos-table">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Veículo</th>
+                                <th>Descrição</th>
+                                <th>Estado</th>
+                                <th>Valor estimado</th>
+                                <th>IA</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Orcamentos)
+                            {
+                                <tr>
+                                    <td>
+                                        @(item.DataCriacao?.ToString("dd/MM/yyyy HH:mm") ?? "-")
+                                    </td>
+
+                                    <td>
+                                        @(item.Veiculo != null
+                                                                        ? $"{item.Veiculo.Matricula} - {item.Veiculo.Marca} {item.Veiculo.Modelo}"
+                                                                        : "-")
+                                                                          </td>
+
+                                    <td class="orcamento-description-cell">
+                                        @item.Descricao
+                                    </td>
+
+                                    <td>
+                                        <span class="orcamento-status-badge">
+                                            @(string.IsNullOrWhiteSpace(item.Estado) ? "-" : item.Estado)
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @(item.ValorEstimado.HasValue
+                                                                        ? item.ValorEstimado.Value.ToString("0.00 €")
+                                                                        : "Por definir")
+                            </td>
+
+                                    <td>
+                                        @(item.GeradoPorIA == true ? "Sim" : "Não")
+                                    </td>
+
+                                    <td class="text-end">
+                                        <a asp-page="./Details"
+                                           asp-route-id="@item.Id"
+                                           class="auth-button auth-button-secondary btn-sm-inline">
+                                            <i class="fa-solid fa-eye"></i>
+                                            <span>Detalhes</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                                                }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="empty-state-box">
+                    <div class="empty-state-icon">
+                        <i class="fa-regular fa-file-lines"></i>
+                    </div>
+                    <h3 class="empty-state-title">Sem pedidos registados</h3>
+                    <p class="empty-state-text">
+                        Ainda não existem pedidos de orçamento submetidos.
+                    </p>
+
+                    <a asp-page="./Create" class="auth-button">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Criar primeiro pedido</span>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>

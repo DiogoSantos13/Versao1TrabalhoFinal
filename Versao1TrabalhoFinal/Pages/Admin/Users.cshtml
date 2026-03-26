@@ -1,48 +1,138 @@
 ﻿@page
 @model Versao1TrabalhoFinal.Pages.Admin.UsersModel
 @{
-    ViewData["Title"] = "Utilizadores";
+    ViewData["Title"] = "Gestão de Utilizadores";
 }
 
-<h2 class="mb-4">Gestão de utilizadores</h2>
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="page-header-block">
+            <p class="page-eyebrow">Administração</p>
+            <h1 class="page-title">Gestão de utilizadores</h1>
+            <p class="page-subtitle">Crie contas e altere as roles dos utilizadores do sistema.</p>
+        </div>
 
-<div class="card shadow-sm">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead>
-                    <tr>
-                        <th>Email</th>
-                        <th>Role Atual</th>
-                        <th>Nova Role</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var user in Model.Users)
-                    {
-                        <tr>
-                            <td>@user.Email</td>
-                            <td>@user.CurrentRole</td>
-                            <td>
-                                <form method="post" asp-page-handler="ChangeRole" class="d-flex gap-2">
-                                    <input type="hidden" name="UserId" value="@user.UserId" />
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="success-banner">
+                @TempData["SuccessMessage"]
+            </div>
+        }
 
-                                    <select name="SelectedRole" class="form-select">
-                                        @foreach (var role in Model.AvailableRoles)
-                                        {
-                                            <option value="@role">@role</option>
-                                        }
-                                    </select>
+        <div class="admin-users-layout">
+            <div class="form-card">
+                <h2 class="section-mini-title">Criar novo utilizador</h2>
 
-                                    <button type="submit" class="btn btn-primary">Alterar</button>
-                                </form>
-                            </td>
-                            <td></td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                <form method="post" asp-page-handler="CreateUser" class="modern-form">
+                    <div asp-validation-summary="All" class="auth-validation"></div>
+
+                    <div class="form-field">
+                        <label asp-for="NewUser.Nome" class="auth-label"></label>
+                        <input asp-for="NewUser.Nome" class="auth-input" />
+                        <span asp-validation-for="NewUser.Nome" class="auth-error"></span>
+                    </div>
+
+                    <div class="form-field">
+                        <label asp-for="NewUser.Email" class="auth-label"></label>
+                        <input asp-for="NewUser.Email" class="auth-input" />
+                        <span asp-validation-for="NewUser.Email" class="auth-error"></span>
+                    </div>
+
+                    <div class="form-field">
+                        <label asp-for="NewUser.Telefone" class="auth-label"></label>
+                        <input asp-for="NewUser.Telefone" class="auth-input" />
+                        <span asp-validation-for="NewUser.Telefone" class="auth-error"></span>
+                    </div>
+
+                    <div class="form-field">
+                        <label asp-for="NewUser.Password" class="auth-label"></label>
+                        <input asp-for="NewUser.Password" class="auth-input" />
+                        <span asp-validation-for="NewUser.Password" class="auth-error"></span>
+                    </div>
+
+                    <div class="form-field">
+                        <label asp-for="NewUser.ConfirmPassword" class="auth-label"></label>
+                        <input asp-for="NewUser.ConfirmPassword" class="auth-input" />
+                        <span asp-validation-for="NewUser.ConfirmPassword" class="auth-error"></span>
+                    </div>
+
+                    <div class="form-field">
+                        <label asp-for="NewUser.Role" class="auth-label"></label>
+                        <select asp-for="NewUser.Role" class="auth-input form-select-modern">
+                            <option value="">Selecione uma role</option>
+                            @foreach (var role in Model.AvailableRoles)
+                            {
+                                <option value="@role">@role</option>
+                            }
+                        </select>
+                        <span asp-validation-for="NewUser.Role" class="auth-error"></span>
+                    </div>
+
+                    <button type="submit" class="auth-button">Criar utilizador</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="table-card mt-4">
+            <h2 class="section-mini-title">Utilizadores existentes</h2>
+
+            @if (Model.UsersList == null || !Model.UsersList.Any())
+            {
+                <div class="empty-state-card">
+                    <h3>Sem utilizadores</h3>
+                    <p>Não existem utilizadores registados.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive-modern">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Telefone</th>
+                                <th>Role atual</th>
+                                <th>Ativo</th>
+                                <th>Alterar role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model.UsersList)
+                            {
+                                <tr>
+                                    <td>@user.Nome</td>
+                                    <td>@user.Email</td>
+                                    <td>@user.Telefone</td>
+                                    <td>@user.CurrentRole</td>
+                                    <td>@(user.Ativo ? "Sim" : "Não")</td>
+                                    <td>
+                                        <form method="post" asp-page-handler="ChangeRole" class="role-form-inline">
+                                            <input type="hidden" name="IdentityUserId" value="@user.IdentityUserId" />
+
+                                            <select name="SelectedRole" class="auth-input form-select-modern role-select-inline">
+                                                <option value="">Sem Role</option>
+                                                @foreach (var role in Model.AvailableRoles)
+                                                {
+                                                    <option value="@role">@role</option>
+                                                }
+                                            </select>
+
+                                            <button type="submit" class="action-link action-link-primary">
+                                                Alterar
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
         </div>
     </div>
-</div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

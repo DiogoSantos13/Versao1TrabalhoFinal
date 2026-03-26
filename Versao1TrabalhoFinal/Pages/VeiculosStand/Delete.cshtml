@@ -4,22 +4,50 @@
     ViewData["Title"] = "Eliminar Veículo Stand";
 }
 
-<div class="card shadow-sm">
-    <div class="card-body">
-        <h2 class="text-danger">Eliminar veículo do stand</h2>
-        <p>Tens a certeza que queres eliminar este registo?</p>
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="page-header-block">
+            <p class="page-eyebrow">Gestão de stock</p>
+            <h1 class="page-title">Eliminar veículo do stand</h1>
+            <p class="page-subtitle">Confirme a remoção deste registo do stock.</p>
+        </div>
 
-        <dl class="row">
-            <dt class="col-sm-3">Veículo</dt>
-            <dd class="col-sm-9">@Model.VeiculoStand.Veiculo?.Marca @Model.VeiculoStand.Veiculo?.Modelo</dd>
+        <div class="delete-card">
+            <div class="delete-alert">
+                <h2>Tem a certeza que quer eliminar este veículo?</h2>
+                <p>Esta ação remove o registo do veículo do stand.</p>
+            </div>
 
-            <dt class="col-sm-3">Preço</dt>
-            <dd class="col-sm-9">€ @Model.VeiculoStand.Preco</dd>
-        </dl>
+            <div class="delete-summary">
+                <div class="delete-summary-row">
+                    <span class="delete-summary-label">Veículo</span>
+                    <strong>
+                        @Model.VeiculoStand.Veiculo?.Marca @Model.VeiculoStand.Veiculo?.Modelo
+                    </strong>
+                </div>
 
-        <form method="post">
-            <button type="submit" class="btn btn-danger">Eliminar</button>
-            <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
-        </form>
+                <div class="delete-summary-row">
+                    <span class="delete-summary-label">Preço</span>
+                    <strong>€ @Model.VeiculoStand.Preco.ToString("N2")</strong>
+                </div>
+
+                <div class="delete-summary-row">
+                    <span class="delete-summary-label">Estado</span>
+                    <strong>
+                        @(string.IsNullOrWhiteSpace(Model.VeiculoStand.Estado) ? "Disponível" : Model.VeiculoStand.Estado)
+                    </strong>
+                </div>
+
+                <div class="delete-summary-row">
+                    <span class="delete-summary-label">Quilómetros</span>
+                    <strong>@Model.VeiculoStand.Quilometros.ToString("N0") km</strong>
+                </div>
+            </div>
+
+            <form method="post" class="form-actions">
+                <button type="submit" class="auth-button auth-button-danger">Eliminar</button>
+                <a asp-page="./Index" class="auth-button auth-button-secondary">Cancelar</a>
+            </form>
+        </div>
     </div>
-</div>
+</section>

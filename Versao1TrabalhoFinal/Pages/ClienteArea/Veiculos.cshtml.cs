@@ -23,8 +23,8 @@ namespace Versao1TrabalhoFinal.Pages.ClienteArea
             var email = User.Identity?.Name;
 
             Veiculos = await _context.Veiculos
-                .Include(v => v.Cliente)
-                .Where(v => v.Cliente != null && v.Cliente.Email == email)
+                .Include(v => v.ClienteId)
+                .Where(v => v.ClienteId != null && v.Cliente.Email == email)
                 .ToListAsync();
         }
     }

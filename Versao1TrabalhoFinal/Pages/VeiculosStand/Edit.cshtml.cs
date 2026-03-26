@@ -11,7 +11,7 @@ namespace Versao1TrabalhoFinal.Pages.VeiculosStand
     /// <summary>
     /// Página de edição de veículos do stand.
     /// </summary>
-    [Authorize(Roles = "Admin,Vendedor")]
+    [Authorize(Roles = "Admin")]
     public class EditModel : PageModel
     {
         private readonly StandDbContext _context;

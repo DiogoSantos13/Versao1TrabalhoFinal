@@ -1,21 +1,45 @@
-﻿using Versao1TrabalhoFinal.Models;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Versao1TrabalhoFinal.Models
 {
     public class Cliente
     {
         public int Id { get; set; }
-        public string? Nome { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        public string Nome { get; set; } = string.Empty;
+
+        [Required]
+        [EmailAddress]
+        [StringLength(150)]
+        public string Email { get; set; } = string.Empty;
+
+        [StringLength(20)]
         public string? Telefone { get; set; }
-        public string? Email { get; set; }
+
+        [StringLength(20)]
         public string? NIF { get; set; }
+
+        [StringLength(200)]
         public string? Morada { get; set; }
-        public DateTime DataRegisto { get; set; }
+
+        [StringLength(250)]
         public string? ImagemUrl { get; set; }
 
+
+        [Required]
+        public string? IdentityUserId { get; set; } = string.Empty;
+
+        //public DateTime DataCriacao { get; set; } = DateTime.Now;
         public ICollection<Veiculo> Veiculos { get; set; } = new List<Veiculo>();
-        public ICollection<OrdemReparacao> OrdensReparacao { get; set; } = new List<OrdemReparacao>();
         public ICollection<Orcamento> Orcamentos { get; set; } = new List<Orcamento>();
-        public ICollection<Venda> Vendas { get; set; } = new List<Venda>();
+
+        /// <summary>
+        /// Carrinho associado ao cliente.
+        //—/summary>
+        public Carrinho? Carrinho { get; set; }
+
+
     }
 }

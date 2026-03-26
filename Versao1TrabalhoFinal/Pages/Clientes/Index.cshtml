@@ -4,40 +4,123 @@
     ViewData["Title"] = "Clientes";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Clientes</h2>
-    <a asp-page="/Clientes/Create" class="btn btn-primary">Novo Cliente</a>
-</div>
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="page-header-block d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <p class="page-eyebrow">Administração</p>
+                <h1 class="page-title">Clientes</h1>
+                <p class="page-subtitle">Consulte e gira os clientes registados na plataforma.</p>
+            </div>
 
-<div class="card shadow-sm">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Telefone</th>
-                        <th>Email</th>
-                        <th>NIF</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var cliente in Model.Clientes)
-                    {
-                        <tr>
-                            <td>@cliente.Nome</td>
-                            <td>@cliente.Telefone</td>
-                            <td>@cliente.Email</td>
-                            <td>@cliente.NIF</td>
-                            <td class="text-end">
-                                <a asp-page="/Clientes/Edit" asp-route-id="@cliente.Id" class="btn btn-sm btn-outline-primary">Editar</a>
-                                <a asp-page="/Clientes/Delete" asp-route-id="@cliente.Id" class="btn btn-sm btn-outline-danger">Eliminar</a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-page="/Clientes/Create" class="auth-button">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Novo cliente</span>
+                </a>
+            }
         </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="success-banner">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="auth-validation">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        @if (Model.Clientes.Any())
+        {
+            <div class="table-card">
+                <div class="table-card-header">
+                    <div>
+                        <h3 class="table-card-title">Lista de clientes</h3>
+                        <p class="table-card-subtitle">Total: @Model.Clientes.Count cliente(s)</p>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Telefone</th>
+                                <th>Email</th>
+                                <th>NIF</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var cliente in Model.Clientes)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="table-primary-text">@cliente.Nome</div>
+                                    </td>
+
+                                    <td>
+                                        <span class="table-secondary-text">
+                                            @(string.IsNullOrWhiteSpace(cliente.Telefone) ? "Sem telefone" : cliente.Telefone)
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="table-secondary-text">@cliente.Email</span>
+                                    </td>
+
+                                    <td>
+                                        <span class="table-secondary-text">
+                                            @(string.IsNullOrWhiteSpace(cliente.NIF) ? "Sem NIF" : cliente.NIF)
+                                        </span>
+                                    </td>
+
+                                    <td class="text-end">
+                                        @if (User.IsInRole("Admin"))
+                                        {
+                                            <div class="table-actions">
+                                                <a asp-page="/Clientes/Edit"
+                                                   asp-route-id="@cliente.Id"
+                                                   class="table-action-btn table-action-edit">
+                                                    Editar
+                                                </a>
+
+                                                <a asp-page="/Clientes/Delete"
+                                                   asp-route-id="@cliente.Id"
+                                                   class="table-action-btn table-action-delete">
+                                                    Eliminar
+                                                </a>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="table-muted">Sem permissões</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state-card">
+                <h3>Sem clientes registados</h3>
+                <p>Ainda não existem clientes no sistema.</p>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-page="/Clientes/Create" class="auth-button">Criar primeiro cliente</a>
+                }
+            </div>
+        }
     </div>
-</div>
+</section>

@@ -1,0 +1,103 @@
+﻿@page "{id:int}"
+@model Versao1TrabalhoFinal.Pages.GestaoOrcamentos.DetailsModel
+@{
+    ViewData["Title"] = "Detalhes do Pedido de Orçamento";
+}
+
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="page-header-block">
+            <p class="page-eyebrow">Área do cliente</p>
+            <h1 class="page-title">Detalhes do pedido</h1>
+            <p class="page-subtitle">Consulte a informação submetida e o estado atual do pedido de orçamento.</p>
+        </div>
+
+        <div class="client-edit-layout">
+            <div class="client-edit-main">
+                <div class="client-form-card">
+                    <div class="client-form-card-header">
+                        <div>
+                            <h2 class="client-form-title">Pedido #@Model.Orcamento.Id</h2>
+                            <p class="client-form-subtitle">Informação registada para análise pela equipa.</p>
+                        </div>
+                    </div>
+
+                    <div class="client-details-grid">
+                        <div class="client-detail-item">
+                            <span class="client-detail-label">Data de criação</span>
+                            <strong>@(Model.Orcamento.DataCriacao?.ToString("dd/MM/yyyy HH:mm") ?? "-")</strong>
+                        </div>
+
+                        <div class="client-detail-item">
+                            <span class="client-detail-label">Estado</span>
+                            <strong>@(string.IsNullOrWhiteSpace(Model.Orcamento.Estado) ? "-" : Model.Orcamento.Estado)</strong>
+                        </div>
+
+                        <div class="client-detail-item client-detail-item-full">
+                            <span class="client-detail-label">Veículo</span>
+                            <strong>
+                                @(Model.Orcamento.Veiculo != null
+                                                                ? $"{Model.Orcamento.Veiculo.Matricula} - {Model.Orcamento.Veiculo.Marca} {Model.Orcamento.Veiculo.Modelo}"
+                                                                : "Sem veículo associado")
+                            </strong>
+                        </div>
+
+                        <div class="client-detail-item client-detail-item-full">
+                            <span class="client-detail-label">Descrição do problema</span>
+                            <strong>@Model.Orcamento.Descricao</strong>
+                        </div>
+
+                        <div class="client-detail-item">
+                            <span class="client-detail-label">Valor estimado</span>
+                            <strong>
+                                @(Model.Orcamento.ValorEstimado.HasValue
+                                                                ? Model.Orcamento.ValorEstimado.Value.ToString("0.00 €")
+                                                                : "Por definir")
+                            </strong>
+                        </div>
+
+                        <div class="client-detail-item">
+                            <span class="client-detail-label">Gerado por IA</span>
+                            <strong>@(Model.Orcamento.GeradoPorIA == true ? "Sim" : "Não")</strong>
+                        </div>
+                    </div>
+
+                    <div class="client-form-actions">
+                        <a asp-page="./Index" class="auth-button auth-button-secondary">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <span>Voltar</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="client-edit-side">
+                <div class="client-summary-card">
+                    <h3 class="client-summary-name">Resumo</h3>
+                    <p class="client-summary-email">Acompanhe aqui o estado atual do seu pedido.</p>
+
+                    <div class="client-summary-divider"></div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">Pedido</span>
+                        <strong>#@Model.Orcamento.Id</strong>
+                    </div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">Estado</span>
+                        <strong>@(string.IsNullOrWhiteSpace(Model.Orcamento.Estado) ? "-" : Model.Orcamento.Estado)</strong>
+                    </div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">Valor estimado</span>
+                        <strong>
+                            @(Model.Orcamento.ValorEstimado.HasValue
+                                                        ? Model.Orcamento.ValorEstimado.Value.ToString("0.00 €")
+                                                        : "Por definir")
+                        </strong>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
