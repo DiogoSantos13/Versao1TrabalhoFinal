@@ -16,7 +16,7 @@ namespace Versao1TrabalhoFinal.Pages.Produtos
         private readonly StandDbContext _context;
 
         /// <summary>
-        /// Construtor da página.
+        /// Inicializa uma nova instância da página de eliminação de produtos.
         /// </summary>
         /// <param name="context">Contexto da base de dados.</param>
         public DeleteModel(StandDbContext context)
@@ -31,18 +31,21 @@ namespace Versao1TrabalhoFinal.Pages.Produtos
         public Produto Produto { get; set; } = new();
 
         /// <summary>
-        /// Carrega o produto antes da confirmação.
+        /// Carrega o produto antes da confirmação da eliminação.
         /// </summary>
-        /// <param name="id">Id do produto.</param>
+        /// <param name="id">Identificador do produto.</param>
         /// <returns>Página ou NotFound.</returns>
         public async Task<IActionResult> OnGetAsync(int id)
         {
             var produto = await _context.Produtos
+                .AsNoTracking()
                 .Include(p => p.Fornecedor)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (produto == null)
+            {
                 return NotFound();
+            }
 
             Produto = produto;
             return Page();
@@ -51,18 +54,21 @@ namespace Versao1TrabalhoFinal.Pages.Produtos
         /// <summary>
         /// Elimina o produto selecionado.
         /// </summary>
-        /// <param name="id">Id do produto.</param>
+        /// <param name="id">Identificador do produto.</param>
         /// <returns>Redireciona para a listagem.</returns>
         public async Task<IActionResult> OnPostAsync(int id)
         {
             var produto = await _context.Produtos.FindAsync(id);
 
-            if (produto != null)
+            if (produto == null)
             {
-                _context.Produtos.Remove(produto);
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
 
+            _context.Produtos.Remove(produto);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Produto eliminado com sucesso.";
             return RedirectToPage("./Index");
         }
     }

@@ -7,162 +7,125 @@
 <section class="dashboard-page">
     <div class="dashboard-container">
         <div class="page-header-block">
-            <p class="page-eyebrow">Área do cliente</p>
-            <h1 class="page-title">O meu carrinho</h1>
-            <p class="page-subtitle">Consulte os veículos do stand e os serviços adicionados ao carrinho.</p>
+            <p class="page-eyebrow">Cliente</p>
+            <h1 class="page-title">Carrinho</h1>
+            <p class="page-subtitle">Consulta os serviços e produtos atualmente associados ao teu carrinho.</p>
         </div>
 
         @if (TempData["SuccessMessage"] != null)
         {
-            <div class="success-banner">
-                @TempData["SuccessMessage"]
-            </div>
+            <div class="alert alert-success mb-3">@TempData["SuccessMessage"]</div>
         }
 
         @if (TempData["ErrorMessage"] != null)
         {
-            <div class="auth-validation">
-                @TempData["ErrorMessage"]
-            </div>
+            <div class="alert alert-danger mb-3">@TempData["ErrorMessage"]</div>
         }
 
-        @if (Model.ItensVeiculos.Any() || Model.ItensServicos.Any())
-        {
-            @if (Model.ItensVeiculos.Any())
+        <div class="client-form-card mb-4">
+            <h2 class="section-title mb-3">Serviços</h2>
+
+            @if (Model.ItensServicos != null && Model.ItensServicos.Any())
             {
-                <div class="mb-5">
-                    <h2 class="vehicle-admin-title mb-3">Veículos do stand</h2>
-
-                    <div class="vehicle-grid">
-                        @foreach (var item in Model.ItensVeiculos)
-                        {
-                            <div class="vehicle-admin-card">
-                                <div class="vehicle-admin-image-wrap">
-                                    <img src="@(string.IsNullOrWhiteSpace(item.VeiculoStand?.ImagemUrl) ? "/images/cars/default-car.jpg" : item.VeiculoStand.ImagemUrl)"
-                                         class="vehicle-admin-image"
-                                         alt="@(item.VeiculoStand?.Veiculo?.Marca ?? "Veículo") @(item.VeiculoStand?.Veiculo?.Modelo ?? "")" />
-                                </div>
-
-                                <div class="vehicle-admin-body">
-                                    <h3 class="vehicle-admin-title">
-                                        @(item.VeiculoStand?.Veiculo?.Marca ?? "Marca")
-                                        @(item.VeiculoStand?.Veiculo?.Modelo ?? "Modelo")
-                                    </h3>
-
-                                    <p class="vehicle-admin-status">
-                                        @(string.IsNullOrWhiteSpace(item.VeiculoStand?.Estado) ? "Disponível" : item.VeiculoStand.Estado)
-                                    </p>
-
-                                    <div class="vehicle-admin-meta">
-                                        <div class="vehicle-admin-meta-item">
-                                            <span class="vehicle-admin-meta-label">Preço</span>
-                                            <strong>€ @item.PrecoNoMomento.ToString("N2")</strong>
-                                        </div>
-
-                                        <div class="vehicle-admin-meta-item">
-                                            <span class="vehicle-admin-meta-label">Quilómetros</span>
-                                            <strong>@(item.VeiculoStand?.Quilometros.ToString("N0") ?? "0")</strong>
-                                        </div>
-                                    </div>
-
-                                    <div class="vehicle-admin-actions">
-                                        <a asp-page="/VeiculosStand/Details"
-                                           asp-route-id="@item.VeiculoStandId"
-                                           class="action-link action-link-primary">
-                                            Ver detalhes
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Serviço</th>
+                                <th>Preço</th>
+                                <th>Data</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.ItensServicos)
+                            {
+                                <tr>
+                                    <td>@item.Servico?.Nome</td>
+                                    <td>@item.PrecoNoMomento.ToString("0.00 €")</td>
+                                    <td>@item.DataAdicao.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td class="text-end">
+                                        <a asp-page="/Carrinho/Remover"
+                                           asp-page-handler="Servico"
+                                           asp-route-id="@item.Id"
+                                           class="auth-button auth-button-secondary">
+                                            Remover
                                         </a>
-
-                                        <form method="post" asp-page-handler="RemoverVeiculo" class="d-inline">
-                                            <input type="hidden" name="id" value="@item.Id" />
-                                            <button type="submit" class="action-link action-link-danger border-0 bg-transparent">
-                                                Remover
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             }
-
-            @if (Model.ItensServicos.Any())
+            else
             {
-                <div class="mb-5">
-                    <h2 class="vehicle-admin-title mb-3">Serviços</h2>
+                <p class="text-muted mb-0">Ainda não tens serviços no carrinho.</p>
+            }
+        </div>
 
-                    <div class="vehicle-grid">
-                        @foreach (var item in Model.ItensServicos)
-                        {
-                            <div class="vehicle-admin-card">
-                                <div class="vehicle-admin-body pt-4">
-                                    <h3 class="vehicle-admin-title">
-                                        @(item.Servico?.Nome ?? "Serviço")
-                                    </h3>
+        <div class="client-form-card mb-4">
+            <h2 class="section-title mb-3">Produtos</h2>
 
-                                    <p class="page-subtitle">
-                                        @(string.IsNullOrWhiteSpace(item.Servico?.Descricao)
-                                                                    ? "Sem descrição disponível."
-                                                                    : item.Servico.Descricao)
-                        </p>
-
-                                    <div class="vehicle-admin-meta">
-                                        <div class="vehicle-admin-meta-item">
-                                            <span class="vehicle-admin-meta-label">Preço</span>
-                                            <strong>€ @item.PrecoNoMomento.ToString("N2")</strong>
-                                        </div>
-
-                                        <div class="vehicle-admin-meta-item">
-                                            <span class="vehicle-admin-meta-label">Tempo estimado</span>
-                                            <strong>@(item.Servico?.TempoEstimado ?? 0) min</strong>
-                                        </div>
-                                    </div>
-
-                                    <div class="vehicle-admin-actions">
-                                        <form method="post" asp-page-handler="RemoverServico" class="d-inline">
-                                            <input type="hidden" name="id" value="@item.Id" />
-                                            <button type="submit" class="action-link action-link-danger border-0 bg-transparent">
-                                                Remover
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                                }
-                    </div>
+            @if (Model.ItensProdutos != null && Model.ItensProdutos.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Preço</th>
+                                <th>Quantidade</th>
+                                <th>Subtotal</th>
+                                <th>Data</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.ItensProdutos)
+                            {
+                                <tr>
+                                    <td>@item.Produto?.Nome</td>
+                                    <td>@item.PrecoNoMomento.ToString("0.00 €")</td>
+                                    <td>@item.Quantidade</td>
+                                    <td>@((item.PrecoNoMomento * item.Quantidade).ToString("0.00 €"))</td>
+                                    <td>@item.DataAdicao.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td class="text-end">
+                                        <a asp-page="/Carrinho/Remover"
+                                           asp-page-handler="Produto"
+                                           asp-route-id="@item.Id"
+                                           class="auth-button auth-button-secondary">
+                                            Remover
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             }
+            else
+            {
+                <p class="text-muted mb-0">Ainda não tens produtos no carrinho.</p>
+            }
+        </div>
 
-            <div class="form-card mt-4">
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                    <div>
-                        <h3 class="vehicle-admin-title">Total</h3>
-                        <p class="page-subtitle mb-0">Total atual de veículos e serviços no carrinho.</p>
-                    </div>
-                    <div>
-                        <strong style="font-size: 1.4rem;">€ @Model.Total.ToString("N2")</strong>
-                    </div>
-                </div>
+        <div class="client-summary-card">
+            <h3 class="client-summary-name">Resumo</h3>
+            <p class="client-summary-email mb-2">Total atual do carrinho</p>
+            <h2>@Model.Total.ToString("0.00 €")</h2>
 
-                <div class="mt-4 d-flex gap-2 flex-wrap">
-                    <a asp-page="/Carrinho/Checkout" class="auth-button">Avançar</a>
+            <div class="client-form-actions mt-4">
+                <a asp-page="/Produtos/Index" class="auth-button auth-button-secondary">
+                    <i class="fa-solid fa-box-open"></i>
+                    <span>Continuar compras</span>
+                </a>
 
-                    <form method="post" asp-page-handler="Limpar">
-                        <button type="submit" class="auth-button auth-button-secondary">Limpar carrinho</button>
-                    </form>
-                </div>
+                <a asp-page="/Carrinho/Checkout" class="auth-button">
+                    <i class="fa-solid fa-credit-card"></i>
+                    <span>Checkout</span>
+                </a>
             </div>
-        }
-        else
-        {
-            <div class="empty-state-card">
-                <h3>Carrinho vazio</h3>
-                <p>Ainda não adicionou veículos do stand nem serviços ao carrinho.</p>
-                <div class="d-flex gap-2 flex-wrap">
-                    <a asp-page="/VeiculosStand/Index" class="auth-button">Explorar veículos</a>
-                    <a asp-page="/Servicos/Index" class="auth-button auth-button-secondary">Explorar serviços</a>
-                </div>
-            </div>
-        }
+        </div>
     </div>
 </section>

@@ -1,30 +1,139 @@
 ﻿@page "{id:int}"
 @model Versao1TrabalhoFinal.Pages.Produtos.DeleteModel
+
 @{
+    /// <summary>
+    /// Define o título da página.
+    /// </summary>
     ViewData["Title"] = "Eliminar Produto";
+
+    /// <summary>
+    /// Define a imagem de pré-visualização do produto.
+    /// </summary>
+    var imagemPreview = !string.IsNullOrWhiteSpace(Model.Produto.ImagemUrl)
+        ? Url.Content(Model.Produto.ImagemUrl)
+        : Url.Content("~/images/produtos/sem-imagem.png");
 }
 
-<div class="row justify-content-center">
-    <div class="col-lg-7">
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <h2 class="text-danger mb-3">Eliminar produto</h2>
-                <p class="mb-4">Tens a certeza que queres eliminar este produto?</p>
-
-                <div class="border rounded p-3 bg-light mb-4">
-                    <p><strong>Nome:</strong> @Model.Produto.Nome</p>
-                    <p><strong>Categoria:</strong> @Model.Produto.Categoria</p>
-                    <p><strong>Fornecedor:</strong> @Model.Produto.Fornecedor?.Nome</p>
-                    <p><strong>Preço:</strong> € @Model.Produto.Preco</p>
+<div class="produto-delete-page py-4 py-lg-5">
+    <div class="produto-delete-shell">
+        @* Cabeçalho da página. *@
+        <section class="produto-delete-hero mb-4">
+            <div class="produto-delete-hero-content">
+                <div>
+                    <span class="produto-delete-kicker">Ação sensível</span>
+                    <h1 class="produto-delete-title">Eliminar produto</h1>
+                    <p class="produto-delete-subtitle">
+                        Esta ação vai remover o produto do catálogo. Confirme os dados antes de continuar.
+                    </p>
                 </div>
 
-                <form method="post">
-                    <input type="hidden" asp-for="Produto.Id" />
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-danger">Eliminar</button>
-                        <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
+                <div class="produto-delete-hero-actions">
+                    <a asp-page="./Index" class="btn produto-delete-btn-light">
+                        <i class="fa-solid fa-arrow-left me-2"></i>
+                        Voltar à lista
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <div class="produto-delete-warning mb-4">
+            <div class="produto-delete-warning-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+
+            <div>
+                <h2>Confirmação necessária</h2>
+                <p class="mb-0">
+                    Tens a certeza que queres eliminar este produto? Esta operação deve ser tratada com cuidado.
+                </p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            @* Cartão com resumo visual do produto. *@
+            <div class="col-12 col-xl-8">
+                <div class="produto-delete-card h-100">
+                    <div class="produto-delete-card-header">
+                        <h2>Resumo do produto</h2>
+                        <p>Verifica os dados principais antes de eliminar definitivamente.</p>
                     </div>
-                </form>
+
+                    <div class="produto-delete-card-body">
+                        <div class="row g-4 align-items-center">
+                            <div class="col-md-5">
+                                <div class="produto-delete-image-box">
+                                    <img src="@imagemPreview"
+                                         alt="@Model.Produto.Nome"
+                                         class="produto-delete-image"
+                                         onerror="this.onerror=null;this.src='@Url.Content("~/images/produtos/sem-imagem.png")';" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-7">
+                                <div class="produto-delete-summary">
+                                    <div class="produto-delete-summary-item">
+                                        <span class="produto-delete-label">Nome</span>
+                                        <strong>@Model.Produto.Nome</strong>
+                                    </div>
+
+                                    <div class="produto-delete-summary-item">
+                                        <span class="produto-delete-label">Categoria</span>
+                                        <strong>@(string.IsNullOrWhiteSpace(Model.Produto.Categoria) ? "Sem categoria" : Model.Produto.Categoria)</strong>
+                                    </div>
+
+                                    <div class="produto-delete-summary-item">
+                                        <span class="produto-delete-label">Fornecedor</span>
+                                        <strong>@(Model.Produto.Fornecedor?.Nome ?? "Sem fornecedor")</strong>
+                                    </div>
+
+                                    <div class="produto-delete-summary-item">
+                                        <span class="produto-delete-label">Preço</span>
+                                        <strong>@Model.Produto.Preco.ToString("0.00") €</strong>
+                                    </div>
+
+                                    <div class="produto-delete-summary-item">
+                                        <span class="produto-delete-label">Stock</span>
+                                        <strong>@Model.Produto.Stock unidade(s)</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Cartão lateral com ações. *@
+            <div class="col-12 col-xl-4">
+                <div class="produto-delete-card h-100">
+                    <div class="produto-delete-card-header">
+                        <h2>Confirmar ação</h2>
+                        <p>Escolhe se pretendes eliminar ou cancelar esta operação.</p>
+                    </div>
+
+                    <div class="produto-delete-card-body">
+                        <form method="post">
+                            <input type="hidden" asp-for="Produto.Id" />
+
+                            <div class="produto-delete-note mb-4">
+                                <i class="fa-solid fa-circle-info me-2"></i>
+                                O produto será removido da listagem atual.
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn produto-delete-btn-danger">
+                                    <i class="fa-solid fa-trash me-2"></i>
+                                    Eliminar produto
+                                </button>
+
+                                <a asp-page="./Index" class="btn produto-delete-btn-light">
+                                    <i class="fa-solid fa-xmark me-2"></i>
+                                    Cancelar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

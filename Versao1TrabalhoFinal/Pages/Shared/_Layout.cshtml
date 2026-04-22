@@ -1,4 +1,91 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Http
+
+@{
+    /// <summary>
+    /// Indica se existe um utilizador autenticado na sessão atual.
+    /// </summary>
+    var isAuthenticated = User?.Identity != null && User.Identity.IsAuthenticated;
+
+    /// <summary>
+    /// Indica se o utilizador atual pertence ao perfil de cliente.
+    /// </summary>
+    var isCliente = isAuthenticated && User.IsInRole("Cliente");
+
+    /// <summary>
+    /// Indica se o utilizador atual pertence ao perfil de administrador.
+    /// </summary>
+    var isAdmin = isAuthenticated && User.IsInRole("Admin");
+
+    /// <summary>
+    /// Indica se o utilizador atual pertence ao perfil de colaborador.
+    /// </summary>
+    var isColaborador = isAuthenticated && User.IsInRole("Colaborador");
+
+    /// <summary>
+    /// Indica se o utilizador atual pode aceder à área de produtos.
+    /// </summary>
+    var canAccessProdutos = isCliente || isAdmin || isColaborador;
+
+    /// <summary>
+    /// Indica se o utilizador atual pode gerir clientes.
+    /// </summary>
+    var canManageClientes = isAdmin || isColaborador;
+}
+
+@functions {
+    /// <summary>
+    /// Devolve a classe CSS apropriada para um link normal de navegação.
+    /// </summary>
+    /// <param name="path">Caminho base da página.</param>
+    /// <param name="exact">Indica se a comparação deve ser exata.</param>
+    /// <returns>Classe CSS com ou sem estado ativo.</returns>
+    public string NavClass(string path, bool exact = false)
+    {
+        var currentPath = Context?.Request?.Path.Value ?? string.Empty;
+
+        var isActive = exact
+            ? string.Equals(currentPath, path, StringComparison.OrdinalIgnoreCase)
+            : currentPath.StartsWith(path, StringComparison.OrdinalIgnoreCase);
+
+        return isActive ? "nav-link-custom nav-link-active" : "nav-link-custom";
+    }
+
+    /// <summary>
+    /// Devolve a classe CSS apropriada para links de autenticação.
+    /// </summary>
+    /// <param name="path">Caminho da página.</param>
+    /// <param name="exact">Indica se a comparação deve ser exata.</param>
+    /// <returns>Classe CSS com ou sem estado ativo.</returns>
+    public string NavAuthClass(string path, bool exact = false)
+    {
+        var currentPath = Context?.Request?.Path.Value ?? string.Empty;
+
+        var isActive = exact
+            ? string.Equals(currentPath, path, StringComparison.OrdinalIgnoreCase)
+            : currentPath.StartsWith(path, StringComparison.OrdinalIgnoreCase);
+
+        return isActive ? "nav-link-auth nav-link-auth-active" : "nav-link-auth";
+    }
+
+    /// <summary>
+    /// Define o valor do atributo aria-current para acessibilidade.
+    /// </summary>
+    /// <param name="path">Caminho da página.</param>
+    /// <param name="exact">Indica se a comparação deve ser exata.</param>
+    /// <returns>Valor page quando ativo, caso contrário false.</returns>
+    public string AriaCurrent(string path, bool exact = false)
+    {
+        var currentPath = Context?.Request?.Path.Value ?? string.Empty;
+
+        var isActive = exact
+            ? string.Equals(currentPath, path, StringComparison.OrdinalIgnoreCase)
+            : currentPath.StartsWith(path, StringComparison.OrdinalIgnoreCase);
+
+        return isActive ? "page" : "false";
+    }
+}
+
 <!DOCTYPE html>
 <html lang="pt-pt">
 <head>
@@ -14,7 +101,12 @@
 <body>
     <header id="siteHeader" class="site-header">
         <div class="nav-left">
-            <button type="button" class="nav-menu-trigger" aria-label="Abrir menu">
+            <button type="button"
+                    class="nav-menu-trigger"
+                    aria-label="Abrir menu"
+                    aria-controls="mobileMenu"
+                    aria-expanded="false"
+                    id="menuTrigger">
                 <i class="fa-solid fa-bars"></i>
             </button>
         </div>
@@ -26,57 +118,86 @@
         </div>
 
         <div class="nav-right">
-            <a asp-page="/VeiculosStand/Index" class="nav-link-custom">
+            @* Link público para o catálogo do stand. *@
+            <a asp-page="/VeiculosStand/Index"
+               class="@NavClass("/VeiculosStand")"
+               aria-current="@AriaCurrent("/VeiculosStand")">
                 <i class="fa-solid fa-car"></i>
                 <span>Stand</span>
             </a>
 
-            <a asp-page="/Servicos/Index" class="nav-link-custom">
+            @* Link público para serviços. *@
+            <a asp-page="/Servicos/Index"
+               class="@NavClass("/Servicos")"
+               aria-current="@AriaCurrent("/Servicos")">
                 <i class="fa-solid fa-briefcase"></i>
                 <span>Serviços</span>
             </a>
 
-            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            @* Link visível para qualquer utilizador autenticado. *@
+            @if (isAuthenticated)
             {
-                <a asp-page="/Veiculos/Index" class="nav-link-custom">
+                <a asp-page="/Veiculos/Index"
+                   class="@NavClass("/Veiculos")"
+                   aria-current="@AriaCurrent("/Veiculos")">
                     <i class="fa-solid fa-car-side"></i>
                     <span>Minhas Viaturas</span>
                 </a>
             }
 
-            @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Cliente"))
+            @* Produtos acessíveis a cliente, admin e colaborador. *@
+            @if (canAccessProdutos)
             {
-                <a asp-page="/GestaoOrcamentos/Index" class="nav-link-custom nav-link-highlight">
+                <a asp-page="/Produtos/Index"
+                   class="@NavClass("/Produtos")"
+                   aria-current="@AriaCurrent("/Produtos")">
+                    <i class="fa-solid @(isCliente ? "fa-shop" : "fa-box-open")"></i>
+                    <span>Produtos</span>
+                </a>
+            }
+
+            @* Área exclusiva de cliente. *@
+            @if (isCliente)
+            {
+                <a asp-page="/GestaoOrcamentos/Index"
+                   class="@(NavClass("/GestaoOrcamentos") + " nav-link-highlight")"
+                   aria-current="@AriaCurrent("/GestaoOrcamentos")">
                     <i class="fa-solid fa-file-invoice-dollar"></i>
                     <span>Orçamentos</span>
                 </a>
-            }
 
-            @if (User.Identity != null && User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("Colaborador")))
-            {
-                <a asp-page="/Clientes/Index" class="nav-link-custom">
-                    <i class="fa-solid fa-users"></i>
-                    <span>Clientes</span>
-                </a>
-            }
-
-            @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Cliente"))
-            {
-                <a asp-page="/Carrinho/Index" class="nav-link-custom">
+                <a asp-page="/Carrinho/Index"
+                   class="@NavClass("/Carrinho/Index", true)"
+                   aria-current="@AriaCurrent("/Carrinho/Index", true)">
                     <i class="fa-solid fa-cart-shopping"></i>
                     <span>Carrinho</span>
                 </a>
             }
 
-            <a asp-page="/Contactos" class="nav-link-custom">
+            @* Área de gestão de clientes para staff autorizado. *@
+            @if (canManageClientes)
+            {
+                <a asp-page="/Clientes/Index"
+                   class="@NavClass("/Clientes")"
+                   aria-current="@AriaCurrent("/Clientes")">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Clientes</span>
+                </a>
+            }
+
+            @* Link público de contactos. *@
+            <a asp-page="/Contactos"
+               class="@NavClass("/Contactos", true)"
+               aria-current="@AriaCurrent("/Contactos", true)">
                 <i class="fa-solid fa-envelope"></i>
                 <span>Contactos</span>
             </a>
 
-            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            @* Área de autenticação / logout. *@
+            @if (isAuthenticated)
             {
                 <div class="nav-auth-group">
-                    <span class="nav-user-name">@User.Identity.Name</span>
+                    <span class="nav-user-name">@User.Identity!.Name</span>
 
                     <form asp-area="Identity"
                           asp-page="/Account/Logout"
@@ -92,7 +213,10 @@
             }
             else
             {
-                <a asp-area="Identity" asp-page="/Account/Login" class="nav-link-auth">
+                <a asp-area="Identity"
+                   asp-page="/Account/Login"
+                   class="@NavAuthClass("/Identity/Account/Login")"
+                   aria-current="@AriaCurrent("/Identity/Account/Login")">
                     <i class="fa-solid fa-right-to-bracket"></i>
                     <span>Iniciar Sessão</span>
                 </a>
@@ -100,11 +224,160 @@
         </div>
     </header>
 
+    <aside id="mobileMenu" class="mobile-drawer" aria-hidden="true">
+        <div class="mobile-drawer-header">
+            <div class="mobile-drawer-brand">
+                <img src="~/images/logotipo.png" alt="Logo Stand Premium" asp-append-version="true">
+            </div>
+
+            <button type="button"
+                    class="mobile-drawer-close"
+                    aria-label="Fechar menu"
+                    id="menuClose">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <nav class="mobile-drawer-nav" aria-label="Menu principal mobile">
+            @* Link público para o catálogo do stand. *@
+            <a asp-page="/VeiculosStand/Index"
+               class="@NavClass("/VeiculosStand")"
+               aria-current="@AriaCurrent("/VeiculosStand")">
+                <i class="fa-solid fa-car"></i>
+                <span>Stand</span>
+            </a>
+
+            @* Link público para serviços. *@
+            <a asp-page="/Servicos/Index"
+               class="@NavClass("/Servicos")"
+               aria-current="@AriaCurrent("/Servicos")">
+                <i class="fa-solid fa-briefcase"></i>
+                <span>Serviços</span>
+            </a>
+
+            @* Link para viaturas do utilizador autenticado. *@
+            @if (isAuthenticated)
+            {
+                <a asp-page="/Veiculos/Index"
+                   class="@NavClass("/Veiculos")"
+                   aria-current="@AriaCurrent("/Veiculos")">
+                    <i class="fa-solid fa-car-side"></i>
+                    <span>Minhas Viaturas</span>
+                </a>
+            }
+
+            @* Produtos acessíveis a cliente, admin e colaborador. *@
+            @if (canAccessProdutos)
+            {
+                <a asp-page="/Produtos/Index"
+                   class="@NavClass("/Produtos")"
+                   aria-current="@AriaCurrent("/Produtos")">
+                    <i class="fa-solid @(isCliente ? "fa-shop" : "fa-box-open")"></i>
+                    <span>Produtos</span>
+                </a>
+            }
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                <div style="background:#222;color:#fff;padding:10px;margin:10px 0;">
+                    <p>User: @User.Identity.Name</p>
+                    <p>Admin: @User.IsInRole("Admin")</p>
+                    <p>Cliente: @User.IsInRole("Cliente")</p>
+                    <p>Colaborador: @User.IsInRole("Colaborador")</p>
+
+                    @foreach (var claim in User.Claims)
+                    {
+                        <p>@claim.Type = @claim.Value</p>
+                    }
+                </div>
+            }
+
+            @* Área exclusiva de cliente no menu mobile. *@
+            @if (isCliente)
+            {
+                <a asp-page="/Carrinho/Produtos"
+                   class="@NavClass("/Carrinho/Produtos", true)"
+                   aria-current="@AriaCurrent("/Carrinho/Produtos", true)">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <span>Carrinho Produtos</span>
+                </a>
+
+                <a asp-page="/GestaoOrcamentos/Index"
+                   class="@(NavClass("/GestaoOrcamentos") + " nav-link-highlight")"
+                   aria-current="@AriaCurrent("/GestaoOrcamentos")">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <span>Orçamentos</span>
+                </a>
+
+                <a asp-page="/Carrinho/Index"
+                   class="@NavClass("/Carrinho/Index", true)"
+                   aria-current="@AriaCurrent("/Carrinho/Index", true)">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span>Carrinho</span>
+                </a>
+            }
+
+            @* Gestão de clientes para admin e colaborador. *@
+            @if (canManageClientes)
+            {
+                <a asp-page="/Clientes/Index"
+                   class="@NavClass("/Clientes")"
+                   aria-current="@AriaCurrent("/Clientes")">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Clientes</span>
+                </a>
+            }
+
+            @* Link público para contactos. *@
+            <a asp-page="/Contactos"
+               class="@NavClass("/Contactos", true)"
+               aria-current="@AriaCurrent("/Contactos", true)">
+                <i class="fa-solid fa-envelope"></i>
+                <span>Contactos</span>
+            </a>
+        </nav>
+
+        <div class="mobile-drawer-footer">
+            @if (isAuthenticated)
+            {
+                <div class="mobile-user-box">
+                    <span class="mobile-user-label">Sessão iniciada</span>
+                    <strong class="mobile-user-name">@User.Identity!.Name</strong>
+                </div>
+
+                <form asp-area="Identity"
+                      asp-page="/Account/Logout"
+                      asp-route-returnUrl="@Url.Page("/Index")"
+                      method="post"
+                      class="mobile-logout-form">
+                    <button type="submit" class="navbar-auth-button mobile-logout-button">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Sair</span>
+                    </button>
+                </form>
+            }
+            else
+            {
+                <a asp-area="Identity"
+                   asp-page="/Account/Login"
+                   class="nav-link-auth mobile-login-link">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span>Iniciar Sessão</span>
+                </a>
+            }
+        </div>
+    </aside>
+
+    <div id="mobileMenuOverlay" class="mobile-drawer-overlay" hidden></div>
+
     <main role="main">
         @RenderBody()
     </main>
 
-    <a href="https://wa.me/351916632118" class="wp-float" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+    <a href="https://wa.me/351968599884"
+       class="wp-float"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="WhatsApp">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
@@ -120,6 +393,55 @@
                 header.classList.remove('scrolled');
             }
         });
+
+        (function () {
+            const body = document.body;
+            const trigger = document.getElementById('menuTrigger');
+            const closeBtn = document.getElementById('menuClose');
+            const drawer = document.getElementById('mobileMenu');
+            const overlay = document.getElementById('mobileMenuOverlay');
+
+            if (!trigger || !closeBtn || !drawer || !overlay) return;
+
+            /// <summary>
+            /// Abre o menu lateral mobile.
+            /// </summary>
+            function openMenu() {
+                drawer.classList.add('is-open');
+                overlay.hidden = false;
+                overlay.classList.add('is-visible');
+                drawer.setAttribute('aria-hidden', 'false');
+                trigger.setAttribute('aria-expanded', 'true');
+                body.classList.add('menu-open');
+            }
+
+            /// <summary>
+            /// Fecha o menu lateral mobile.
+            /// </summary>
+            function closeMenu() {
+                drawer.classList.remove('is-open');
+                overlay.classList.remove('is-visible');
+                drawer.setAttribute('aria-hidden', 'true');
+                trigger.setAttribute('aria-expanded', 'false');
+                body.classList.remove('menu-open');
+
+                setTimeout(() => {
+                    if (!drawer.classList.contains('is-open')) {
+                        overlay.hidden = true;
+                    }
+                }, 250);
+            }
+
+            trigger.addEventListener('click', openMenu);
+            closeBtn.addEventListener('click', closeMenu);
+            overlay.addEventListener('click', closeMenu);
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape' && drawer.classList.contains('is-open')) {
+                    closeMenu();
+                }
+            });
+        })();
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)

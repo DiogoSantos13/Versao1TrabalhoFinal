@@ -7,13 +7,20 @@ using Versao1TrabalhoFinal.Services.AI;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Base de dados
+/// <summary>
+/// Configuração da base de dados da aplicação.
+/// </summary>
 builder.Services.AddDbContext<StandDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("StandOficinaDB")));
 
-// Sessão e cache
+/// <summary>
+/// Configuração da cache em memória para suporte à sessão.
+/// </summary>
 builder.Services.AddDistributedMemoryCache();
 
+/// <summary>
+/// Configuração da sessão da aplicação.
+/// </summary>
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -21,10 +28,15 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+/// <summary>
+/// Registo de serviços auxiliares do ASP.NET Core.
+/// </summary>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 
-// Identity
+/// <summary>
+/// Configuração do Identity com utilizadores e roles.
+/// </summary>
 builder.Services
     .AddIdentity<IdentityUser, IdentityRole>(options =>
     {
@@ -40,7 +52,9 @@ builder.Services
     .AddEntityFrameworkStores<StandDbContext>()
     .AddDefaultTokenProviders();
 
-// Cookie de autenticação
+/// <summary>
+/// Configuração do cookie de autenticação.
+/// </summary>
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
@@ -51,7 +65,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.HttpOnly = true;
 });
 
-// Autorização
+/// <summary>
+/// Configuração das policies de autorização por perfis.
+/// </summary>
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("ClienteOnly", policy =>
@@ -62,9 +78,14 @@ builder.Services.AddAuthorization(options =>
 
     options.AddPolicy("AdminOnly", policy =>
         policy.RequireRole("Admin"));
+
+    options.AddPolicy("ProdutosAccess", policy =>
+        policy.RequireRole("Cliente", "Admin", "Colaborador"));
 });
 
-// Razor Pages
+/// <summary>
+/// Configuração das Razor Pages e respetivas regras de acesso.
+/// </summary>
 builder.Services.AddRazorPages(options =>
 {
     options.Conventions.AllowAnonymousToPage("/Index");
@@ -80,10 +101,16 @@ builder.Services.AddRazorPages(options =>
 
     options.Conventions.AuthorizeFolder("/ClienteArea", "ClienteOnly");
     options.Conventions.AuthorizeFolder("/Dashboard", "AdminOnly");
+
+    /// <summary>
+    /// Autoriza o acesso à pasta de produtos a clientes e membros do staff definidos.
+    /// </summary>
+    options.Conventions.AuthorizeFolder("/Produtos", "ProdutosAccess");
 });
 
-
-// Serviços da aplicação
+/// <summary>
+/// Registo dos serviços da aplicação.
+/// </summary>
 builder.Services.AddScoped<IOpenAIChatService, OpenAIChatService>();
 builder.Services.AddScoped<IAiChatService, AiChatService>();
 builder.Services.AddScoped<IChatConversationService, ChatConversationService>();
@@ -91,26 +118,42 @@ builder.Services.AddScoped<OrcamentoService>();
 
 var app = builder.Build();
 
-// Pipeline
+/// <summary>
+/// Configuração do pipeline HTTP para ambiente não desenvolvimento.
+/// </summary>
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
 
-
+/// <summary>
+/// Middleware base da aplicação.
+/// </summary>
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
+/// <summary>
+/// Middleware de sessão. Deve ser chamado após o routing.
+/// </summary>
+app.UseSession();
+
+/// <summary>
+/// Middleware de autenticação e autorização.
+/// </summary>
 app.UseAuthentication();
 app.UseAuthorization();
 
+/// <summary>
+/// Mapeamento das Razor Pages.
+/// </summary>
 app.MapRazorPages();
 
-
-// Seed inicial de roles/users
+/// <summary>
+/// Execução do seed inicial de roles e utilizadores.
+/// </summary>
 using (var scope = app.Services.CreateScope())
 {
     await IdentitySeeder.SeedAsync(scope.ServiceProvider);

@@ -29,10 +29,6 @@ namespace Versao1TrabalhoFinal.Models
         [ForeignKey(nameof(VeiculoId))]
         public Veiculo? Veiculo { get; set; }
 
-        /// <summary>
-        /// Itens de carrinho associados a este veículo do stand.
-        /// </summary>
-        public ICollection<CarrinhoItem> CarrinhoItens { get; set; } = new List<CarrinhoItem>();
 
     }
 }

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Versao1TrabalhoFinal.Data;
 using Versao1TrabalhoFinal.Models;
@@ -9,104 +9,240 @@ using Versao1TrabalhoFinal.Models;
 namespace Versao1TrabalhoFinal.Pages.Produtos
 {
     /// <summary>
-    /// Página de listagem de produtos com filtros por marca, modelo e texto.
+    /// Página de listagem de produtos com filtros, paginação, compra para clientes e gestão para administradores e colaboradores.
     /// </summary>
-    [Authorize(Roles = "Admin,Colaborador")]
+    [Authorize(Roles = "Cliente,Admin,Colaborador")]
     public class IndexModel : PageModel
     {
         private readonly StandDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
         /// <summary>
-        /// Construtor da página.
+        /// Inicializa uma nova instância da página de produtos.
         /// </summary>
         /// <param name="context">Contexto da base de dados.</param>
-        public IndexModel(StandDbContext context)
+        /// <param name="userManager">Serviço de gestão de utilizadores.</param>
+        public IndexModel(StandDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         /// <summary>
-        /// Filtro de marca do veículo.
+        /// Lista de produtos a apresentar na página atual.
+        /// </summary>
+        public IList<Produto> Produtos { get; set; } = new List<Produto>();
+
+        /// <summary>
+        /// Marca usada no filtro.
         /// </summary>
         [BindProperty(SupportsGet = true)]
-        public string? MarcaFiltro { get; set; }
+        public string? Marca { get; set; }
 
         /// <summary>
-        /// Filtro de modelo do veículo.
+        /// Modelo usado no filtro.
         /// </summary>
         [BindProperty(SupportsGet = true)]
-        public string? ModeloFiltro { get; set; }
+        public string? Modelo { get; set; }
 
         /// <summary>
-        /// Texto de pesquisa livre.
+        /// Página atual da paginação.
         /// </summary>
         [BindProperty(SupportsGet = true)]
-        public string? Pesquisa { get; set; }
+        public int PaginaAtual { get; set; } = 1;
 
         /// <summary>
-        /// Lista final de produtos.
+        /// Quantidade de produtos por página.
         /// </summary>
-        public List<Produto> Produtos { get; set; } = new();
+        [BindProperty(SupportsGet = true)]
+        public int TamanhoPagina { get; set; } = 8;
 
         /// <summary>
-        /// Lista de marcas disponíveis para filtro.
+        /// Número total de produtos encontrados após filtros.
         /// </summary>
-        public List<SelectListItem> Marcas { get; set; } = new();
+        public int TotalProdutos { get; set; }
 
         /// <summary>
-        /// Lista de modelos disponíveis para filtro.
+        /// Número total de páginas.
         /// </summary>
-        public List<SelectListItem> Modelos { get; set; } = new();
+        public int TotalPaginas { get; set; }
 
         /// <summary>
-        /// Carrega produtos e filtros.
+        /// Indica se existe página anterior.
+        /// </summary>
+        public bool TemPaginaAnterior => PaginaAtual > 1;
+
+        /// <summary>
+        /// Indica se existe página seguinte.
+        /// </summary>
+        public bool TemPaginaSeguinte => PaginaAtual < TotalPaginas;
+
+        /// <summary>
+        /// Indica se o utilizador atual tem permissões para gerir produtos.
+        /// </summary>
+        public bool PodeGerirProdutos =>
+            User.IsInRole("Admin") || User.IsInRole("Colaborador");
+
+        /// <summary>
+        /// Indica se o utilizador atual pode adicionar produtos ao carrinho.
+        /// </summary>
+        public bool PodeComprarProdutos =>
+            User.IsInRole("Cliente");
+
+        /// <summary>
+        /// Carrega a listagem paginada de produtos com filtros opcionais.
         /// </summary>
         public async Task OnGetAsync()
         {
-            Marcas = await _context.Veiculos
-                .Where(v => v.Marca != null)
-                .Select(v => v.Marca!)
-                .Distinct()
-                .OrderBy(x => x)
-                .Select(x => new SelectListItem { Value = x, Text = x })
-                .ToListAsync();
-
-            var modelosQuery = _context.Veiculos.AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(MarcaFiltro))
+            if (PaginaAtual < 1)
             {
-                modelosQuery = modelosQuery.Where(v => v.Marca == MarcaFiltro);
+                PaginaAtual = 1;
             }
 
-            Modelos = await modelosQuery
-                .Where(v => v.Modelo != null)
-                .Select(v => v.Modelo!)
-                .Distinct()
-                .OrderBy(x => x)
-                .Select(x => new SelectListItem { Value = x, Text = x })
-                .ToListAsync();
+            var tamanhosPermitidos = new[] { 4, 8, 12, 16, 24 };
+
+            if (!tamanhosPermitidos.Contains(TamanhoPagina))
+            {
+                TamanhoPagina = 8;
+            }
 
             var query = _context.Produtos
                 .Include(p => p.Fornecedor)
+                .AsNoTracking()
                 .AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(MarcaFiltro))
-                query = query.Where(p => p.MarcaVeiculo == MarcaFiltro);
-
-            if (!string.IsNullOrWhiteSpace(ModeloFiltro))
-                query = query.Where(p => p.ModeloVeiculo == ModeloFiltro);
-
-            if (!string.IsNullOrWhiteSpace(Pesquisa))
+            if (!string.IsNullOrWhiteSpace(Marca))
             {
-                query = query.Where(p =>
-                    (p.Nome != null && p.Nome.Contains(Pesquisa)) ||
-                    (p.Descricao != null && p.Descricao.Contains(Pesquisa)) ||
-                    (p.Categoria != null && p.Categoria.Contains(Pesquisa)));
+                query = query.Where(p => p.MarcaVeiculo != null && p.MarcaVeiculo.Contains(Marca));
+            }
+
+            if (!string.IsNullOrWhiteSpace(Modelo))
+            {
+                query = query.Where(p => p.ModeloVeiculo != null && p.ModeloVeiculo.Contains(Modelo));
+            }
+
+            TotalProdutos = await query.CountAsync();
+
+            TotalPaginas = (int)Math.Ceiling(TotalProdutos / (double)TamanhoPagina);
+
+            if (TotalPaginas == 0)
+            {
+                TotalPaginas = 1;
+            }
+
+            if (PaginaAtual > TotalPaginas)
+            {
+                PaginaAtual = TotalPaginas;
             }
 
             Produtos = await query
                 .OrderBy(p => p.Nome)
+                .Skip((PaginaAtual - 1) * TamanhoPagina)
+                .Take(TamanhoPagina)
                 .ToListAsync();
+        }
+
+        /// <summary>
+        /// Adiciona um produto ao carrinho do cliente autenticado.
+        /// </summary>
+        /// <param name="produtoId">Identificador do produto.</param>
+        /// <returns>Redirecionamento para a página atual mantendo filtros e paginação.</returns>
+        public async Task<IActionResult> OnPostAddAsync(int produtoId)
+        {
+            if (!User.IsInRole("Cliente"))
+            {
+                return Forbid();
+            }
+
+            var cliente = await ObterClienteAutenticadoAsync();
+
+            if (cliente == null)
+            {
+                TempData["ErrorMessage"] = "Cliente autenticado não encontrado.";
+                return RedirectToPage(new { Marca, Modelo, PaginaAtual, TamanhoPagina });
+            }
+
+            var produto = await _context.Produtos
+                .FirstOrDefaultAsync(p => p.Id == produtoId);
+
+            if (produto == null)
+            {
+                TempData["ErrorMessage"] = "Produto não encontrado.";
+                return RedirectToPage(new { Marca, Modelo, PaginaAtual, TamanhoPagina });
+            }
+
+            if (produto.Stock <= 0)
+            {
+                TempData["ErrorMessage"] = "Produto sem stock disponível.";
+                return RedirectToPage(new { Marca, Modelo, PaginaAtual, TamanhoPagina });
+            }
+
+            var carrinho = await _context.Carrinhos
+                .FirstOrDefaultAsync(c => c.ClienteId == cliente.Id);
+
+            if (carrinho == null)
+            {
+                carrinho = new Models.Carrinho
+                {
+                    ClienteId = cliente.Id,
+                    DataCriacao = DateTime.Now
+                };
+
+                _context.Carrinhos.Add(carrinho);
+                await _context.SaveChangesAsync();
+            }
+
+            var itemExistente = await _context.CarrinhoProdutos
+                .FirstOrDefaultAsync(cp => cp.CarrinhoId == carrinho.Id && cp.ProdutoId == produto.Id);
+
+            if (itemExistente == null)
+            {
+                var novoItem = new CarrinhoProdutos
+                {
+                    CarrinhoId = carrinho.Id,
+                    ProdutoId = produto.Id,
+                    Quantidade = 1,
+                    PrecoNoMomento = produto.Preco,
+                    DataAdicao = DateTime.Now
+                };
+
+                _context.CarrinhoProdutos.Add(novoItem);
+            }
+            else
+            {
+                if (itemExistente.Quantidade < produto.Stock)
+                {
+                    itemExistente.Quantidade++;
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Não existe stock suficiente.";
+                    return RedirectToPage(new { Marca, Modelo, PaginaAtual, TamanhoPagina });
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Produto adicionado ao carrinho com sucesso.";
+
+            return RedirectToPage(new { Marca, Modelo, PaginaAtual, TamanhoPagina });
+        }
+
+        /// <summary>
+        /// Obtém o cliente associado ao utilizador autenticado.
+        /// </summary>
+        /// <returns>Cliente autenticado ou null.</returns>
+        private async Task<Cliente?> ObterClienteAutenticadoAsync()
+        {
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return null;
+            }
+
+            return await _context.Clientes
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.IdentityUserId == userId);
         }
     }
 }

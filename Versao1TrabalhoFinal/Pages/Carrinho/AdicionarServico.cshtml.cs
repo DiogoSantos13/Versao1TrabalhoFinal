@@ -20,10 +20,8 @@ namespace Versao1TrabalhoFinal.Pages.Carrinho
         private readonly UserManager<IdentityUser> _userManager;
 
         /// <summary>
-        /// Inicializa uma nova instância da página de adição de serviços ao carrinho.
+        /// Inicializa uma nova instância da página de adição de serviço ao carrinho.
         /// </summary>
-        /// <param name="context">Contexto da base de dados.</param>
-        /// <param name="userManager">Gestor de utilizadores do Identity.</param>
         public AdicionarServicoModel(StandDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
@@ -31,10 +29,9 @@ namespace Versao1TrabalhoFinal.Pages.Carrinho
         }
 
         /// <summary>
-        /// Adiciona um serviço ao carrinho do cliente autenticado.
+        /// Adiciona o serviço ao carrinho do cliente autenticado.
         /// </summary>
         /// <param name="servicoId">Identificador do serviço.</param>
-        /// <returns>Redireciona para a página do carrinho ou para a listagem de serviços.</returns>
         public async Task<IActionResult> OnGetAsync(int servicoId)
         {
             var cliente = await ObterClienteAutenticadoAsync();
@@ -57,35 +54,22 @@ namespace Versao1TrabalhoFinal.Pages.Carrinho
 
             if (!servico.Ativo)
             {
-                TempData["ErrorMessage"] = "O serviço selecionado está inativo.";
+                TempData["ErrorMessage"] = "O serviço selecionado não está ativo.";
                 return RedirectToPage("/Servicos/Index");
             }
 
-            var carrinho = await _context.Carrinhos
-                .FirstOrDefaultAsync(c => c.ClienteId == cliente.Id);
-
-            if (carrinho == null)
-            {
-                carrinho = new CarrinhoEntity
-                {
-                    ClienteId = cliente.Id,
-                    DataCriacao = DateTime.Now
-                };
-
-                _context.Carrinhos.Add(carrinho);
-                await _context.SaveChangesAsync();
-            }
+            var carrinho = await ObterOuCriarCarrinhoAsync(cliente.Id);
 
             var itemExistente = await _context.CarrinhoServicos
-                .AnyAsync(cs => cs.CarrinhoId == carrinho.Id && cs.ServicoId == servico.Id);
+                .FirstOrDefaultAsync(cs => cs.CarrinhoId == carrinho.Id && cs.ServicoId == servico.Id);
 
-            if (itemExistente)
+            if (itemExistente != null)
             {
                 TempData["SuccessMessage"] = "O serviço já se encontra no carrinho.";
                 return RedirectToPage("/Carrinho/Index");
             }
 
-            var itemServico = new CarrinhoServicoEntity
+            var item = new CarrinhoServicoEntity
             {
                 CarrinhoId = carrinho.Id,
                 ServicoId = servico.Id,
@@ -93,7 +77,7 @@ namespace Versao1TrabalhoFinal.Pages.Carrinho
                 DataAdicao = DateTime.Now
             };
 
-            _context.CarrinhoServicos.Add(itemServico);
+            _context.CarrinhoServicos.Add(item);
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Serviço adicionado ao carrinho com sucesso.";
@@ -101,9 +85,8 @@ namespace Versao1TrabalhoFinal.Pages.Carrinho
         }
 
         /// <summary>
-        /// Obtém o cliente autenticado a partir do utilizador atual.
+        /// Obtém o cliente autenticado associado ao utilizador atual.
         /// </summary>
-        /// <returns>Cliente autenticado ou nulo.</returns>
         private async Task<ClienteEntity?> ObterClienteAutenticadoAsync()
         {
             var userId = _userManager.GetUserId(User);
@@ -115,6 +98,31 @@ namespace Versao1TrabalhoFinal.Pages.Carrinho
 
             return await _context.Clientes
                 .FirstOrDefaultAsync(c => c.IdentityUserId == userId);
+        }
+
+        /// <summary>
+        /// Obtém o carrinho do cliente ou cria um novo caso ainda não exista.
+        /// </summary>
+        private async Task<CarrinhoEntity> ObterOuCriarCarrinhoAsync(int clienteId)
+        {
+            var carrinho = await _context.Carrinhos
+                .FirstOrDefaultAsync(c => c.ClienteId == clienteId);
+
+            if (carrinho != null)
+            {
+                return carrinho;
+            }
+
+            carrinho = new CarrinhoEntity
+            {
+                ClienteId = clienteId,
+                DataCriacao = DateTime.Now
+            };
+
+            _context.Carrinhos.Add(carrinho);
+            await _context.SaveChangesAsync();
+
+            return carrinho;
         }
     }
 }

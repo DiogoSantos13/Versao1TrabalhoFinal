@@ -1,7 +1,7 @@
 ﻿namespace Versao1TrabalhoFinal.Models
 {
     /// <summary>
-    /// Representa o carrinho de um cliente.
+    /// Representa o carrinho único do cliente.
     /// </summary>
     public class Carrinho
     {
@@ -25,16 +25,15 @@
         /// </summary>
         public Cliente Cliente { get; set; } = null!;
 
-        /// <summary>
-        /// Itens do carrinho.
-        /// </summary>
-        public ICollection<CarrinhoItem> Itens { get; set; } = new List<CarrinhoItem>();
 
         /// <summary>
         /// Serviços adicionados ao carrinho.
         /// </summary>
         public ICollection<CarrinhoServico> Servicos { get; set; } = new List<CarrinhoServico>();
 
-
+        /// <summary>
+        /// Produtos adicionados ao carrinho.
+        /// </summary>
+        public ICollection<CarrinhoProdutos> Produtos { get; set; } = new List<CarrinhoProdutos>();
     }
 }

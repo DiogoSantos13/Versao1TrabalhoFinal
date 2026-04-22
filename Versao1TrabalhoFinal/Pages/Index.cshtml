@@ -1,7 +1,7 @@
 ﻿@page
 @model Versao1TrabalhoFinal.Pages.IndexModel
 @{
-    ViewData["Title"] = "Stand e Ofinica Automóvel - Stand Premium";
+    ViewData["Title"] = "Stand e Oficina Automóvel - Stand Premium";
 }
 
 <section class="hero">
@@ -10,7 +10,7 @@
         COM UM SERVIÇO DE QUALIDADE COMPLETO.
     </h1>
     <p class="hero-subtitle">
-        Descubra as últimas entradas em stock e encontre a viatura certa para si.
+        Descubra as últimas entradas em stock, os nossos serviços e os produtos disponíveis para o seu veículo.
     </p>
 </section>
 
@@ -96,6 +96,116 @@
         </div>
 
         <div class="swiper-pagination"></div>
+    </div>
+</section>
+
+<section class="stock-section">
+    <div class="section-title">
+        <p>Oficina</p>
+        <h2>Serviços em destaque</h2>
+    </div>
+
+    <div class="vehicle-grid">
+        @if (Model.ServicosDestaque != null && Model.ServicosDestaque.Any())
+        {
+            foreach (var servico in Model.ServicosDestaque)
+            {
+                <div class="vehicle-admin-card">
+                    <div class="vehicle-admin-body pt-4">
+                        <h3 class="vehicle-admin-title">@servico.Nome</h3>
+
+                        <p class="page-subtitle">
+                            @(string.IsNullOrWhiteSpace(servico.Descricao)
+                                                ? "Serviço disponível na nossa oficina."
+                                                : servico.Descricao)
+                </p>
+
+                        <div class="vehicle-admin-meta">
+                            <div class="vehicle-admin-meta-item">
+                                <span class="vehicle-admin-meta-label">Preço base</span>
+                                <strong>€ @servico.PrecoBase.ToString("N2")</strong>
+                            </div>
+
+                            <div class="vehicle-admin-meta-item">
+                                <span class="vehicle-admin-meta-label">Tempo estimado</span>
+                                <strong>@servico.TempoEstimado min</strong>
+                            </div>
+                        </div>
+
+                        <div class="vehicle-admin-actions">
+                            <a asp-page="/Servicos/Index" class="action-link action-link-primary">
+                                Ver serviços
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                }
+        }
+        else
+        {
+            <div class="empty-state-card">
+                <h3>Sem serviços em destaque</h3>
+                <p>Não existem serviços disponíveis para apresentar neste momento.</p>
+            </div>
+        }
+    </div>
+</section>
+
+<section class="stock-section">
+    <div class="section-title">
+        <p>Loja</p>
+        <h2>Produtos em destaque</h2>
+    </div>
+
+    <div class="vehicle-grid">
+        @if (Model.ProdutosDestaque != null && Model.ProdutosDestaque.Any())
+        {
+            foreach (var produto in Model.ProdutosDestaque)
+            {
+                <div class="vehicle-admin-card">
+                    <div class="vehicle-admin-image-wrap">
+                        <img src="@(string.IsNullOrWhiteSpace(produto.ImagemUrl) ? "/images/products/default-product.jpg" : produto.ImagemUrl)"
+                             class="vehicle-admin-image"
+                             alt="@(produto.Nome ?? "Produto")" />
+                    </div>
+
+                    <div class="vehicle-admin-body">
+                        <h3 class="vehicle-admin-title">@produto.Nome</h3>
+
+                        <p class="page-subtitle">
+                            @(string.IsNullOrWhiteSpace(produto.Descricao)
+                                                ? "Produto disponível para o seu veículo."
+                                                : produto.Descricao)
+                </p>
+
+                        <div class="vehicle-admin-meta">
+                            <div class="vehicle-admin-meta-item">
+                                <span class="vehicle-admin-meta-label">Preço</span>
+                                <strong>€ @produto.Preco.ToString("N2")</strong>
+                            </div>
+
+                            <div class="vehicle-admin-meta-item">
+                                <span class="vehicle-admin-meta-label">Stock</span>
+                                <strong>@produto.Stock</strong>
+                            </div>
+                        </div>
+
+                        <div class="vehicle-admin-actions">
+                            <a asp-page="/Produtos/Index" class="action-link action-link-primary">
+                                Ver produtos
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                }
+        }
+        else
+        {
+            <div class="empty-state-card">
+                <h3>Sem produtos em destaque</h3>
+                <p>Não existem produtos disponíveis para apresentar neste momento.</p>
+            </div>
+        }
     </div>
 </section>
 

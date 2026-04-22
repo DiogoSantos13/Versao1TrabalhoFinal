@@ -17,7 +17,7 @@ namespace Versao1TrabalhoFinal.Pages.Produtos
         private readonly StandDbContext _context;
 
         /// <summary>
-        /// Construtor da página.
+        /// Inicializa uma nova instância da página de edição de produtos.
         /// </summary>
         /// <param name="context">Contexto da base de dados.</param>
         public EditModel(StandDbContext context)
@@ -26,60 +26,99 @@ namespace Versao1TrabalhoFinal.Pages.Produtos
         }
 
         /// <summary>
-        /// Produto a editar.
+        /// Produto que está a ser editado.
         /// </summary>
         [BindProperty]
         public Produto Produto { get; set; } = new();
 
         /// <summary>
-        /// Lista de fornecedores.
+        /// Lista de fornecedores disponíveis para o dropdown.
         /// </summary>
         public SelectList FornecedoresSelect { get; set; } = default!;
 
         /// <summary>
-        /// Carrega o produto para edição.
+        /// Carrega o produto e os fornecedores para edição.
         /// </summary>
-        /// <param name="id">Id do produto.</param>
-        /// <returns>Página ou NotFound.</returns>
+        /// <param name="id">Identificador do produto.</param>
+        /// <returns>Página de edição ou NotFound.</returns>
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var produto = await _context.Produtos.FindAsync(id);
+            var produto = await _context.Produtos
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == id);
 
             if (produto == null)
+            {
                 return NotFound();
+            }
 
             Produto = produto;
-
-            FornecedoresSelect = new SelectList(
-                await _context.Fornecedores.OrderBy(f => f.Nome).ToListAsync(),
-                "Id",
-                "Nome",
-                Produto.FornecedorId);
+            await CarregarFornecedoresAsync(Produto.FornecedorId);
 
             return Page();
         }
 
         /// <summary>
-        /// Guarda as alterações do produto.
+        /// Guarda as alterações efetuadas ao produto.
         /// </summary>
-        /// <returns>Redireciona para a listagem.</returns>
+        /// <returns>Redireciona para a listagem em caso de sucesso.</returns>
         public async Task<IActionResult> OnPostAsync()
         {
+            var fornecedorValido = await _context.Fornecedores
+                .AsNoTracking()
+                .AnyAsync(f => f.Id == Produto.FornecedorId);
+
+            if (!fornecedorValido)
+            {
+                ModelState.AddModelError("Produto.FornecedorId", "Selecione um fornecedor válido.");
+            }
+
             if (!ModelState.IsValid)
             {
-                FornecedoresSelect = new SelectList(
-                    await _context.Fornecedores.OrderBy(f => f.Nome).ToListAsync(),
-                    "Id",
-                    "Nome",
-                    Produto.FornecedorId);
-
+                await CarregarFornecedoresAsync(Produto.FornecedorId);
                 return Page();
             }
 
             _context.Attach(Produto).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
 
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                var produtoExiste = await _context.Produtos
+                    .AsNoTracking()
+                    .AnyAsync(p => p.Id == Produto.Id);
+
+                if (!produtoExiste)
+                {
+                    return NotFound();
+                }
+
+                throw;
+            }
+
+            TempData["SuccessMessage"] = "Produto atualizado com sucesso.";
             return RedirectToPage("./Index");
+        }
+
+        /// <summary>
+        /// Carrega a lista de fornecedores e seleciona o atual, se existir.
+        /// </summary>
+        /// <param name="fornecedorSelecionadoId">Fornecedor atualmente selecionado.</param>
+        private async Task CarregarFornecedoresAsync(int? fornecedorSelecionadoId = null)
+        {
+            var fornecedores = await _context.Fornecedores
+                .AsNoTracking()
+                .OrderBy(f => f.Nome)
+                .ToListAsync();
+
+            FornecedoresSelect = new SelectList(
+                fornecedores,
+                "Id",
+                "Nome",
+                fornecedorSelecionadoId);
         }
     }
 }

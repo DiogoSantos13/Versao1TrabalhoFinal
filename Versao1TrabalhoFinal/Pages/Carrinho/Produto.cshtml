@@ -1,0 +1,90 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.Carrinho.ProdutoModel
+@{
+    ViewData["Title"] = "Carrinho de Produtos";
+}
+
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="page-header-block">
+            <p class="page-eyebrow">Cliente</p>
+            <h1 class="page-title">Carrinho de produtos</h1>
+            <p class="page-subtitle">Gerencie os produtos adicionados ao seu carrinho.</p>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success mb-3">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger mb-3">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <div class="client-form-card">
+            @if (Model.CarrinhoAtual != null && Model.CarrinhoAtual.Produtos != null && Model.CarrinhoAtual.Produtos.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Preço</th>
+                                <th>Quantidade</th>
+                                <th>Subtotal</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.CarrinhoAtual.Produtos)
+                            {
+                                <tr>
+                                    <td>@item.Produto.Nome</td>
+                                    <td>@item.PrecoNoMomento.ToString("0.00 €")</td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <form method="post" asp-page-handler="Decrease">
+                                                <input type="hidden" name="itemId" value="@item.Id" />
+                                                <button type="submit" class="auth-button auth-button-secondary">-</button>
+                                            </form>
+
+                                            <span>@item.Quantidade</span>
+
+                                            <form method="post" asp-page-handler="Increase">
+                                                <input type="hidden" name="itemId" value="@item.Id" />
+                                                <button type="submit" class="auth-button auth-button-secondary">+</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                    <td>@((item.Quantidade * item.PrecoNoMomento).ToString("0.00 €"))</td>
+                                    <td class="text-end">
+                                        <form method="post" asp-page-handler="Remove">
+                                            <input type="hidden" name="itemId" value="@item.Id" />
+                                            <button type="submit" class="auth-button auth-button-secondary">
+                                                <i class="fa-solid fa-trash"></i>
+                                                <span>Remover</span>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4 text-end">
+                    <h3>Total: @Model.TotalProdutos.ToString("0.00 €")</h3>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted mb-0">Ainda não existem produtos no carrinho.</p>
+            }
+        </div>
+    </div>
+</section>

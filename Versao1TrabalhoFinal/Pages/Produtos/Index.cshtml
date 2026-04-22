@@ -1,83 +1,274 @@
 ﻿@page
 @model Versao1TrabalhoFinal.Pages.Produtos.IndexModel
+
 @{
+    /// <summary>
+    /// Define o título da página.
+    /// </summary>
     ViewData["Title"] = "Produtos";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Produtos</h2>
-    <a asp-page="/Produtos/Create" class="btn btn-primary">Novo Produto</a>
-</div>
-
-<div class="row">
-    <div class="col-lg-3 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5 class="mb-3">Filtros</h5>
-
-                <form method="get">
-                    <div class="mb-3">
-                        <label class="form-label">Marca</label>
-                        <select asp-for="MarcaFiltro" asp-items="Model.Marcas" class="form-select">
-                            <option value="">Todas</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Modelo</label>
-                        <select asp-for="ModeloFiltro" asp-items="Model.Modelos" class="form-select">
-                            <option value="">Todos</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Pesquisar</label>
-                        <input asp-for="Pesquisa" class="form-control" placeholder="Nome, descrição ou categoria" />
-                    </div>
-
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-primary" type="submit">Filtrar</button>
-                        <a asp-page="./Index" class="btn btn-outline-secondary">Limpar</a>
-                    </div>
-                </form>
+<div class="produtos-showcase py-4 py-lg-5">
+    <div class="produtos-shell">
+        @* Cabeçalho da página. *@
+        <section class="produtos-topbar mb-4">
+            <div>
+                <span class="produtos-kicker">Catálogo</span>
+                <h1 class="produtos-heading">Produtos</h1>
+                <p class="produtos-description">
+                    Explore os produtos disponíveis com um visual mais limpo, imagens destacadas e paginação organizada.
+                </p>
             </div>
-        </div>
-    </div>
 
-    <div class="col-lg-9">
-        <div class="row g-4">
-            @if (!Model.Produtos.Any())
+            @if (Model.PodeGerirProdutos)
             {
-                <div class="col-12">
-                    <div class="alert alert-warning">Não foram encontrados produtos.</div>
+                <div class="produtos-topbar-action">
+                    <a asp-page="./Create" class="btn produtos-btn-primary">
+                        <i class="fa-solid fa-plus me-2"></i>
+                        Novo Produto
+                    </a>
                 </div>
             }
+        </section>
 
-            @foreach (var produto in Model.Produtos)
-            {
-                <div class="col-md-6 col-xl-4">
-                    <div class="card h-100 shadow-sm">
-                        @if (!string.IsNullOrWhiteSpace(produto.ImagemUrl))
-                        {
-                            <img src="@produto.ImagemUrl" class="card-img-top" style="height:220px; object-fit:cover;" alt="@produto.Nome" />
-                        }
-                        <div class="card-body">
-                            <h5>@produto.Nome</h5>
-                            <p class="text-muted">@produto.Categoria</p>
-                            <p>@produto.Descricao</p>
-                            <p><strong>Compatível:</strong> @produto.MarcaVeiculo @produto.ModeloVeiculo</p>
-                            <p><strong>Fornecedor:</strong> @produto.Fornecedor?.Nome</p>
-                            <p><strong>Stock:</strong> @produto.Stock</p>
-                            <p class="fw-bold text-success">€ @produto.Preco</p>
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4" role="alert">
+                @TempData["SuccessMessage"]
+            </div>
+        }
 
-                            <div class="d-flex gap-2">
-                                <a asp-page="/Produtos/Edit" asp-route-id="@produto.Id" class="btn btn-sm btn-outline-primary">Editar</a>
-                                <a asp-page="/Produtos/Delete" asp-route-id="@produto.Id" class="btn btn-sm btn-outline-danger">Eliminar</a>
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger border-0 shadow-sm rounded-4 mb-4" role="alert">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        @* Bloco de filtros e quantidade por página. *@
+        <section class="produtos-filter-panel mb-4">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-12 col-md-4">
+                    <label asp-for="Marca" class="form-label produtos-form-label">Marca</label>
+                    <input asp-for="Marca" class="form-control produtos-form-input" placeholder="Ex.: Bosch" />
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label asp-for="Modelo" class="form-label produtos-form-label">Modelo</label>
+                    <input asp-for="Modelo" class="form-control produtos-form-input" placeholder="Ex.: Série X" />
+                </div>
+
+                <div class="col-12 col-md-2">
+                    <label asp-for="TamanhoPagina" class="form-label produtos-form-label">Por página</label>
+                    <select asp-for="TamanhoPagina" class="form-select produtos-form-input">
+                        <option value="4">4</option>
+                        <option value="8">8</option>
+                        <option value="12">12</option>
+                        <option value="16">16</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-2">
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn produtos-btn-outline">
+                            <i class="fa-solid fa-magnifying-glass me-2"></i>
+                            Filtrar
+                        </button>
+
+                        <a asp-page="./Index" class="btn produtos-btn-ghost">
+                            Limpar
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        @* Texto com resumo da paginação atual. *@
+        <section class="produtos-meta mb-4">
+            <p class="mb-0">
+                A mostrar <strong>@Model.Produtos.Count</strong> produto(s) na página
+                <strong>@Model.PaginaAtual</strong> de <strong>@Model.TotalPaginas</strong>.
+            </p>
+        </section>
+
+        @if (Model.Produtos != null && Model.Produtos.Any())
+        {
+            @* Grelha de cards compacta e centrada. *@
+            <section class="produtos-grid">
+                @foreach (var produto in Model.Produtos)
+                {
+                    <article class="produto-mini-card">
+                        <div class="produto-mini-image-wrap">
+                            @{
+                                var imagem = !string.IsNullOrWhiteSpace(produto.ImagemUrl)
+                                ? Url.Content(produto.ImagemUrl)
+                                : Url.Content("~/images/produtos/sem-imagem.png");
+                            }
+
+                            <img src="@imagem"
+                                 alt="@produto.Nome"
+                                 class="produto-mini-image"
+                                 onerror="this.onerror=null;this.src='@Url.Content("~/images/produtos/sem-imagem.png")';" />
+
+                            <div class="produto-mini-overlay">
+                                @if (produto.Stock > 10)
+                                {
+                                    <span class="produto-stock-badge produto-stock-ok">@produto.Stock em stock</span>
+                                }
+                                else if (produto.Stock > 0)
+                                {
+                                    <span class="produto-stock-badge produto-stock-low">@produto.Stock restantes</span>
+                                }
+                                else
+                                {
+                                    <span class="produto-stock-badge produto-stock-out">Sem stock</span>
+                                }
                             </div>
                         </div>
-                    </div>
+
+                        <div class="produto-mini-body">
+                            <div class="produto-mini-top">
+                                <span class="produto-mini-brand">
+                                    @(string.IsNullOrWhiteSpace(produto.MarcaVeiculo) ? "Sem marca" : produto.MarcaVeiculo)
+                                </span>
+                                <span class="produto-mini-price">@produto.Preco.ToString("0.00") €</span>
+                            </div>
+
+                            <h3 class="produto-mini-title">@produto.Nome</h3>
+
+                            <p class="produto-mini-model">
+                                @(string.IsNullOrWhiteSpace(produto.ModeloVeiculo) ? "Modelo não definido" : produto.ModeloVeiculo)
+                            </p>
+
+                            <p class="produto-mini-supplier">
+                                <i class="fa-solid fa-building me-2"></i>
+                                @(produto.Fornecedor?.Nome ?? "Sem fornecedor")
+                            </p>
+
+                            <div class="produto-mini-actions">
+                                @if (Model.PodeGerirProdutos)
+                                {
+                                    <a asp-page="./Edit"
+                                       asp-route-id="@produto.Id"
+                                       class="btn produtos-btn-soft-warning">
+                                        <i class="fa-solid fa-pen-to-square me-1"></i>
+                                        Editar
+                                    </a>
+
+                                    <a asp-page="./Delete"
+                                       asp-route-id="@produto.Id"
+                                       class="btn produtos-btn-soft-danger">
+                                        <i class="fa-solid fa-trash me-1"></i>
+                                        Eliminar
+                                    </a>
+                                }
+
+                                @if (Model.PodeComprarProdutos)
+                                {
+                                    @if (produto.Stock <= 0)
+                                    {
+                                        <button type="button" class="btn produtos-btn-disabled w-100" disabled>
+                                            <i class="fa-solid fa-cart-plus me-1"></i>
+                                            Sem stock
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <form method="post" class="w-100">
+                                            <input type="hidden" name="produtoId" value="@produto.Id" />
+                                            <input type="hidden" name="Marca" value="@Model.Marca" />
+                                            <input type="hidden" name="Modelo" value="@Model.Modelo" />
+                                            <input type="hidden" name="PaginaAtual" value="@Model.PaginaAtual" />
+                                            <input type="hidden" name="TamanhoPagina" value="@Model.TamanhoPagina" />
+
+                                            <button type="submit"
+                                                    asp-page-handler="Add"
+                                                    class="btn produtos-btn-add w-100">
+                                                <i class="fa-solid fa-cart-plus me-1"></i>
+                                                Adicionar ao carrinho
+                                            </button>
+                                        </form>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </article>
+                }
+            </section>
+
+            @* Paginação centrada e mais cuidada visualmente. *@
+            <nav class="produtos-pagination-wrap mt-5" aria-label="Paginação de produtos">
+                <div class="produtos-pagination">
+                    <a asp-page="./Index"
+                       asp-route-Marca="@Model.Marca"
+                       asp-route-Modelo="@Model.Modelo"
+                       asp-route-TamanhoPagina="@Model.TamanhoPagina"
+                       asp-route-PaginaAtual="1"
+                       class="produtos-page-link @(Model.TemPaginaAnterior ? "" : "is-disabled")">
+                        Primeira
+                    </a>
+
+                    <a asp-page="./Index"
+                       asp-route-Marca="@Model.Marca"
+                       asp-route-Modelo="@Model.Modelo"
+                       asp-route-TamanhoPagina="@Model.TamanhoPagina"
+                       asp-route-PaginaAtual="@(Model.PaginaAtual - 1)"
+                       class="produtos-page-link @(Model.TemPaginaAnterior ? "" : "is-disabled")">
+                        Anterior
+                    </a>
+
+                    @for (int i = 1; i <= Model.TotalPaginas; i++)
+                    {
+                        if (i >= Model.PaginaAtual - 1 && i <= Model.PaginaAtual + 1)
+                        {
+                            <a asp-page="./Index"
+                               asp-route-Marca="@Model.Marca"
+                               asp-route-Modelo="@Model.Modelo"
+                               asp-route-TamanhoPagina="@Model.TamanhoPagina"
+                               asp-route-PaginaAtual="@i"
+                               class="produtos-page-link @(i == Model.PaginaAtual ? "is-active" : "")">
+                                @i
+                            </a>
+                        }
+                    }
+
+                    <a asp-page="./Index"
+                       asp-route-Marca="@Model.Marca"
+                       asp-route-Modelo="@Model.Modelo"
+                       asp-route-TamanhoPagina="@Model.TamanhoPagina"
+                       asp-route-PaginaAtual="@(Model.PaginaAtual + 1)"
+                       class="produtos-page-link @(Model.TemPaginaSeguinte ? "" : "is-disabled")">
+                        Seguinte
+                    </a>
+
+                    <a asp-page="./Index"
+                       asp-route-Marca="@Model.Marca"
+                       asp-route-Modelo="@Model.Modelo"
+                       asp-route-TamanhoPagina="@Model.TamanhoPagina"
+                       asp-route-PaginaAtual="@Model.TotalPaginas"
+                       class="produtos-page-link @(Model.TemPaginaSeguinte ? "" : "is-disabled")">
+                        Última
+                    </a>
                 </div>
-            }
-        </div>
+            </nav>
+        }
+        else
+        {
+            <section class="produtos-empty-box">
+                <i class="fa-solid fa-box-open produtos-empty-box-icon"></i>
+                <h3>Nenhum produto encontrado</h3>
+                <p>Não existem resultados para os filtros escolhidos.</p>
+                <a asp-page="./Index" class="btn produtos-btn-ghost">Limpar filtros</a>
+            </section>
+        }
     </div>
 </div>
+
+@section Scripts {
+    @{
+        /// <summary>
+        /// Renderiza scripts de validação quando disponíveis.
+        /// </summary>
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -3,12 +3,13 @@
 namespace Versao1TrabalhoFinal.Models
 {
     /// <summary>
-    /// Representa um item do carrinho associado a um veículo do stand.
+    /// Representa a ligação entre um carrinho e um produto.
+    /// Permite guardar produtos no mesmo carrinho onde também existem veículos e serviços.
     /// </summary>
-    public class CarrinhoItem
+    public class CarrinhoProdutos
     {
         /// <summary>
-        /// Identificador do item do carrinho.
+        /// Identificador único do item de produto no carrinho.
         /// </summary>
         public int Id { get; set; }
 
@@ -18,29 +19,34 @@ namespace Versao1TrabalhoFinal.Models
         public int CarrinhoId { get; set; }
 
         /// <summary>
-        /// Identificador do veículo do stand.
+        /// Identificador do produto.
         /// </summary>
-        public int VeiculoStandId { get; set; }
+        public int ProdutoId { get; set; }
 
         /// <summary>
-        /// Preço do veículo no momento em que foi adicionado ao carrinho.
+        /// Quantidade do produto no carrinho.
+        /// </summary>
+        public int Quantidade { get; set; } = 1;
+
+        /// <summary>
+        /// Preço do produto no momento em que foi adicionado ao carrinho.
         /// </summary>
         [Column(TypeName = "decimal(18,2)")]
         public decimal PrecoNoMomento { get; set; }
 
         /// <summary>
-        /// Data em que o item foi adicionado ao carrinho.
+        /// Data em que o produto foi adicionado ao carrinho.
         /// </summary>
         public DateTime DataAdicao { get; set; } = DateTime.Now;
 
         /// <summary>
-        /// Carrinho associado ao item.
+        /// Carrinho associado.
         /// </summary>
         public Carrinho Carrinho { get; set; } = null!;
 
         /// <summary>
-        /// Veículo do stand associado ao item.
+        /// Produto associado.
         /// </summary>
-        public VeiculoStand VeiculoStand { get; set; } = null!;
+        public Produto Produto { get; set; } = null!;
     }
 }

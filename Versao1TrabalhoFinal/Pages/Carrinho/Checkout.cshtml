@@ -1,59 +1,74 @@
 ﻿@page
 @model Versao1TrabalhoFinal.Pages.Carrinho.CheckoutModel
 @{
-    ViewData["Title"] = "Confirmar pedido";
+    ViewData["Title"] = "Checkout";
 }
 
 <section class="dashboard-page">
     <div class="dashboard-container">
         <div class="page-header-block">
-            <p class="page-eyebrow">Área do cliente</p>
-            <h1 class="page-title">Confirmar pedido</h1>
-            <p class="page-subtitle">Verifique os veículos do carrinho antes de confirmar.</p>
+            <p class="page-eyebrow">Checkout</p>
+            <h1 class="page-title">Resumo final</h1>
+            <p class="page-subtitle">Confirma os itens do carrinho antes de avançar.</p>
         </div>
 
-        @if (Model.Itens.Any())
-        {
-            <div class="form-card">
-                <div class="table-responsive">
-                    <table class="table align-middle">
-                        <thead>
-                            <tr>
-                                <th>Veículo</th>
-                                <th>Preço</th>
-                                <th>Quilómetros</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.Itens)
-                            {
-                                <tr>
-                                    <td>@(item.VeiculoStand.Veiculo?.Marca ?? "Marca") @(item.VeiculoStand.Veiculo?.Modelo ?? "Modelo")</td>
-                                    <td>€ @item.PrecoNoMomento.ToString("N2")</td>
-                                    <td>@item.VeiculoStand.Quilometros.ToString("N0")</td>
-                                    <td>@(string.IsNullOrWhiteSpace(item.VeiculoStand.Estado) ? EstadoVeiculoStand.Disponivel : item.VeiculoStand.Estado)</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+        <div class="client-form-card mb-4">
+            <h2 class="section-title mb-3">Serviços</h2>
 
-                <div class="d-flex justify-content-between align-items-center mt-4">
-                    <div>
-                        <h3 class="vehicle-admin-title">Total</h3>
-                        <p class="page-subtitle mb-0">Valor total atual do pedido.</p>
-                    </div>
-                    <div>
-                        <strong style="font-size: 1.4rem;">€ @Model.Total.ToString("N2")</strong>
-                    </div>
-                </div>
+            @if (Model.Servicos != null && Model.Servicos.Any())
+            {
+                <ul class="list-group">
+                    @foreach (var item in Model.Servicos)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>@item.Servico?.Nome</span>
+                            <strong>@item.PrecoNoMomento.ToString("0.00 €")</strong>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-muted mb-0">Sem serviços no checkout.</p>
+            }
+        </div>
 
-                <form method="post" class="mt-4 d-flex gap-2">
-                    <button type="submit" class="auth-button">Confirmar pedido</button>
-                    <a asp-page="/Carrinho/Index" class="auth-button auth-button-secondary">Voltar ao carrinho</a>
-                </form>
+        <div class="client-form-card mb-4">
+            <h2 class="section-title mb-3">Produtos</h2>
+
+            @if (Model.Produtos != null && Model.Produtos.Any())
+            {
+                <ul class="list-group">
+                    @foreach (var item in Model.Produtos)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>@item.Produto?.Nome x @item.Quantidade</span>
+                            <strong>@((item.PrecoNoMomento * item.Quantidade).ToString("0.00 €"))</strong>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-muted mb-0">Sem produtos no checkout.</p>
+            }
+        </div>
+
+        <div class="client-summary-card">
+            <h3 class="client-summary-name">Total a pagar</h3>
+            <h2 class="mb-3">@Model.Total.ToString("0.00 €")</h2>
+
+            <div class="client-form-actions">
+                <a asp-page="/Carrinho/Index" class="auth-button auth-button-secondary">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Voltar ao carrinho</span>
+                </a>
+
+                <button type="button" class="auth-button">
+                    <i class="fa-solid fa-check"></i>
+                    <span>Confirmar pedido</span>
+                </button>
             </div>
-        }
+        </div>
     </div>
 </section>

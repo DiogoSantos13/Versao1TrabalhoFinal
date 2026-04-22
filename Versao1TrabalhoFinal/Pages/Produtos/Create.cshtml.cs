@@ -9,7 +9,7 @@ using Versao1TrabalhoFinal.Models;
 namespace Versao1TrabalhoFinal.Pages.Produtos
 {
     /// <summary>
-    /// Página responsável pela criação de produtos.
+    /// Página responsável pela criação de produtos para venda.
     /// </summary>
     [Authorize(Roles = "Admin,Colaborador")]
     public class CreateModel : PageModel
@@ -17,7 +17,7 @@ namespace Versao1TrabalhoFinal.Pages.Produtos
         private readonly StandDbContext _context;
 
         /// <summary>
-        /// Construtor da página.
+        /// Inicializa uma nova instância da página de criação de produtos.
         /// </summary>
         /// <param name="context">Contexto da base de dados.</param>
         public CreateModel(StandDbContext context)
@@ -26,46 +26,66 @@ namespace Versao1TrabalhoFinal.Pages.Produtos
         }
 
         /// <summary>
-        /// Produto ligado ao formulário.
+        /// Produto em criação.
         /// </summary>
         [BindProperty]
         public Produto Produto { get; set; } = new();
 
         /// <summary>
-        /// Lista de fornecedores para dropdown.
+        /// Lista de fornecedores disponíveis para o produto.
         /// </summary>
-        public SelectList FornecedoresSelect { get; set; } = default!;
+        public SelectList FornecedoresOptions { get; set; } = default!;
 
         /// <summary>
-        /// Carrega os dados do formulário.
+        /// Carrega a página de criação e os fornecedores disponíveis.
         /// </summary>
-        public async Task OnGetAsync()
+        /// <returns>Página de criação.</returns>
+        public async Task<IActionResult> OnGetAsync()
         {
-            FornecedoresSelect = new SelectList(
-                await _context.Fornecedores.OrderBy(f => f.Nome).ToListAsync(),
-                "Id",
-                "Nome");
+            await CarregarFornecedoresAsync();
+            return Page();
         }
 
         /// <summary>
-        /// Guarda o produto criado.
+        /// Processa a submissão do formulário de criação do produto.
         /// </summary>
-        /// <returns>Redireciona para a listagem ou volta à página em caso de erro.</returns>
+        /// <returns>Redireciona para a listagem em caso de sucesso.</returns>
         public async Task<IActionResult> OnPostAsync()
         {
+            var fornecedorValido = await _context.Fornecedores
+                .AsNoTracking()
+                .AnyAsync(f => f.Id == Produto.FornecedorId);
+
+            if (!fornecedorValido)
+            {
+                ModelState.AddModelError("Produto.FornecedorId", "Selecione um fornecedor válido.");
+            }
+
             if (!ModelState.IsValid)
             {
-                FornecedoresSelect = new SelectList(
-                    await _context.Fornecedores.OrderBy(f => f.Nome).ToListAsync(),
-                    "Id",
-                    "Nome");
+                await CarregarFornecedoresAsync();
                 return Page();
             }
 
             _context.Produtos.Add(Produto);
             await _context.SaveChangesAsync();
 
+            TempData["SuccessMessage"] = "Produto criado com sucesso.";
             return RedirectToPage("./Index");
+        }
+
+        /// <summary>
+        /// Carrega a lista de fornecedores para o dropdown.
+        /// </summary>
+        private async Task CarregarFornecedoresAsync()
+        {
+            var fornecedores = await _context.Fornecedores
+                .AsNoTracking()
+                .OrderBy(f => f.Nome)
+                .Select(f => new { f.Id, f.Nome })
+                .ToListAsync();
+
+            FornecedoresOptions = new SelectList(fornecedores, "Id", "Nome", Produto.FornecedorId);
         }
     }
 }

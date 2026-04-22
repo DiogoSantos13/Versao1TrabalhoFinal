@@ -1,3 +1,8 @@
+﻿/* =============================================================================
+   /// summary: VARIÁVEIS GLOBAIS CSS
+   /// Define as variáveis de cor, sombra e sobreposição reutilizadas em todo o projeto.
+   /// Inclui cores primárias (azul escuro), accent (verde), fundos, texto e sombras.
+   ============================================================================= */
 :root {
     --primary-blue: #050a14;
     --accent-green: #82b414;
@@ -11,6 +16,13 @@
     --shadow-strong: 0 20px 50px rgba(0, 0, 0, 0.12);
 }
 
+
+/* =============================================================================
+   /// summary: RESET & BASE
+   /// Reset de margens/padding, box-sizing universal, scroll suave no HTML.
+   /// Estilos base para body (fonte Poppins, fundo claro, sem overflow horizontal),
+   /// links sem sublinhado e imagens responsivas.
+   ============================================================================= */
 * {
     margin: 0;
     padding: 0;
@@ -41,6 +53,14 @@ img {
 main {
     display: block;
 }
+
+
+/* =============================================================================
+   /// summary: NAVBAR — SITE HEADER (VERSÃO HOMEPAGE / DARK OVERLAY)
+   /// Header fixo com gradiente escuro no topo, transição para fundo sólido ao
+   /// fazer scroll. Inclui logo centrada, links de navegação à direita com ícone
+   /// + label, grupo de autenticação, nome do utilizador truncado e trigger do menu.
+   ============================================================================= */
 
 /* Navbar */
 .site-header {
@@ -164,6 +184,13 @@ main {
     padding: 0;
 }
 
+
+/* =============================================================================
+   /// summary: HERO SECTION
+   /// Secção hero com imagem de fundo, sobreposição escura e conteúdo centrado.
+   /// Inclui título grande (h1) em maiúsculas com destaque em verde e subtítulo.
+   ============================================================================= */
+
 /* Hero */
 .hero {
     min-height: 75vh;
@@ -200,6 +227,13 @@ main {
     max-width: 700px;
 }
 
+
+/* =============================================================================
+   /// summary: SECÇÕES GENÉRICAS & TÍTULOS DE SECÇÃO
+   /// Padding padrão para secções de stock e título centrado com label em verde
+   /// (texto pequeno uppercase) e heading h2 em maiúsculas.
+   ============================================================================= */
+
 /* Sections */
 .stock-section {
     padding: 80px 0;
@@ -229,6 +263,13 @@ main {
         margin-bottom: 0;
     }
 
+
+/* =============================================================================
+   /// summary: SWIPER (CARROSSEL DE STOCK)
+   /// Estilos do container do swiper e das bullets de paginação
+   /// (inativas em cinzento, ativa em verde accent).
+   ============================================================================= */
+
 /* Swiper */
 .swiper-container-stock {
     width: 100%;
@@ -243,6 +284,14 @@ main {
 .swiper-pagination-bullet-active {
     background: var(--accent-green);
 }
+
+
+/* =============================================================================
+   /// summary: CARDS DE VIATURAS (LISTAGEM / DESTAQUES)
+   /// Card com cantos arredondados, sombra e hover com elevação.
+   /// Inclui container de imagem, barra de specs sobreposta (combustível, km, etc.),
+   /// secção de informação com marca, modelo, campanha e preço, e botão "ver mais".
+   ============================================================================= */
 
 /* Cards */
 .destaques_box {
@@ -370,6 +419,14 @@ main {
         color: inherit;
     }
 
+
+/* =============================================================================
+   /// summary: SECÇÃO DE MAPA / CONTACTOS
+   /// Card combinado com iframe do mapa à esquerda e painel de informações
+   /// de contacto à direita (fundo azul escuro), incluindo linhas de contacto
+   /// com ícone + label + valor e botão de direções.
+   ============================================================================= */
+
 /* Map */
 .map-section {
     padding: 80px 5%;
@@ -461,6 +518,13 @@ main {
         transform: translateY(-3px);
     }
 
+
+/* =============================================================================
+   /// summary: BOTÃO FLUTUANTE DO WHATSAPP
+   /// Botão circular fixo no canto inferior direito com cor verde do WhatsApp,
+   /// ícone e efeito hover de elevação + brilho.
+   ============================================================================= */
+
 /* WhatsApp */
 .wp-float {
     position: fixed;
@@ -485,6 +549,13 @@ main {
         transform: translateY(-4px) scale(1.04);
         filter: brightness(1.05);
     }
+
+
+/* =============================================================================
+   /// summary: BOTÕES DE AUTENTICAÇÃO NA NAVBAR
+   /// Botão transparente com ícone + label (mesmo padrão visual dos nav-links),
+   /// usado em formulários inline de login/logout na barra de navegação.
+   ============================================================================= */
 
 /* Generic buttons/links for auth in navbar */
 .navbar-auth-form {
@@ -524,10 +595,23 @@ main {
         letter-spacing: 0.5px;
     }
 
+
+/* =============================================================================
+   /// summary: OFFSET DO CONTEÚDO COM HEADER FIXO
+   /// Classe utilitária para compensar o espaço ocupado pelo header fixo.
+   ============================================================================= */
+
 /* Content spacing when using fixed header */
 .page-content-offset {
     padding-top: 0;
 }
+
+
+/* =============================================================================
+   /// summary: MEDIA QUERIES — HOMEPAGE (NAVBAR, HERO, CARDS, MAPA, WHATSAPP)
+   /// Breakpoints responsivos para ≤1199px, ≤991px, ≤767px e ≤575px.
+   /// Ajustam tamanho do header, fonte do hero, padding do swiper, cards e mapa.
+   ============================================================================= */
 
 /* Responsive */
 @media (max-width: 1199.98px) {
@@ -745,6 +829,14 @@ main {
         width: 100%;
     }
 }
+
+
+/* =============================================================================
+   /// summary: PÁGINA DE AUTENTICAÇÃO (LOGIN / REGISTO)
+   /// Página a ecrã completo com imagem de fundo e sobreposição escura.
+   /// Card central com logótipo, título, formulário (inputs, checkbox, botão),
+   /// links auxiliares (recuperar password, registar) e mensagens de erro/validação.
+   ============================================================================= */
 .auth-page {
     position: relative;
     min-height: 100vh;
@@ -930,6 +1022,14 @@ main {
         align-items: flex-start;
     }
 }
+
+
+/* =============================================================================
+   /// summary: VARIANTES DE BOTÕES DE AUTENTICAÇÃO
+   /// auth-card-sm: container estreito para formulários secundários.
+   /// auth-button-secondary: botão cinzento neutro (cancelar / voltar).
+   /// auth-button-danger: botão vermelho para ações destrutivas (ex: eliminar conta).
+   ============================================================================= */
 .auth-card-sm {
     max-width: 520px;
     margin: 0 auto;
@@ -958,6 +1058,13 @@ main {
         filter: brightness(1.05);
     }
 
+
+/* =============================================================================
+   /// summary: DASHBOARD — PÁGINA PRINCIPAL DO BACKOFFICE
+   /// Layout geral do dashboard com padding para o header fixo.
+   /// Inclui container centralizado, bloco de cabeçalho de página (eyebrow label,
+   /// título h1 e subtítulo), card de formulário com grelha multi-coluna e ações.
+   ============================================================================= */
 .dashboard-page {
     padding: 140px 20px 70px;
     background: var(--bg-light);
@@ -1088,6 +1195,14 @@ main {
             width: 100%;
         }
 }
+
+
+/* =============================================================================
+   /// summary: LISTAGEM DE VIATURAS (ADMIN — VEHICLE GRID)
+   /// Header da lista com botão de ação à direita. Grelha de 3 colunas de cards
+   /// de viatura com imagem, título, status, metadados em grelha 2x2 e botões
+   /// de editar/eliminar. Estado vazio com mensagem e CTA.
+   ============================================================================= */
 .list-header {
     display: flex;
     justify-content: space-between;
@@ -1256,6 +1371,13 @@ main {
         width: 100%;
     }
 }
+
+
+/* =============================================================================
+   /// summary: PÁGINA DE ELIMINAÇÃO / CONFIRMAÇÃO DE DELETE
+   /// Card com alerta visual em vermelho explicando a ação irreversível,
+   /// resumo dos dados da entidade em linhas label + valor, e botões de confirmação.
+   ============================================================================= */
 .delete-card {
     background: #ffffff;
     border-radius: 24px;
@@ -1320,6 +1442,13 @@ main {
         align-items: flex-start;
     }
 }
+
+
+/* =============================================================================
+   /// summary: PÁGINA DE DETALHE (FICHA DE VIATURA / ENTIDADE)
+   /// Layout de duas colunas (imagem + informação) com grelha de campos
+   /// label/valor. Adapta para coluna única em mobile.
+   ============================================================================= */
 .details-card {
     background: #ffffff;
     border-radius: 24px;
@@ -1406,151 +1535,17 @@ main {
         padding: 22px 16px;
         border-radius: 18px;
     }
-}.table-card {
-    background: #ffffff;
-    border-radius: 28px;
-    padding: 1.5rem;
-    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
-    border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
-.table-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.25rem;
-}
 
-.table-card-title {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #0f172a;
-}
-
-.table-card-subtitle {
-    margin: 0.35rem 0 0;
-    color: #64748b;
-    font-size: 0.95rem;
-}
-
-.custom-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    min-width: 900px;
-}
-
-.custom-table thead th {
-    padding: 1rem 1.1rem;
-    font-size: 0.85rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    color: #475569;
-    background: #f8fafc;
-    border-bottom: 1px solid #e2e8f0;
-    white-space: nowrap;
-}
-
-.custom-table thead th:first-child {
-    border-top-left-radius: 18px;
-}
-
-.custom-table thead th:last-child {
-    border-top-right-radius: 18px;
-}
-
-.custom-table tbody td {
-    padding: 1rem 1.1rem;
-    border-bottom: 1px solid #eef2f7;
-    vertical-align: middle;
-    white-space: nowrap;
-}
-
-.custom-table tbody tr {
-    transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.custom-table tbody tr:hover {
-    background: #f8fbff;
-}
-
-.table-primary-text {
-    font-weight: 600;
-    color: #0f172a;
-}
-
-.table-secondary-text {
-    color: #475569;
-    font-size: 0.96rem;
-}
-
-.table-muted {
-    color: #94a3b8;
-    font-size: 0.92rem;
-}
-
-.table-actions {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-}
-
-.table-action-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 84px;
-    padding: 0.55rem 0.95rem;
-    border-radius: 999px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    border: 1px solid transparent;
-}
-
-.table-action-edit {
-    background: rgba(37, 99, 235, 0.1);
-    color: #1d4ed8;
-    border-color: rgba(37, 99, 235, 0.15);
-}
-
-.table-action-edit:hover {
-    background: #2563eb;
-    color: #ffffff;
-}
-
-.table-action-delete {
-    background: rgba(220, 38, 38, 0.08);
-    color: #dc2626;
-    border-color: rgba(220, 38, 38, 0.15);
-}
-
-.table-action-delete:hover {
-    background: #dc2626;
-    color: #ffffff;
-}
-
-@media (max-width: 991.98px) {
-    .table-card {
-        padding: 1rem;
-        border-radius: 22px;
-    }
-
-    .custom-table {
-        min-width: 760px;
-    }
-
-    .custom-table thead th,
-    .custom-table tbody td {
-        padding: 0.85rem 0.9rem;
-    }
-}
+/* =============================================================================
+   /// summary: TABELA PERSONALIZADA (ADMIN — TABLE CARD)
+   /// Card com bordas arredondadas que envolve uma tabela com cabeçalho destacado,
+   /// hover nas linhas e colunas de texto primário/secundário/muted.
+   /// Botões de ação (editar/eliminar) com cores semânticas e estilo pill.
+   /// Nota: este bloco de estilos está duplicado no ficheiro original; ambas as
+   /// versões são mantidas sem alterações conforme solicitado.
+   ============================================================================= */
 .table-card {
     background: #ffffff;
     border-radius: 28px;
@@ -1696,6 +1691,161 @@ main {
             padding: 0.85rem 0.9rem;
         }
 }
+
+/* --- Duplicate block (segunda ocorrência no ficheiro original — mantida) --- */
+.table-card {
+    background: #ffffff;
+    border-radius: 28px;
+    padding: 1.5rem;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.table-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.table-card-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.table-card-subtitle {
+    margin: 0.35rem 0 0;
+    color: #64748b;
+    font-size: 0.95rem;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 900px;
+}
+
+    .custom-table thead th {
+        padding: 1rem 1.1rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: #475569;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        white-space: nowrap;
+    }
+
+        .custom-table thead th:first-child {
+            border-top-left-radius: 18px;
+        }
+
+        .custom-table thead th:last-child {
+            border-top-right-radius: 18px;
+        }
+
+    .custom-table tbody td {
+        padding: 1rem 1.1rem;
+        border-bottom: 1px solid #eef2f7;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    .custom-table tbody tr {
+        transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+        .custom-table tbody tr:hover {
+            background: #f8fbff;
+        }
+
+.table-primary-text {
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.table-secondary-text {
+    color: #475569;
+    font-size: 0.96rem;
+}
+
+.table-muted {
+    color: #94a3b8;
+    font-size: 0.92rem;
+}
+
+.table-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.table-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 84px;
+    padding: 0.55rem 0.95rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.table-action-edit {
+    background: rgba(37, 99, 235, 0.1);
+    color: #1d4ed8;
+    border-color: rgba(37, 99, 235, 0.15);
+}
+
+    .table-action-edit:hover {
+        background: #2563eb;
+        color: #ffffff;
+    }
+
+.table-action-delete {
+    background: rgba(220, 38, 38, 0.08);
+    color: #dc2626;
+    border-color: rgba(220, 38, 38, 0.15);
+}
+
+    .table-action-delete:hover {
+        background: #dc2626;
+        color: #ffffff;
+    }
+
+@media (max-width: 991.98px) {
+    .table-card {
+        padding: 1rem;
+        border-radius: 22px;
+    }
+
+    .custom-table {
+        min-width: 760px;
+    }
+
+        .custom-table thead th,
+        .custom-table tbody td {
+            padding: 0.85rem 0.9rem;
+        }
+}
+
+
+/* =============================================================================
+   /// summary: EDIÇÃO DE CLIENTE (CLIENT EDIT LAYOUT)
+   /// Layout de duas colunas: formulário principal à esquerda (grelha 2 colunas,
+   /// inputs com focus azul) e card de resumo sticky à direita (avatar circular,
+   /// nome, email, dados resumidos). Inclui ações do formulário com separador.
+   ============================================================================= */
 .client-edit-layout {
     display: grid;
     grid-template-columns: minmax(0, 2fr) minmax(280px, 360px);
@@ -1885,6 +2035,14 @@ main {
         min-height: 50px;
     }
 }
+
+
+/* =============================================================================
+   /// summary: ZONA DE PERIGO — CLIENTE (CLIENT DANGER / DELETE)
+   /// Banner vermelho com ícone de aviso, título e descrição da ação perigosa.
+   /// Grelha de detalhes do cliente antes de confirmar eliminação.
+   /// Botão de ação destrutiva com gradiente vermelho e efeito de elevação.
+   ============================================================================= */
 .client-danger-card {
     border: 1px solid rgba(248, 113, 113, 0.25);
 }
@@ -2005,6 +2163,14 @@ main {
         grid-column: auto;
     }
 }
+
+
+/* =============================================================================
+   /// summary: ORÇAMENTOS — TABELA E ESTADO VAZIO
+   /// Barra de ações no topo. Tabela específica de orçamentos com cabeçalho
+   /// discreto, badge de estado arredondado (azul). Botão inline compacto.
+   /// Empty state com ícone, título, texto e CTA.
+   ============================================================================= */
 .page-actions-bar {
     display: flex;
     justify-content: flex-start;
@@ -2109,6 +2275,15 @@ main {
         padding: 1.5rem 0.75rem;
     }
 }
+
+
+/* =============================================================================
+   /// summary: NAVBAR — VERSÃO BACKOFFICE / INTERIOR (FUNDO CLARO)
+   /// Header sticky com backdrop blur e fundo branco semitransparente.
+   /// nav-link-custom reestilizado para modo claro (texto escuro, fundo ao hover).
+   /// nav-link-highlight: variante azul destacada (ex: botão de nova viatura).
+   /// Estados active (nav-link-active / nav-link-auth-active).
+   ============================================================================= */
 .nav-link-custom {
     display: inline-flex;
     align-items: center;
@@ -2198,3 +2373,1460 @@ main {
 }
 
 
+.nav-link-active {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+.nav-link-auth-active {
+    background: #ffffff;
+    color: #111827;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
+}
+
+
+/* =============================================================================
+   /// summary: MENU DRAWER MOBILE
+   /// Painel lateral deslizante (off-canvas) para navegação mobile. Fundo escuro
+   /// com gradiente, logótipo, botão de fechar, lista de links e rodapé com caixa
+   /// de utilizador + botão de logout / link de login. Overlay com blur por baixo.
+   /// body.menu-open bloqueia o scroll da página.
+   ============================================================================= */
+.mobile-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: min(340px, 88vw);
+    height: 100vh;
+    background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+    color: #ffffff;
+    z-index: 1300;
+    transform: translateX(-100%);
+    transition: transform 0.28s ease;
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem 1rem 1rem;
+    box-shadow: 24px 0 50px rgba(0, 0, 0, 0.28);
+}
+
+    .mobile-drawer.is-open {
+        transform: translateX(0);
+    }
+
+.mobile-drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.mobile-drawer-brand img {
+    width: 120px;
+    height: auto;
+    display: block;
+}
+
+.mobile-drawer-close {
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    border-radius: 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-drawer-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    overflow-y: auto;
+    padding-right: 0.2rem;
+}
+
+    .mobile-drawer-nav .nav-link-custom {
+        width: 100%;
+        justify-content: flex-start;
+        padding: 0.95rem 1rem;
+        border-radius: 16px;
+    }
+
+.mobile-drawer-footer {
+    margin-top: auto;
+    padding-top: 1rem;
+    display: grid;
+    gap: 0.85rem;
+}
+
+.mobile-user-box {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+    padding: 0.9rem 1rem;
+}
+
+.mobile-user-label {
+    display: block;
+    font-size: 0.8rem;
+    opacity: 0.78;
+    margin-bottom: 0.25rem;
+}
+
+.mobile-user-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.mobile-logout-form,
+.mobile-login-link {
+    width: 100%;
+}
+
+.mobile-logout-button,
+.mobile-login-link {
+    width: 100%;
+    justify-content: center;
+}
+
+.mobile-drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.5);
+    backdrop-filter: blur(3px);
+    z-index: 1200;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+    .mobile-drawer-overlay.is-visible {
+        opacity: 1;
+    }
+
+body.menu-open {
+    overflow: hidden;
+}
+
+
+/* =============================================================================
+   /// summary: EMPTY STATE (VERSÃO DARK / BACKOFFICE)
+   /// Caixa de estado vazio com fundo cinzento claro, ícone circular escuro,
+   /// título e texto descritivo. Variante alternativa ao empty-state do módulo
+   /// de orçamentos acima.
+   ============================================================================= */
+.empty-state-box {
+    padding: 2rem;
+    border-radius: 24px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    text-align: center;
+}
+
+.empty-state-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #0f172a, #1f2937);
+    color: #fff;
+    font-size: 1.4rem;
+}
+
+.empty-state-title {
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.empty-state-text {
+    margin-bottom: 0;
+    color: #6b7280;
+}
+
+
+/* =============================================================================
+   /// summary: MEDIA QUERIES — NAVBAR BACKOFFICE & DRAWER MOBILE
+   /// ≥1100px: esconde o trigger do menu e o drawer (usa navbar completa).
+   /// ≤1099px: esconde nav-right (links de desktop) e mostra apenas o trigger.
+   ============================================================================= */
+@media (min-width: 1100px) {
+    .nav-menu-trigger {
+        display: none;
+    }
+
+    .mobile-drawer,
+    .mobile-drawer-overlay {
+        display: none;
+    }
+}
+
+@media (max-width: 1099px) {
+    .nav-right {
+        display: none;
+    }
+
+    .nav-left {
+        display: flex;
+        align-items: center;
+    }
+}
+
+
+/* =============================================================================
+   /// summary: PRODUTOS PAGE — VERSÃO TABELA (ADMIN)
+   /// Página de gestão de produtos com hero de filtros, tabela com cabeçalho
+   /// colorido, badges de stock (success/warning/danger), botões de ação
+   /// (editar/eliminar/adicionar) e estado vazio com ícone e CTA.
+   ============================================================================= */
+
+/* =========================
+   PRODUTOS PAGE
+========================= */
+
+.produtos-page {
+    max-width: 1400px;
+}
+
+.produtos-hero {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid #e9eef5;
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+.produtos-hero-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.produtos-eyebrow {
+    display: inline-block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6b7280;
+    margin-bottom: 0.75rem;
+}
+
+.produtos-title {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.produtos-subtitle {
+    font-size: 1.05rem;
+    color: #6b7280;
+    max-width: 720px;
+    margin-bottom: 0;
+}
+
+.produtos-filtros-card,
+.produtos-table-card {
+    background: #ffffff;
+    border: 1px solid #e9eef5;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+    overflow: hidden;
+}
+
+.produtos-card-header {
+    padding: 1.5rem 1.5rem 0.75rem 1.5rem;
+}
+
+.produtos-card-header-inline {
+    padding-bottom: 1rem;
+}
+
+.produtos-card-body {
+    padding: 1.5rem;
+}
+
+.produtos-card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.35rem;
+}
+
+.produtos-card-text {
+    color: #6b7280;
+    font-size: 0.96rem;
+}
+
+.produtos-label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.45rem;
+}
+
+.produtos-input {
+    min-height: 48px;
+    border-radius: 14px;
+    border: 1px solid #dbe3ee;
+    background-color: #f9fbfd;
+    padding: 0.75rem 1rem;
+    box-shadow: none;
+}
+
+    .produtos-input:focus {
+        border-color: #4f46e5;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.12);
+    }
+
+.produtos-btn-primary,
+.produtos-btn-outline,
+.produtos-btn-light,
+.produtos-btn-add,
+.produtos-btn-action,
+.produtos-btn-disabled {
+    border-radius: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.produtos-btn-primary {
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    color: #fff;
+    border: none;
+    padding: 0.85rem 1.2rem;
+}
+
+    .produtos-btn-primary:hover {
+        background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+.produtos-btn-outline {
+    background: #eef2ff;
+    color: #4338ca;
+    border: 1px solid #c7d2fe;
+    min-height: 48px;
+}
+
+    .produtos-btn-outline:hover {
+        background: #e0e7ff;
+        color: #312e81;
+    }
+
+.produtos-btn-light {
+    background: #f8fafc;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    min-height: 48px;
+}
+
+    .produtos-btn-light:hover {
+        background: #eef2f7;
+        color: #1f2937;
+    }
+
+.produtos-table {
+    margin: 0;
+}
+
+    .produtos-table thead th {
+        background-color: #f8fafc;
+        color: #475569;
+        font-size: 0.84rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 1rem 1.2rem;
+        white-space: nowrap;
+    }
+
+    .produtos-table tbody td {
+        padding: 1rem 1.2rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #eef2f7;
+        color: #334155;
+    }
+
+    .produtos-table tbody tr:hover {
+        background-color: #fafcff;
+    }
+
+.produtos-product-name {
+    font-weight: 700;
+    color: #0f172a;
+    display: inline-block;
+    max-width: 300px;
+    line-height: 1.35;
+}
+
+.produtos-price {
+    font-weight: 700;
+    color: #111827;
+    white-space: nowrap;
+}
+
+.produtos-badge {
+    border-radius: 999px;
+    font-size: 0.78rem;
+    padding: 0.5rem 0.75rem;
+    font-weight: 700;
+}
+
+.produtos-badge-success {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.produtos-badge-warning {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.produtos-badge-danger {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.produtos-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.produtos-btn-action {
+    padding: 0.55rem 0.8rem;
+    border: 1px solid transparent;
+}
+
+.produtos-btn-edit {
+    background: #fff7ed;
+    color: #c2410c;
+    border-color: #fed7aa;
+}
+
+    .produtos-btn-edit:hover {
+        background: #ffedd5;
+        color: #9a3412;
+    }
+
+.produtos-btn-delete {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+    .produtos-btn-delete:hover {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+.produtos-btn-add {
+    background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+    color: #ffffff;
+    border: none;
+    padding: 0.55rem 0.85rem;
+}
+
+    .produtos-btn-add:hover {
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 18px rgba(13, 148, 136, 0.18);
+    }
+
+.produtos-btn-disabled {
+    background: #e5e7eb;
+    color: #6b7280;
+    border: none;
+    padding: 0.55rem 0.85rem;
+    cursor: not-allowed;
+}
+
+.produtos-empty-state {
+    padding: 3rem 1.5rem;
+    text-align: center;
+}
+
+.produtos-empty-icon {
+    font-size: 2.5rem;
+    color: #94a3b8;
+    margin-bottom: 1rem;
+}
+
+.produtos-empty-state h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+}
+
+.produtos-empty-state p {
+    color: #64748b;
+    max-width: 520px;
+    margin: 0 auto 1.25rem auto;
+}
+
+@media (max-width: 991.98px) {
+    .produtos-title {
+        font-size: 2rem;
+    }
+
+    .produtos-hero,
+    .produtos-filtros-card,
+    .produtos-table-card {
+        border-radius: 20px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .produtos-page {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    .produtos-hero {
+        padding: 1.35rem;
+    }
+
+    .produtos-title {
+        font-size: 1.8rem;
+    }
+
+    .produtos-card-header,
+    .produtos-card-body {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .produtos-table thead th,
+    .produtos-table tbody td {
+        padding: 0.85rem 0.75rem;
+    }
+
+    .produtos-product-name {
+        max-width: 220px;
+    }
+
+    .produtos-actions {
+        justify-content: flex-start;
+    }
+}
+
+
+/* =============================================================================
+   /// summary: PRODUTOS — VERSÃO CARD GRID (BACKOFFICE)
+   /// Wrapper de grelha com cards de produto: imagem, marca, nome, modelo,
+   /// fornecedor, preço e botões de ação. Paginação com info de resultados e
+   /// links de páginas.
+   ============================================================================= */
+.produtos-card-grid-wrapper {
+    background: #fff;
+    border: 1px solid #e9eef5;
+    border-radius: 24px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+}
+
+.produto-card {
+    background: #ffffff;
+    border: 1px solid #e8edf5;
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .produto-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 18px 35px rgba(15, 23, 42, 0.10);
+    }
+
+.produto-image-wrap {
+    height: 220px;
+    background: linear-gradient(135deg, #f8fafc 0%, #eef2f7 100%);
+    overflow: hidden;
+}
+
+.produto-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.produto-card-body {
+    padding: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.produto-marca {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #6366f1;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.produto-nome {
+    font-size: 1.08rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+    line-height: 1.35;
+}
+
+.produto-modelo,
+.produto-fornecedor {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.94rem;
+}
+
+.produto-footer-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.produto-preco {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #111827;
+}
+
+.produto-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.25rem;
+}
+
+.produtos-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.produtos-pagination-info {
+    color: #64748b;
+    font-weight: 600;
+}
+
+.produtos-pagination-links {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+
+/* =============================================================================
+   /// summary: PRODUTOS — SHOWCASE (VITRINE PÚBLICA)
+   /// Página pública de produtos com fundo degradê, shell centrado,
+   /// topbar com heading + description, painel de filtros com backdrop blur,
+   /// grelha de mini-cards com imagem, badge de stock, preço, marca e ações.
+   /// Paginação inline arredondada com link activo em gradiente índigo.
+   /// Empty state com ícone e mensagem.
+   ============================================================================= */
+
+/* =========================
+   PRODUTOS - SHOWCASE
+========================= */
+
+.produtos-showcase {
+    background: linear-gradient(180deg, #f8fafc 0%, #f4f7fb 100%);
+    min-height: 100vh;
+}
+
+.produtos-shell {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.produtos-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.produtos-kicker {
+    display: inline-block;
+    font-size: 0.82rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6366f1;
+    margin-bottom: 0.6rem;
+}
+
+.produtos-heading {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 0.4rem;
+}
+
+.produtos-description {
+    max-width: 720px;
+    color: #64748b;
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+
+.produtos-filter-panel {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid #e5eaf1;
+    border-radius: 22px;
+    padding: 1.25rem;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+    backdrop-filter: blur(8px);
+}
+
+.produtos-form-label {
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 0.45rem;
+}
+
+.produtos-form-input {
+    min-height: 48px;
+    border-radius: 14px;
+    border: 1px solid #dbe4ef;
+    background: #f8fafc;
+    padding: 0.75rem 0.95rem;
+}
+
+    .produtos-form-input:focus {
+        border-color: #4f46e5;
+        background: #ffffff;
+        box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.10);
+    }
+
+.produtos-meta {
+    color: #64748b;
+    font-size: 0.98rem;
+}
+
+.produtos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 320px));
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.produto-mini-card {
+    background: #ffffff;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid #e6edf5;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.07);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+    .produto-mini-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 38px rgba(15, 23, 42, 0.11);
+    }
+
+.produto-mini-image-wrap {
+    position: relative;
+    height: 210px;
+    background: linear-gradient(135deg, #edf2f7 0%, #dfe7f1 100%);
+    overflow: hidden;
+}
+
+.produto-mini-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s ease;
+}
+
+.produto-mini-card:hover .produto-mini-image {
+    transform: scale(1.04);
+}
+
+.produto-mini-overlay {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+}
+
+.produto-stock-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.76rem;
+    font-weight: 800;
+    backdrop-filter: blur(8px);
+}
+
+.produto-stock-ok {
+    background: rgba(220, 252, 231, 0.92);
+    color: #166534;
+}
+
+.produto-stock-low {
+    background: rgba(254, 243, 199, 0.94);
+    color: #92400e;
+}
+
+.produto-stock-out {
+    background: rgba(254, 226, 226, 0.94);
+    color: #b91c1c;
+}
+
+.produto-mini-body {
+    padding: 1.15rem;
+}
+
+.produto-mini-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 0.75rem;
+    margin-bottom: 0.65rem;
+}
+
+.produto-mini-brand {
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6366f1;
+}
+
+.produto-mini-price {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0f172a;
+    white-space: nowrap;
+}
+
+.produto-mini-title {
+    font-size: 1.08rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.35;
+    margin-bottom: 0.45rem;
+    min-height: 2.9rem;
+}
+
+.produto-mini-model,
+.produto-mini-supplier {
+    color: #64748b;
+    font-size: 0.93rem;
+    margin-bottom: 0.45rem;
+}
+
+.produto-mini-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 1rem;
+}
+
+.produtos-btn-primary,
+.produtos-btn-outline,
+.produtos-btn-ghost,
+.produtos-btn-add,
+.produtos-btn-disabled,
+.produtos-btn-soft-warning,
+.produtos-btn-soft-danger {
+    border-radius: 14px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.produtos-btn-primary {
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    color: #fff;
+    border: none;
+    padding: 0.85rem 1.15rem;
+}
+
+    .produtos-btn-primary:hover {
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+.produtos-btn-outline {
+    background: #eef2ff;
+    color: #4338ca;
+    border: 1px solid #c7d2fe;
+    min-height: 48px;
+}
+
+    .produtos-btn-outline:hover {
+        background: #e0e7ff;
+        color: #312e81;
+    }
+
+.produtos-btn-ghost {
+    background: #ffffff;
+    color: #475569;
+    border: 1px solid #dbe4ef;
+    min-height: 48px;
+}
+
+    .produtos-btn-ghost:hover {
+        background: #f8fafc;
+        color: #0f172a;
+    }
+
+.produtos-btn-add {
+    background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem 1rem;
+}
+
+    .produtos-btn-add:hover {
+        color: #ffffff;
+        box-shadow: 0 10px 20px rgba(13, 148, 136, 0.20);
+    }
+
+.produtos-btn-disabled {
+    background: #e5e7eb;
+    color: #6b7280;
+    border: none;
+    padding: 0.75rem 1rem;
+    cursor: not-allowed;
+}
+
+.produtos-btn-soft-warning {
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+    padding: 0.65rem 0.9rem;
+}
+
+    .produtos-btn-soft-warning:hover {
+        background: #ffedd5;
+        color: #9a3412;
+    }
+
+.produtos-btn-soft-danger {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+    padding: 0.65rem 0.9rem;
+}
+
+    .produtos-btn-soft-danger:hover {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+.produtos-pagination-wrap {
+    display: flex;
+    justify-content: center;
+}
+
+.produtos-pagination {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #e5eaf1;
+    border-radius: 22px;
+    padding: 0.7rem;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.produtos-page-link {
+    min-width: 48px;
+    height: 48px;
+    padding: 0 1rem;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-weight: 700;
+    color: #475569;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+}
+
+    .produtos-page-link:hover {
+        color: #1e293b;
+        background: #f8fafc;
+    }
+
+    .produtos-page-link.is-active {
+        background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+        color: #fff;
+        border-color: transparent;
+        box-shadow: 0 10px 18px rgba(79, 70, 229, 0.22);
+    }
+
+    .produtos-page-link.is-disabled {
+        opacity: 0.45;
+        pointer-events: none;
+    }
+
+.produtos-empty-box {
+    text-align: center;
+    background: #ffffff;
+    border: 1px solid #e5eaf1;
+    border-radius: 24px;
+    padding: 3rem 1.5rem;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+.produtos-empty-box-icon {
+    font-size: 2.4rem;
+    color: #94a3b8;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .produtos-heading {
+        font-size: 1.8rem;
+    }
+
+    .produtos-shell {
+        padding: 0 0.85rem;
+    }
+
+    .produtos-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .produto-mini-title {
+        min-height: auto;
+    }
+
+    .produtos-pagination {
+        width: 100%;
+    }
+}
+/* =========================
+   EDITAR PRODUTO
+========================= */
+
+.produto-edit-page {
+    background: linear-gradient(180deg, #f8fafc 0%, #f4f7fb 100%);
+    min-height: 100vh;
+}
+
+.produto-edit-shell {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.produto-edit-hero {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid #e5eaf1;
+    border-radius: 24px;
+    padding: 1.75rem;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+    backdrop-filter: blur(8px);
+}
+
+.produto-edit-hero-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.produto-edit-kicker {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6366f1;
+    margin-bottom: 0.6rem;
+}
+
+.produto-edit-title {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 0.4rem;
+}
+
+.produto-edit-subtitle {
+    max-width: 720px;
+    color: #64748b;
+    margin-bottom: 0;
+}
+
+.produto-form-card {
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid #e5eaf1;
+    border-radius: 24px;
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.05);
+    overflow: hidden;
+}
+
+.produto-form-card-header {
+    padding: 1.25rem 1.25rem 0.75rem 1.25rem;
+}
+
+    .produto-form-card-header h2 {
+        font-size: 1.08rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 0.3rem;
+    }
+
+    .produto-form-card-header p {
+        font-size: 0.95rem;
+        color: #64748b;
+        margin-bottom: 0;
+    }
+
+.produto-form-card-body {
+    padding: 1.25rem;
+}
+
+.produto-form-label {
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 0.45rem;
+}
+
+.produto-form-input {
+    min-height: 48px;
+    border-radius: 14px;
+    border: 1px solid #dbe4ef;
+    background: #f8fafc;
+    padding: 0.75rem 0.95rem;
+}
+
+    .produto-form-input:focus {
+        border-color: #4f46e5;
+        background: #ffffff;
+        box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.10);
+    }
+
+.produto-textarea {
+    min-height: 130px;
+    resize: vertical;
+}
+
+.produto-preview-box {
+    background: linear-gradient(135deg, #edf2f7 0%, #dfe7f1 100%);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    height: 260px;
+}
+
+.produto-preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.produto-btn-primary,
+.produto-btn-light {
+    min-height: 48px;
+    border-radius: 14px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.produto-btn-primary {
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    color: #fff;
+    border: none;
+}
+
+    .produto-btn-primary:hover {
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 12px 20px rgba(79, 70, 229, 0.20);
+    }
+
+.produto-btn-light {
+    background: #ffffff;
+    color: #475569;
+    border: 1px solid #dbe4ef;
+}
+
+    .produto-btn-light:hover {
+        background: #f8fafc;
+        color: #0f172a;
+    }
+
+.produto-sticky-card {
+    top: 1.5rem;
+}
+
+@media (max-width: 991.98px) {
+    .produto-edit-title {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .produto-edit-shell {
+        padding: 0 0.85rem;
+    }
+
+    .produto-edit-hero,
+    .produto-form-card {
+        border-radius: 20px;
+    }
+
+    .produto-preview-box {
+        height: 220px;
+    }
+}
+/* =========================
+   DELETE PRODUTO
+========================= */
+
+.produto-delete-page {
+    background: linear-gradient(180deg, #fff7f7 0%, #f8fafc 100%);
+    min-height: 100vh;
+}
+
+.produto-delete-shell {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.produto-delete-hero {
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid #f1d4d4;
+    border-radius: 24px;
+    padding: 1.75rem;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.05);
+}
+
+.produto-delete-hero-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.produto-delete-kicker {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #dc2626;
+    margin-bottom: 0.6rem;
+}
+
+.produto-delete-title {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: #7f1d1d;
+    margin-bottom: 0.4rem;
+}
+
+.produto-delete-subtitle {
+    max-width: 720px;
+    color: #7c5a5a;
+    margin-bottom: 0;
+}
+
+.produto-delete-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    border-radius: 22px;
+    padding: 1rem 1.2rem;
+    box-shadow: 0 10px 24px rgba(220, 38, 38, 0.05);
+}
+
+.produto-delete-warning-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    background: #fee2e2;
+    color: #dc2626;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.produto-delete-warning h2 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #991b1b;
+    margin-bottom: 0.3rem;
+}
+
+.produto-delete-warning p {
+    color: #7c5a5a;
+}
+
+.produto-delete-card {
+    background: rgba(255, 255, 255, 0.97);
+    border: 1px solid #f0e4e4;
+    border-radius: 24px;
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.05);
+    overflow: hidden;
+}
+
+.produto-delete-card-header {
+    padding: 1.25rem 1.25rem 0.75rem 1.25rem;
+}
+
+    .produto-delete-card-header h2 {
+        font-size: 1.08rem;
+        font-weight: 800;
+        color: #111827;
+        margin-bottom: 0.3rem;
+    }
+
+    .produto-delete-card-header p {
+        font-size: 0.95rem;
+        color: #6b7280;
+        margin-bottom: 0;
+    }
+
+.produto-delete-card-body {
+    padding: 1.25rem;
+}
+
+.produto-delete-image-box {
+    background: linear-gradient(135deg, #f8d7da 0%, #f8fafc 100%);
+    border-radius: 22px;
+    overflow: hidden;
+    border: 1px solid #ead4d7;
+    height: 280px;
+}
+
+.produto-delete-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.produto-delete-summary {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.produto-delete-summary-item {
+    background: #fafafa;
+    border: 1px solid #ececec;
+    border-radius: 16px;
+    padding: 0.9rem 1rem;
+}
+
+.produto-delete-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #9ca3af;
+    margin-bottom: 0.35rem;
+}
+
+.produto-delete-summary-item strong {
+    color: #111827;
+    font-size: 1rem;
+}
+
+.produto-delete-note {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #9a3412;
+    border-radius: 16px;
+    padding: 0.9rem 1rem;
+    font-weight: 600;
+}
+
+.produto-delete-btn-danger,
+.produto-delete-btn-light {
+    min-height: 48px;
+    border-radius: 14px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.produto-delete-btn-danger {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    color: #fff;
+    border: none;
+}
+
+    .produto-delete-btn-danger:hover {
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 12px 20px rgba(220, 38, 38, 0.18);
+    }
+
+.produto-delete-btn-light {
+    background: #ffffff;
+    color: #475569;
+    border: 1px solid #dbe4ef;
+}
+
+    .produto-delete-btn-light:hover {
+        background: #f8fafc;
+        color: #0f172a;
+    }
+
+@media (max-width: 991.98px) {
+    .produto-delete-title {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .produto-delete-shell {
+        padding: 0 0.85rem;
+    }
+
+    .produto-delete-hero,
+    .produto-delete-card,
+    .produto-delete-warning {
+        border-radius: 20px;
+    }
+
+    .produto-delete-image-box {
+        height: 220px;
+    }
+}

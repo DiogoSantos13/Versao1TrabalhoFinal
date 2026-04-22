@@ -18,13 +18,32 @@ namespace Versao1TrabalhoFinal.Pages.ClienteArea
 
         public List<Veiculo> Veiculos { get; set; } = new();
 
+        /// <summary>
+        /// Carrega os veículos associados ao cliente autenticado.
+        /// </summary>
         public async Task OnGetAsync()
         {
             var email = User.Identity?.Name;
 
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                Veiculos = new List<Veiculo>();
+                return;
+            }
+
+            var cliente = await _context.Clientes
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Email == email);
+
+            if (cliente == null)
+            {
+                Veiculos = new List<Veiculo>();
+                return;
+            }
+
             Veiculos = await _context.Veiculos
-                .Include(v => v.ClienteId)
-                .Where(v => v.ClienteId != null && v.Cliente.Email == email)
+                .Where(v => v.ClienteId == cliente.Id)
+                .AsNoTracking()
                 .ToListAsync();
         }
     }

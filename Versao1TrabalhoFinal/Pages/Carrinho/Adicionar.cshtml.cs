@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Versao1TrabalhoFinal.Data;
+using Versao1TrabalhoFinal.Models;
 using CarrinhoEntity = Versao1TrabalhoFinal.Models.Carrinho;
-using CarrinhoItemEntity = Versao1TrabalhoFinal.Models.CarrinhoItem;
 using EstadoVeiculoStandEntity = Versao1TrabalhoFinal.Models.EstadoVeiculoStand;
 
 namespace Versao1TrabalhoFinal.Pages.Carrinho
@@ -85,24 +85,16 @@ namespace Versao1TrabalhoFinal.Pages.Carrinho
                 await _context.SaveChangesAsync();
             }
 
-            var itemExistente = await _context.CarrinhoItens
-                .AnyAsync(ci => ci.CarrinhoId == carrinho.Id && ci.VeiculoStandId == veiculoStand.Id);
 
-            if (itemExistente)
-            {
-                TempData["SuccessMessage"] = "O veículo já se encontra no carrinho.";
-                return RedirectToPage("/Carrinho/Index");
-            }
-
-            var item = new CarrinhoItemEntity
+            
+            var item = new CarrinhoProdutos
             {
                 CarrinhoId = carrinho.Id,
-                VeiculoStandId = veiculoStand.Id,
                 PrecoNoMomento = veiculoStand.Preco,
                 DataAdicao = DateTime.Now
             };
 
-            _context.CarrinhoItens.Add(item);
+            _context.CarrinhoProdutos.Add(item);
 
             try
             {
