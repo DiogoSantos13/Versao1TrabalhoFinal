@@ -1,0 +1,230 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.ContactosModel
+@{
+    ViewData["Title"] = "Contactos";
+}
+
+<section class="contact-hero-section">
+    <div class="contact-hero-overlay"></div>
+
+    <div class="contact-page-container">
+        <div class="contact-hero-grid">
+            <div class="contact-hero-content">
+                <span class="contact-badge">Stand Premium</span>
+                <h1 class="contact-hero-title">Fale connosco e descubra a próxima oportunidade sobre rodas.</h1>
+                <p class="contact-hero-text">
+                    Quer comprar, vender, marcar um serviço ou pedir informações? Envie já a sua mensagem
+                    e responderemos o mais rápido possível.
+                </p>
+
+                <div class="contact-hero-actions">
+                    <a href="tel:+351968599884" class="contact-cta-primary">
+                        <i class="fa-solid fa-phone-volume"></i>
+                        <span>Ligar agora</span>
+                    </a>
+
+                    <a href="https://wa.me/351968599884"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="contact-cta-secondary">
+                        <i class="fa-brands fa-whatsapp"></i>
+                        <span>WhatsApp</span>
+                    </a>
+                </div>
+
+                <div class="contact-floating-points">
+                    <div class="floating-point-card">
+                        <strong>Atendimento rápido</strong>
+                        <span>Resposta direta e acompanhamento próximo.</span>
+                    </div>
+                    <div class="floating-point-card">
+                        <strong>Stand e oficina</strong>
+                        <span>Tudo no mesmo espaço, sem complicações.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-highlight-card is-visible">
+                <div class="contact-highlight-top">
+                    <span class="mini-label">Estamos disponíveis</span>
+                    <div class="pulse-dot"></div>
+                </div>
+
+                <h2>Visite-nos ou envie mensagem</h2>
+                <p>
+                    Pode contactar-nos por telefone, email, WhatsApp ou através do formulário desta página.
+                </p>
+
+                <div class="contact-quick-info">
+                    <div class="quick-info-item">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <div>
+                            <strong>Morada</strong>
+                            <span>Tomar, Santarém, Portugal</span>
+                        </div>
+                    </div>
+
+                    <div class="quick-info-item">
+                        <i class="fa-solid fa-envelope"></i>
+                        <div>
+                            <strong>Email</strong>
+                            <span>dfpds2005@gmail.com</span>
+                        </div>
+                    </div>
+
+                    <div class="quick-info-item">
+                        <i class="fa-solid fa-clock"></i>
+                        <div>
+                            <strong>Horário</strong>
+                            <span>Segunda a Sábado · 09:00 às 19:00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="#mapa" class="contact-scroll-link">
+                    <span>Ver localização</span>
+                    <i class="fa-solid fa-arrow-down"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="contact-form-section">
+    <div class="contact-page-container">
+        <div class="contact-form-grid">
+            <div class="contact-form-intro">
+                <span class="section-label">Mensagem direta</span>
+                <h2>Envie-nos a sua mensagem</h2>
+                <p>
+                    Preencha o formulário e a mensagem será enviada diretamente para o email do stand.
+                    Quanto mais detalhe indicar, mais rápida e útil será a resposta.
+                </p>
+
+                <ul class="contact-feature-list">
+                    <li><i class="fa-solid fa-circle-check"></i><span>Pedidos de orçamento</span></li>
+                    <li><i class="fa-solid fa-circle-check"></i><span>Informações sobre viaturas</span></li>
+                    <li><i class="fa-solid fa-circle-check"></i><span>Marcações de serviço</span></li>
+                    <li><i class="fa-solid fa-circle-check"></i><span>Dúvidas gerais</span></li>
+                </ul>
+            </div>
+
+            <div class="contact-form-card">
+                @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+                {
+                    <div class="alert alert-success mb-4" role="alert">
+                        @Model.SuccessMessage
+                    </div>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+                {
+                    <div class="alert alert-danger mb-4" role="alert">
+                        @Model.ErrorMessage
+                    </div>
+                }
+
+                <form method="post" class="contact-form-box">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="contact-form-row">
+                        <div class="contact-form-group">
+                            <label asp-for="Input.Nome"></label>
+                            <input asp-for="Input.Nome" class="contact-input" placeholder="O seu nome" />
+                            <span asp-validation-for="Input.Nome" class="text-danger"></span>
+                        </div>
+
+                        <div class="contact-form-group">
+                            <label asp-for="Input.Apelido"></label>
+                            <input asp-for="Input.Apelido" class="contact-input" placeholder="O seu apelido" />
+                            <span asp-validation-for="Input.Apelido" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="contact-form-row">
+                        <div class="contact-form-group">
+                            <label asp-for="Input.Email"></label>
+                            <input asp-for="Input.Email" class="contact-input" placeholder="email@exemplo.com" />
+                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="contact-form-group">
+                            <label asp-for="Input.Telefone"></label>
+                            <input asp-for="Input.Telefone" class="contact-input" placeholder="+351 9xx xxx xxx" />
+                            <span asp-validation-for="Input.Telefone" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="contact-form-group">
+                        <label asp-for="Input.Assunto"></label>
+                        <input asp-for="Input.Assunto" class="contact-input" placeholder="Assunto da mensagem" />
+                        <span asp-validation-for="Input.Assunto" class="text-danger"></span>
+                    </div>
+
+                    <div class="contact-form-group">
+                        <label asp-for="Input.Mensagem"></label>
+                        <textarea asp-for="Input.Mensagem"
+                                  class="contact-input contact-textarea"
+                                  rows="6"
+                                  placeholder="Escreva aqui a sua mensagem..."></textarea>
+                        <span asp-validation-for="Input.Mensagem" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="contact-submit-button">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>Enviar mensagem</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="mapa" class="contact-map-section">
+    <div class="contact-page-container">
+        <div class="contact-map-header">
+            <div>
+                <span class="section-label">Localização</span>
+                <h2>Venha visitar-nos</h2>
+                <p>Abra o mapa, trace a rota e passe pelo stand.</p>
+            </div>
+
+            <a href="https://www.google.com/maps/search/?api=1&query=Tomar+Santar%C3%A9m"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="contact-map-button">
+                <i class="fa-solid fa-route"></i>
+                <span>Abrir no Google Maps</span>
+            </a>
+        </div>
+
+        <div class="contact-map-wrapper">
+            <iframe title="Mapa de localização do Stand Premium"
+                    src="https://www.google.com/maps?q=Tomar,Santar%C3%A9m&z=14&output=embed"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    allowfullscreen>
+            </iframe>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        (() => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, { threshold: 0.15 });
+
+            document.querySelectorAll('.contact-form-card, .contact-form-intro').forEach(el => {
+                observer.observe(el);
+            });
+        })();
+    </script>
+}

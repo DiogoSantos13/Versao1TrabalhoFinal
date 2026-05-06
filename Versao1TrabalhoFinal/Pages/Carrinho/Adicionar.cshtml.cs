@@ -31,42 +31,54 @@ namespace Versao1TrabalhoFinal.Pages.Carrinho
         }
 
         /// <summary>
-        /// Adiciona um veículo do stand ao carrinho do cliente autenticado.
+        /// Veículo do stand carregado para apresentação na página.
+        /// </summary>
+        public VeiculoStand? VeiculoStand { get; set; }
+
+        /// <summary>
+        /// Processa o pedido de adição de um veículo do stand ao carrinho.
         /// </summary>
         /// <param name="veiculoStandId">Identificador do veículo do stand.</param>
-        /// <returns>Redireciona para a página do carrinho ou para a listagem do stand.</returns>
+        /// <returns>Resultado da execução da página.</returns>
         public async Task<IActionResult> OnGetAsync(int veiculoStandId)
         {
+            if (veiculoStandId <= 0)
+            {
+                TempData["ErrorMessage"] = "O identificador do veículo é inválido.";
+                return RedirectToPage("/VeiculosStand/Index");
+            }
+
             var userId = _userManager.GetUserId(User);
 
             if (string.IsNullOrWhiteSpace(userId))
             {
                 TempData["ErrorMessage"] = "Utilizador não autenticado.";
-                return RedirectToPage("/Account/Login");
+                return RedirectToPage("/Identity/Account/Login");
             }
 
             var cliente = await _context.Clientes
+                .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.IdentityUserId == userId);
 
             if (cliente == null)
             {
-                TempData["ErrorMessage"] = $"Cliente não encontrado para o utilizador autenticado. UserId: {userId}";
+                TempData["ErrorMessage"] = "Cliente não encontrado para o utilizador autenticado.";
                 return RedirectToPage("/VeiculosStand/Index");
             }
 
-            var veiculoStand = await _context.VeiculosStand
-                .AsNoTracking()
+            VeiculoStand = await _context.VeiculosStand
+                .Include(vs => vs.Veiculo)
                 .FirstOrDefaultAsync(vs => vs.Id == veiculoStandId);
 
-            if (veiculoStand == null)
+            if (VeiculoStand == null)
             {
                 TempData["ErrorMessage"] = "O veículo pretendido não foi encontrado.";
                 return RedirectToPage("/VeiculosStand/Index");
             }
 
-            if (!string.Equals(veiculoStand.Estado, EstadoVeiculoStandEntity.Disponivel, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(VeiculoStand.Estado, EstadoVeiculoStandEntity.Disponivel, StringComparison.OrdinalIgnoreCase))
             {
-                TempData["ErrorMessage"] = $"Este veículo já não se encontra disponível. Estado atual: {veiculoStand.Estado}";
+                TempData["ErrorMessage"] = $"Este veículo já não se encontra disponível. Estado atual: {VeiculoStand.Estado}";
                 return RedirectToPage("/VeiculosStand/Index");
             }
 
@@ -85,16 +97,27 @@ namespace Versao1TrabalhoFinal.Pages.Carrinho
                 await _context.SaveChangesAsync();
             }
 
+            var itemExistente = await _context.CarrinhoVeiculosStand
+                .AsNoTracking()
+                .FirstOrDefaultAsync(cvs =>
+                    cvs.CarrinhoId == carrinho.Id &&
+                    cvs.VeiculoStandId == VeiculoStand.Id);
 
-            
-            var item = new CarrinhoProdutos
+            if (itemExistente != null)
+            {
+                TempData["ErrorMessage"] = "Este veículo já se encontra no carrinho.";
+                return RedirectToPage("/Carrinho/Index");
+            }
+
+            var item = new CarrinhoVeiculoStand
             {
                 CarrinhoId = carrinho.Id,
-                PrecoNoMomento = veiculoStand.Preco,
+                VeiculoStandId = VeiculoStand.Id,
+                PrecoNoMomento = VeiculoStand.Preco,
                 DataAdicao = DateTime.Now
             };
 
-            _context.CarrinhoProdutos.Add(item);
+            _context.CarrinhoVeiculosStand.Add(item);
 
             try
             {
@@ -107,7 +130,7 @@ namespace Versao1TrabalhoFinal.Pages.Carrinho
             }
 
             TempData["SuccessMessage"] = "Veículo adicionado ao carrinho com sucesso.";
-            return RedirectToPage("/Carrinho/Index");
+            return Page();
         }
     }
 }

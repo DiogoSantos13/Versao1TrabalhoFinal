@@ -10,7 +10,7 @@ namespace Versao1TrabalhoFinal.Data
     public class StandDbContext : IdentityDbContext
     {
         /// <summary>
-        /// Construtor do contexto, recebe as opções configuradas pelo DI.
+        /// Inicializa uma nova instância do contexto da base de dados.
         /// </summary>
         /// <param name="options">Opções de configuração do contexto.</param>
         public StandDbContext(DbContextOptions<StandDbContext> options) : base(options)
@@ -37,11 +37,7 @@ namespace Versao1TrabalhoFinal.Data
         /// </summary>
         public DbSet<Orcamento> Orcamentos { get; set; } = null!;
 
-        /// <summary>
-        /// Tabela de histórico de chat associado a orçamentos.
-        /// </summary>
-        public DbSet<HistoricoChatOrcamento> HistoricoChatOrcamentos { get; set; } = null!;
-
+        
         /// <summary>
         /// Tabela de histórico de reparações.
         /// </summary>
@@ -83,24 +79,28 @@ namespace Versao1TrabalhoFinal.Data
         public DbSet<CarrinhoServico> CarrinhoServicos { get; set; } = null!;
 
         /// <summary>
-        /// Tabela de itens de produtos no carrinho (tabela de ligação).
+        /// Tabela de itens de produtos no carrinho.
         /// </summary>
         public DbSet<CarrinhoProdutos> CarrinhoProdutos { get; set; } = null!;
 
         /// <summary>
-        /// Configura o modelo da base de dados, mapeando entidades, tabelas e relacionamentos.
+        /// Tabela de itens de veículos do stand no carrinho.
         /// </summary>
-        /// <param name="builder">Construtor do modelo (ModelBuilder).</param>
+        public DbSet<CarrinhoVeiculoStand> CarrinhoVeiculosStand { get; set; } = null!;
+
+        /// <summary>
+        /// Configura o modelo da base de dados, incluindo tabelas, propriedades e relações.
+        /// </summary>
+        /// <param name="builder">Construtor do modelo.</param>
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            // Mapear entidades para tabelas específicas com o schema "dbo"
+            // Mapeamento explícito das entidades para tabelas no schema dbo.
             builder.Entity<Veiculo>().ToTable("Veiculos", "dbo");
             builder.Entity<VeiculoStand>().ToTable("VeiculosStand", "dbo");
             builder.Entity<Cliente>().ToTable("Clientes", "dbo");
             builder.Entity<Orcamento>().ToTable("Orcamentos", "dbo");
-            builder.Entity<HistoricoChatOrcamento>().ToTable("HistoricoChatOrcamentos", "dbo");
             builder.Entity<HistoricoReparacao>().ToTable("HistoricoReparacoes", "dbo");
             builder.Entity<Produto>().ToTable("Produtos", "dbo");
             builder.Entity<Venda>().ToTable("Vendas", "dbo");
@@ -110,8 +110,9 @@ namespace Versao1TrabalhoFinal.Data
             builder.Entity<Carrinho>().ToTable("Carrinhos", "dbo");
             builder.Entity<CarrinhoServico>().ToTable("CarrinhoServicos", "dbo");
             builder.Entity<CarrinhoProdutos>().ToTable("CarrinhoProdutos", "dbo");
+            builder.Entity<CarrinhoVeiculoStand>().ToTable("CarrinhoVeiculosStand", "dbo");
 
-            // Configuração de tipos numéricos (decimal) para garantir precisão adequada
+            // Configuração de precisão decimal.
             builder.Entity<VeiculoStand>()
                 .Property(v => v.Preco)
                 .HasColumnType("decimal(18,2)");
@@ -120,74 +121,99 @@ namespace Versao1TrabalhoFinal.Data
                 .Property(p => p.Preco)
                 .HasColumnType("decimal(18,2)");
 
-          
             builder.Entity<CarrinhoProdutos>()
                 .Property(cp => cp.PrecoNoMomento)
                 .HasColumnType("decimal(18,2)");
 
-            // Relação VeiculoStand -> Veiculo (um veículo pode estar em vários registos do stand)
+            builder.Entity<CarrinhoServico>()
+                .Property(cs => cs.PrecoNoMomento)
+                .HasColumnType("decimal(18,2)");
+
+            builder.Entity<CarrinhoVeiculoStand>()
+                .Property(cvs => cvs.PrecoNoMomento)
+                .HasColumnType("decimal(18,2)");
+
+            // Relação VeiculoStand -> Veiculo.
             builder.Entity<VeiculoStand>()
                 .HasOne(vs => vs.Veiculo)
                 .WithMany()
                 .HasForeignKey(vs => vs.VeiculoId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Relação Produto -> Fornecedor (um fornecedor tem muitos produtos)
+            // Relação Produto -> Fornecedor.
             builder.Entity<Produto>()
                 .HasOne(p => p.Fornecedor)
                 .WithMany(f => f.Produtos)
                 .HasForeignKey(p => p.FornecedorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Relação Carrinho -> Cliente (um para um)
+            // Relação Carrinho -> Cliente (1 para 1).
             builder.Entity<Carrinho>()
                 .HasOne(c => c.Cliente)
                 .WithOne(c => c.Carrinho)
                 .HasForeignKey<Carrinho>(c => c.ClienteId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Índice único para garantir que cada cliente tem apenas um carrinho
+            // Índice único para garantir um carrinho por cliente.
             builder.Entity<Carrinho>()
                 .HasIndex(c => c.ClienteId)
                 .IsUnique();
 
-
-            // Relação CarrinhoServico -> Carrinho (um carrinho tem muitos serviços)
+            // Relação CarrinhoServico -> Carrinho.
             builder.Entity<CarrinhoServico>()
                 .HasOne(cs => cs.Carrinho)
                 .WithMany(c => c.Servicos)
                 .HasForeignKey(cs => cs.CarrinhoId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Relação CarrinhoServico -> Servico
+            // Relação CarrinhoServico -> Servico.
             builder.Entity<CarrinhoServico>()
                 .HasOne(cs => cs.Servico)
                 .WithMany(s => s.CarrinhoServicos)
                 .HasForeignKey(cs => cs.ServicoId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Índice único para evitar o mesmo serviço repetido no mesmo carrinho
+            // Índice único para impedir repetição do mesmo serviço no carrinho.
             builder.Entity<CarrinhoServico>()
                 .HasIndex(cs => new { cs.CarrinhoId, cs.ServicoId })
                 .IsUnique();
 
-            // Relação CarrinhoProdutos -> Carrinho (um carrinho tem muitos produtos)
+            // Relação CarrinhoProdutos -> Carrinho.
             builder.Entity<CarrinhoProdutos>()
                 .HasOne(cp => cp.Carrinho)
                 .WithMany(c => c.Produtos)
                 .HasForeignKey(cp => cp.CarrinhoId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Relação CarrinhoProdutos -> Produto
+            // Relação CarrinhoProdutos -> Produto.
             builder.Entity<CarrinhoProdutos>()
                 .HasOne(cp => cp.Produto)
                 .WithMany(p => p.CarrinhoProdutos)
                 .HasForeignKey(cp => cp.ProdutoId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Índice único para evitar o mesmo produto repetido no mesmo carrinho
+            // Índice único para impedir repetição do mesmo produto no carrinho.
             builder.Entity<CarrinhoProdutos>()
                 .HasIndex(cp => new { cp.CarrinhoId, cp.ProdutoId })
+                .IsUnique();
+
+            // Relação CarrinhoVeiculoStand -> Carrinho.
+            builder.Entity<CarrinhoVeiculoStand>()
+                .HasOne(cvs => cvs.Carrinho)
+                .WithMany(c => c.CarrinhoVeiculosStand)
+                .HasForeignKey(cvs => cvs.CarrinhoId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Relação CarrinhoVeiculoStand -> VeiculoStand.
+            builder.Entity<CarrinhoVeiculoStand>()
+                .HasOne(cvs => cvs.VeiculoStand)
+                .WithMany(vs => vs.CarrinhoVeiculosStand)
+                .HasForeignKey(cvs => cvs.VeiculoStandId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Índice único para impedir o mesmo veículo do stand repetido no mesmo carrinho.
+            builder.Entity<CarrinhoVeiculoStand>()
+                .HasIndex(cvs => new { cvs.CarrinhoId, cvs.VeiculoStandId })
                 .IsUnique();
         }
     }

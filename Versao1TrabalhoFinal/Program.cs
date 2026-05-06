@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Data.SqlClient;
+using System.Data.Common;
 using Versao1TrabalhoFinal.Data;
 using Versao1TrabalhoFinal.Seed;
 using Versao1TrabalhoFinal.Services;
-using Versao1TrabalhoFinal.Services.AI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -111,9 +113,6 @@ builder.Services.AddRazorPages(options =>
 /// <summary>
 /// Registo dos serviços da aplicação.
 /// </summary>
-builder.Services.AddScoped<IOpenAIChatService, OpenAIChatService>();
-builder.Services.AddScoped<IAiChatService, AiChatService>();
-builder.Services.AddScoped<IChatConversationService, ChatConversationService>();
 builder.Services.AddScoped<OrcamentoService>();
 
 var app = builder.Build();
@@ -152,11 +151,56 @@ app.UseAuthorization();
 app.MapRazorPages();
 
 /// <summary>
-/// Execução do seed inicial de roles e utilizadores.
+/// Aplicar migrações e executar o seed inicial de roles e utilizadores.
+/// - Garante que o esquema da BD está atualizado antes de usar RoleManager/UserManager.
+/// - Regista erros detalhados para diagnóstico (incl. InnerException).
 /// </summary>
 using (var scope = app.Services.CreateScope())
 {
-    await IdentitySeeder.SeedAsync(scope.ServiceProvider);
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+
+    try
+    {
+        var db = services.GetRequiredService<StandDbContext>();
+        DbConnection? conn = db.Database.GetDbConnection();
+
+        // Logar a cadeia de conexão para diagnóstico (atenção a não expor credenciais em produção)
+        logger.LogInformation("Connection string (masked): {ConnectionString}", conn?.ConnectionString);
+
+        // Tentar abrir explicitamente para capturar SqlException com número e mensagem detalhada
+        try
+        {
+            if (conn != null)
+            {
+                await conn.OpenAsync();
+                logger.LogInformation("DB connection aberta com sucesso.");
+                await conn.CloseAsync();
+            }
+        }
+        catch (SqlException sqlEx)
+        {
+            logger.LogError(sqlEx, "Falha ao abrir a ligação SQL (Number: {Number}, State: {State}): {Message}", sqlEx.Number, sqlEx.State, sqlEx.Message);
+            throw;
+        }
+        catch (Exception openEx)
+        {
+            logger.LogError(openEx, "Erro ao abrir ligação à BD: {Message}", openEx.Message);
+            throw;
+        }
+
+        // Aplica migrações pendentes (async)
+        await db.Database.MigrateAsync();
+
+        // Executa o seed (pode lançar exceções; serão logadas)
+        await IdentitySeeder.SeedAsync(services);
+    }
+    catch (Exception ex)
+    {
+        // Registar a excepção completa, incluindo InnerException
+        logger.LogError(ex, "Erro durante migração/seed: {Message}", ex.Message);
+        throw;
+    }
 }
 
 app.Run();

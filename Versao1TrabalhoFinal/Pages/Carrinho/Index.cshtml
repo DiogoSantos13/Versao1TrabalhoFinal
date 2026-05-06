@@ -7,125 +7,224 @@
 <section class="dashboard-page">
     <div class="dashboard-container">
         <div class="page-header-block">
-            <p class="page-eyebrow">Cliente</p>
-            <h1 class="page-title">Carrinho</h1>
-            <p class="page-subtitle">Consulta os serviços e produtos atualmente associados ao teu carrinho.</p>
+            <p class="page-eyebrow">Área do cliente</p>
+            <h1 class="page-title">O meu carrinho</h1>
+            <p class="page-subtitle">Consulte os produtos, serviços e veículos do stand atualmente adicionados.</p>
         </div>
 
         @if (TempData["SuccessMessage"] != null)
         {
-            <div class="alert alert-success mb-3">@TempData["SuccessMessage"]</div>
+            <div class="alert alert-success mb-4" role="alert">
+                @TempData["SuccessMessage"]
+            </div>
         }
 
         @if (TempData["ErrorMessage"] != null)
         {
-            <div class="alert alert-danger mb-3">@TempData["ErrorMessage"]</div>
+            <div class="alert alert-danger mb-4" role="alert">
+                @TempData["ErrorMessage"]
+            </div>
         }
 
-        <div class="client-form-card mb-4">
-            <h2 class="section-title mb-3">Serviços</h2>
+        @if (!Model.TemItens)
+        {
+            <div class="empty-state-card">
+                <h3>Carrinho vazio</h3>
+                <p>De momento ainda não adicionaste produtos, serviços ou veículos do stand ao teu carrinho.</p>
 
-            @if (Model.ItensServicos != null && Model.ItensServicos.Any())
-            {
-                <div class="table-responsive">
-                    <table class="table align-middle">
-                        <thead>
-                            <tr>
-                                <th>Serviço</th>
-                                <th>Preço</th>
-                                <th>Data</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.ItensServicos)
-                            {
-                                <tr>
-                                    <td>@item.Servico?.Nome</td>
-                                    <td>@item.PrecoNoMomento.ToString("0.00 €")</td>
-                                    <td>@item.DataAdicao.ToString("dd/MM/yyyy HH:mm")</td>
-                                    <td class="text-end">
-                                        <a asp-page="/Carrinho/Remover"
-                                           asp-page-handler="Servico"
-                                           asp-route-id="@item.Id"
-                                           class="auth-button auth-button-secondary">
-                                            Remover
-                                        </a>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                <div class="client-form-actions mt-3">
+                    <a asp-page="/Produtos/Index" class="auth-button">
+                        <i class="fa-solid fa-box-open"></i>
+                        <span>Ver produtos</span>
+                    </a>
+
+                    <a asp-page="/Servicos/Index" class="auth-button auth-button-secondary">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                        <span>Ver serviços</span>
+                    </a>
+
+                    <a asp-page="/VeiculosStand/Index" class="auth-button auth-button-secondary">
+                        <i class="fa-solid fa-car"></i>
+                        <span>Ver veículos do stand</span>
+                    </a>
                 </div>
-            }
-            else
-            {
-                <p class="text-muted mb-0">Ainda não tens serviços no carrinho.</p>
-            }
-        </div>
-
-        <div class="client-form-card mb-4">
-            <h2 class="section-title mb-3">Produtos</h2>
-
-            @if (Model.ItensProdutos != null && Model.ItensProdutos.Any())
-            {
-                <div class="table-responsive">
-                    <table class="table align-middle">
-                        <thead>
-                            <tr>
-                                <th>Produto</th>
-                                <th>Preço</th>
-                                <th>Quantidade</th>
-                                <th>Subtotal</th>
-                                <th>Data</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.ItensProdutos)
-                            {
-                                <tr>
-                                    <td>@item.Produto?.Nome</td>
-                                    <td>@item.PrecoNoMomento.ToString("0.00 €")</td>
-                                    <td>@item.Quantidade</td>
-                                    <td>@((item.PrecoNoMomento * item.Quantidade).ToString("0.00 €"))</td>
-                                    <td>@item.DataAdicao.ToString("dd/MM/yyyy HH:mm")</td>
-                                    <td class="text-end">
-                                        <a asp-page="/Carrinho/Remover"
-                                           asp-page-handler="Produto"
-                                           asp-route-id="@item.Id"
-                                           class="auth-button auth-button-secondary">
-                                            Remover
-                                        </a>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-            else
-            {
-                <p class="text-muted mb-0">Ainda não tens produtos no carrinho.</p>
-            }
-        </div>
-
-        <div class="client-summary-card">
-            <h3 class="client-summary-name">Resumo</h3>
-            <p class="client-summary-email mb-2">Total atual do carrinho</p>
-            <h2>@Model.Total.ToString("0.00 €")</h2>
-
-            <div class="client-form-actions mt-4">
-                <a asp-page="/Produtos/Index" class="auth-button auth-button-secondary">
-                    <i class="fa-solid fa-box-open"></i>
-                    <span>Continuar compras</span>
-                </a>
-
-                <a asp-page="/Carrinho/Checkout" class="auth-button">
-                    <i class="fa-solid fa-credit-card"></i>
-                    <span>Checkout</span>
-                </a>
             </div>
-        </div>
+        }
+        else
+        {
+            <div class="client-edit-layout">
+                <div class="client-edit-main">
+
+                    @if (Model.Carrinho != null && Model.Carrinho.Produtos.Any())
+                    {
+                        <div class="client-form-card mb-4">
+                            <div class="client-form-card-header">
+                                <div>
+                                    <h2 class="client-form-title">Produtos</h2>
+                                    <p class="client-form-subtitle">Itens de produto adicionados ao carrinho.</p>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Produto</th>
+                                            <th>Preço</th>
+                                            <th>Data de adição</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.Carrinho.Produtos)
+                                        {
+                                            <tr>
+                                                <td>@(item.Produto?.Nome ?? "Produto")</td>
+                                                <td>@item.PrecoNoMomento.ToString("N2") €</td>
+                                                <td>@item.DataAdicao.ToString("dd/MM/yyyy HH:mm")</td>
+                                                <td>
+                                                    <a asp-page="/Carrinho/Remover"
+                                                       asp-route-produtoId="@item.ProdutoId"
+                                                       class="action-link action-link-danger">
+                                                        Remover
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+
+                    @if (Model.Carrinho != null && Model.Carrinho.Servicos.Any())
+                    {
+                        <div class="client-form-card mb-4">
+                            <div class="client-form-card-header">
+                                <div>
+                                    <h2 class="client-form-title">Serviços</h2>
+                                    <p class="client-form-subtitle">Serviços adicionados ao carrinho.</p>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Serviço</th>
+                                            <th>Preço</th>
+                                            <th>Data de adição</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.Carrinho.Servicos)
+                                        {
+                                            <tr>
+                                                <td>@(item.Servico?.Nome ?? "Serviço")</td>
+                                                <td>@item.PrecoNoMomento.ToString("N2") €</td>
+                                                <td>@item.DataAdicao.ToString("dd/MM/yyyy HH:mm")</td>
+                                                <td>
+                                                    <a asp-page="/Carrinho/Remover"
+                                                       asp-route-servicoId="@item.ServicoId"
+                                                       class="action-link action-link-danger">
+                                                        Remover
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+
+                    @if (Model.Carrinho != null && Model.Carrinho.CarrinhoVeiculosStand.Any())
+                    {
+                        <div class="client-form-card mb-4">
+                            <div class="client-form-card-header">
+                                <div>
+                                    <h2 class="client-form-title">Veículos do stand</h2>
+                                    <p class="client-form-subtitle">Veículos do stand adicionados ao carrinho.</p>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Veículo</th>
+                                            <th>Preço</th>
+                                            <th>Estado</th>
+                                            <th>Data de adição</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.Carrinho.CarrinhoVeiculosStand)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @(item.VeiculoStand?.Veiculo?.Marca ?? "Marca")
+                                                    @(item.VeiculoStand?.Veiculo?.Modelo ?? "Modelo")
+                                                </td>
+                                                <td>@item.PrecoNoMomento.ToString("N2") €</td>
+                                                <td>@(string.IsNullOrWhiteSpace(item.VeiculoStand?.Estado) ? "-" : item.VeiculoStand?.Estado)</td>
+                                                <td>@item.DataAdicao.ToString("dd/MM/yyyy HH:mm")</td>
+                                                <td>
+                                                    <a asp-page="/Carrinho/Remover"
+                                                       asp-route-veiculoStandId="@item.VeiculoStandId"
+                                                       class="action-link action-link-danger">
+                                                        Remover
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <aside class="client-edit-side">
+                    <div class="client-summary-card">
+                        <h3 class="client-summary-name">Resumo do carrinho</h3>
+                        <p class="client-summary-email">Totais atuais do carrinho.</p>
+
+                        <div class="client-summary-divider"></div>
+
+                        <div class="client-summary-item">
+                            <span class="client-summary-label">Produtos</span>
+                            <strong>@Model.TotalProdutos.ToString("N2") €</strong>
+                        </div>
+
+                        <div class="client-summary-item">
+                            <span class="client-summary-label">Serviços</span>
+                            <strong>@Model.TotalServicos.ToString("N2") €</strong>
+                        </div>
+
+                        <div class="client-summary-item">
+                            <span class="client-summary-label">Veículos do stand</span>
+                            <strong>@Model.TotalVeiculosStand.ToString("N2") €</strong>
+                        </div>
+
+                        <div class="client-summary-divider"></div>
+
+                        <div class="client-summary-item">
+                            <span class="client-summary-label">Total geral</span>
+                            <strong>@Model.TotalGeral.ToString("N2") €</strong>
+                        </div>
+
+                        <div class="client-form-actions mt-4">
+                            <a asp-page="/Produtos/Index" class="auth-button auth-button-secondary">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Adicionar mais</span>
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        }
     </div>
 </section>

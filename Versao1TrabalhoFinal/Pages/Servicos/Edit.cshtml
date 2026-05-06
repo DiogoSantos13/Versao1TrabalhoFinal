@@ -1,60 +1,188 @@
 ﻿@page "{id:int}"
 @model Versao1TrabalhoFinal.Pages.Servicos.EditModel
+
 @{
+    /// <summary>
+    /// Define o título da página.
+    /// </summary>
     ViewData["Title"] = "Editar Serviço";
+
+    /// <summary>
+    /// Define a imagem de pré-visualização do serviço.
+    /// </summary>
+    var imagemPreview = !string.IsNullOrWhiteSpace(Model.Servico.ImagemUrl)
+        ? Url.Content(Model.Servico.ImagemUrl)
+        : Url.Content("~/images/servicos/sem-imagem.png");
 }
 
-<h2 class="mb-4">Editar Serviço</h2>
+<div class="produto-edit-page py-4 py-lg-5">
+    <div class="produto-edit-shell">
+        <section class="produto-edit-hero mb-4">
+            <div class="produto-edit-hero-content">
+                <div>
+                    <span class="produto-edit-kicker">Gestão de serviços</span>
+                    <h1 class="produto-edit-title">Editar serviço</h1>
+                    <p class="produto-edit-subtitle">
+                        Atualize a informação do serviço, confirme os dados comerciais e valide a imagem apresentada ao cliente.
+                    </p>
+                </div>
 
-<div class="row">
-    <div class="col-md-8 col-lg-6">
+                <div class="produto-edit-hero-actions">
+                    <a asp-page="./Index" class="btn produto-btn-light">
+                        <i class="fa-solid fa-arrow-left me-2"></i>
+                        Voltar à lista
+                    </a>
+                </div>
+            </div>
+        </section>
+
         <form method="post">
             <input type="hidden" asp-for="Servico.Id" />
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-            <div class="mb-3">
-                <label asp-for="Servico.Nome" class="form-label"></label>
-                <input asp-for="Servico.Nome" class="form-control" />
-                <span asp-validation-for="Servico.Nome" class="text-danger"></span>
-            </div>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 shadow-sm rounded-4 mb-4"></div>
 
-            <div class="mb-3">
-                <label asp-for="Servico.Descricao" class="form-label"></label>
-                <textarea asp-for="Servico.Descricao" class="form-control" rows="4"></textarea>
-                <span asp-validation-for="Servico.Descricao" class="text-danger"></span>
-            </div>
+            <div class="row g-4">
+                <div class="col-12 col-xl-8">
+                    <div class="produto-form-card mb-4">
+                        <div class="produto-form-card-header">
+                            <h2>Informação principal</h2>
+                            <p>Edite o nome e a descrição base do serviço.</p>
+                        </div>
 
-            <div class="mb-3">
-                <label asp-for="Servico.PrecoBase" class="form-label"></label>
-                <input asp-for="Servico.PrecoBase" class="form-control" />
-                <span asp-validation-for="Servico.PrecoBase" class="text-danger"></span>
-            </div>
+                        <div class="produto-form-card-body">
+                            <div class="mb-3">
+                                <label asp-for="Servico.Nome" class="form-label produto-form-label"></label>
+                                <input asp-for="Servico.Nome" class="form-control produto-form-input" />
+                                <span asp-validation-for="Servico.Nome" class="text-danger small"></span>
+                            </div>
 
-            <div class="mb-3">
-                <label asp-for="Servico.TempoEstimado" class="form-label"></label>
-                <input asp-for="Servico.TempoEstimado" class="form-control" />
-                <span asp-validation-for="Servico.TempoEstimado" class="text-danger"></span>
-            </div>
+                            <div class="mb-0">
+                                <label asp-for="Servico.Descricao" class="form-label produto-form-label"></label>
+                                <textarea asp-for="Servico.Descricao"
+                                          class="form-control produto-form-input produto-textarea"
+                                          rows="5"></textarea>
+                                <span asp-validation-for="Servico.Descricao" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
 
-            <div class="mb-3">
-                <label asp-for="Servico.ImagemUrl" class="form-label"></label>
-                <input asp-for="Servico.ImagemUrl" class="form-control" />
-                <span asp-validation-for="Servico.ImagemUrl" class="text-danger"></span>
-            </div>
+                    <div class="produto-form-card mb-4">
+                        <div class="produto-form-card-header">
+                            <h2>Dados comerciais</h2>
+                            <p>Atualize preço base, tempo estimado e disponibilidade do serviço.</p>
+                        </div>
 
-            <div class="form-check mb-3">
-                <input asp-for="Servico.Ativo" class="form-check-input" />
-                <label asp-for="Servico.Ativo" class="form-check-label"></label>
-            </div>
+                        <div class="produto-form-card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label asp-for="Servico.PrecoBase" class="form-label produto-form-label"></label>
+                                    <input asp-for="Servico.PrecoBase"
+                                           class="form-control produto-form-input"
+                                           type="number"
+                                           step="0.01"
+                                           min="0"
+                                           inputmode="decimal" />
+                                    <span asp-validation-for="Servico.PrecoBase" class="text-danger small"></span>
+                                    <div class="form-text">Exemplo: 49,90</div>
+                                </div>
 
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-warning">Guardar alterações</button>
-                <a asp-page="/Servicos/Index" class="btn btn-secondary">Cancelar</a>
+                                <div class="col-md-6">
+                                    <label asp-for="Servico.TempoEstimado" class="form-label produto-form-label"></label>
+                                    <input asp-for="Servico.TempoEstimado"
+                                           class="form-control produto-form-input"
+                                           placeholder="Ex.: 2 horas" />
+                                    <span asp-validation-for="Servico.TempoEstimado" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <div class="form-check form-switch produto-form-switch">
+                                    <input asp-for="Servico.Ativo" class="form-check-input" />
+                                    <label asp-for="Servico.Ativo" class="form-check-label produto-form-label mb-0"></label>
+                                </div>
+                                <div class="form-text">Desative esta opção se não quiser mostrar o serviço aos clientes.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-xl-4">
+                    <div class="produto-form-card mb-4 sticky-xl-top produto-sticky-card">
+                        <div class="produto-form-card-header">
+                            <h2>Imagem do serviço</h2>
+                            <p>Confirme a imagem usada antes de guardar as alterações.</p>
+                        </div>
+
+                        <div class="produto-form-card-body">
+                            <div class="produto-preview-box mb-3">
+                                <img src="@imagemPreview"
+                                     alt="@Model.Servico.Nome"
+                                     class="produto-preview-image"
+                                     onerror="this.onerror=null;this.src='@Url.Content("~/images/servicos/sem-imagem.png")';" />
+                            </div>
+
+                            <div class="mb-0">
+                                <label asp-for="Servico.ImagemUrl" class="form-label produto-form-label"></label>
+                                <input asp-for="Servico.ImagemUrl"
+                                       class="form-control produto-form-input"
+                                       id="imagemUrlInput" />
+                                <span asp-validation-for="Servico.ImagemUrl" class="text-danger small"></span>
+                                <div class="form-text">
+                                    Exemplo: <code>~/images/servicos/revisao-completa.jpg</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="produto-form-card">
+                        <div class="produto-form-card-header">
+                            <h2>Ações</h2>
+                            <p>Guarde as alterações ou volte sem modificar.</p>
+                        </div>
+
+                        <div class="produto-form-card-body">
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn produto-btn-primary">
+                                    <i class="fa-solid fa-floppy-disk me-2"></i>
+                                    Guardar alterações
+                                </button>
+
+                                <a asp-page="./Index" class="btn produto-btn-light">
+                                    <i class="fa-solid fa-xmark me-2"></i>
+                                    Cancelar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        (function () {
+            const input = document.getElementById('imagemUrlInput');
+            const preview = document.querySelector('.produto-preview-image');
+            const fallback = '@Url.Content("~/images/servicos/sem-imagem.png")';
+
+            if (!input || !preview) return;
+
+            function atualizarPreview() {
+                const valor = input.value.trim();
+                preview.src = valor ? valor : fallback;
+            }
+
+            input.addEventListener('input', atualizarPreview);
+
+            preview.addEventListener('error', function () {
+                preview.src = fallback;
+            });
+        })();
+    </script>
 }

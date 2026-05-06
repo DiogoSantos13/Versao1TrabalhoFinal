@@ -18,9 +18,19 @@
     var isAdmin = isAuthenticated && User.IsInRole("Admin");
 
     /// <summary>
+    /// Indica se o utilizador atual pertence ao perfil de mecânico.
+    /// </summary>
+    var isMecanico = isAuthenticated && User.IsInRole("Mecanico");
+
+    /// <summary>
     /// Indica se o utilizador atual pertence ao perfil de colaborador.
     /// </summary>
     var isColaborador = isAuthenticated && User.IsInRole("Colaborador");
+
+    /// <summary>
+    /// Indica se o utilizador atual pertence ao staff.
+    /// </summary>
+    var isStaff = isAdmin || isMecanico || isColaborador;
 
     /// <summary>
     /// Indica se o utilizador atual pode aceder à área de produtos.
@@ -31,6 +41,16 @@
     /// Indica se o utilizador atual pode gerir clientes.
     /// </summary>
     var canManageClientes = isAdmin || isColaborador;
+
+    /// <summary>
+    /// Indica se o utilizador atual pode ver o dashboard.
+    /// </summary>
+    var canSeeDashboard = isStaff;
+
+    /// <summary>
+    /// Indica se o utilizador atual pode ver os orçamentos.
+    /// </summary>
+    var canSeeOrcamentos = isStaff || isCliente;
 }
 
 @functions {
@@ -118,7 +138,6 @@
         </div>
 
         <div class="nav-right">
-            @* Link público para o catálogo do stand. *@
             <a asp-page="/VeiculosStand/Index"
                class="@NavClass("/VeiculosStand")"
                aria-current="@AriaCurrent("/VeiculosStand")">
@@ -126,7 +145,6 @@
                 <span>Stand</span>
             </a>
 
-            @* Link público para serviços. *@
             <a asp-page="/Servicos/Index"
                class="@NavClass("/Servicos")"
                aria-current="@AriaCurrent("/Servicos")">
@@ -134,7 +152,6 @@
                 <span>Serviços</span>
             </a>
 
-            @* Link visível para qualquer utilizador autenticado. *@
             @if (isAuthenticated)
             {
                 <a asp-page="/Veiculos/Index"
@@ -145,7 +162,16 @@
                 </a>
             }
 
-            @* Produtos acessíveis a cliente, admin e colaborador. *@
+            @if (canSeeDashboard)
+            {
+                <a asp-page="/Dashboard/Index"
+                   class="@NavClass("/Dashboard")"
+                   aria-current="@AriaCurrent("/Dashboard")">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+            }
+
             @if (canAccessProdutos)
             {
                 <a asp-page="/Produtos/Index"
@@ -156,8 +182,7 @@
                 </a>
             }
 
-            @* Área exclusiva de cliente. *@
-            @if (isCliente)
+            @if (canSeeOrcamentos)
             {
                 <a asp-page="/GestaoOrcamentos/Index"
                    class="@(NavClass("/GestaoOrcamentos") + " nav-link-highlight")"
@@ -165,7 +190,10 @@
                     <i class="fa-solid fa-file-invoice-dollar"></i>
                     <span>Orçamentos</span>
                 </a>
+            }
 
+            @if (isCliente)
+            {
                 <a asp-page="/Carrinho/Index"
                    class="@NavClass("/Carrinho/Index", true)"
                    aria-current="@AriaCurrent("/Carrinho/Index", true)">
@@ -174,7 +202,6 @@
                 </a>
             }
 
-            @* Área de gestão de clientes para staff autorizado. *@
             @if (canManageClientes)
             {
                 <a asp-page="/Clientes/Index"
@@ -185,7 +212,6 @@
                 </a>
             }
 
-            @* Link público de contactos. *@
             <a asp-page="/Contactos"
                class="@NavClass("/Contactos", true)"
                aria-current="@AriaCurrent("/Contactos", true)">
@@ -193,7 +219,6 @@
                 <span>Contactos</span>
             </a>
 
-            @* Área de autenticação / logout. *@
             @if (isAuthenticated)
             {
                 <div class="nav-auth-group">
@@ -239,7 +264,6 @@
         </div>
 
         <nav class="mobile-drawer-nav" aria-label="Menu principal mobile">
-            @* Link público para o catálogo do stand. *@
             <a asp-page="/VeiculosStand/Index"
                class="@NavClass("/VeiculosStand")"
                aria-current="@AriaCurrent("/VeiculosStand")">
@@ -247,7 +271,6 @@
                 <span>Stand</span>
             </a>
 
-            @* Link público para serviços. *@
             <a asp-page="/Servicos/Index"
                class="@NavClass("/Servicos")"
                aria-current="@AriaCurrent("/Servicos")">
@@ -255,7 +278,6 @@
                 <span>Serviços</span>
             </a>
 
-            @* Link para viaturas do utilizador autenticado. *@
             @if (isAuthenticated)
             {
                 <a asp-page="/Veiculos/Index"
@@ -266,7 +288,16 @@
                 </a>
             }
 
-            @* Produtos acessíveis a cliente, admin e colaborador. *@
+            @if (canSeeDashboard)
+            {
+                <a asp-page="/Dashboard/Index"
+                   class="@NavClass("/Dashboard")"
+                   aria-current="@AriaCurrent("/Dashboard")">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+            }
+
             @if (canAccessProdutos)
             {
                 <a asp-page="/Produtos/Index"
@@ -276,22 +307,17 @@
                     <span>Produtos</span>
                 </a>
             }
-            @if (User.Identity != null && User.Identity.IsAuthenticated)
-            {
-                <div style="background:#222;color:#fff;padding:10px;margin:10px 0;">
-                    <p>User: @User.Identity.Name</p>
-                    <p>Admin: @User.IsInRole("Admin")</p>
-                    <p>Cliente: @User.IsInRole("Cliente")</p>
-                    <p>Colaborador: @User.IsInRole("Colaborador")</p>
 
-                    @foreach (var claim in User.Claims)
-                    {
-                        <p>@claim.Type = @claim.Value</p>
-                    }
-                </div>
+            @if (canSeeOrcamentos)
+            {
+                <a asp-page="/GestaoOrcamentos/Index"
+                   class="@(NavClass("/GestaoOrcamentos") + " nav-link-highlight")"
+                   aria-current="@AriaCurrent("/GestaoOrcamentos")">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <span>Orçamentos</span>
+                </a>
             }
 
-            @* Área exclusiva de cliente no menu mobile. *@
             @if (isCliente)
             {
                 <a asp-page="/Carrinho/Produtos"
@@ -299,13 +325,6 @@
                    aria-current="@AriaCurrent("/Carrinho/Produtos", true)">
                     <i class="fa-solid fa-basket-shopping"></i>
                     <span>Carrinho Produtos</span>
-                </a>
-
-                <a asp-page="/GestaoOrcamentos/Index"
-                   class="@(NavClass("/GestaoOrcamentos") + " nav-link-highlight")"
-                   aria-current="@AriaCurrent("/GestaoOrcamentos")">
-                    <i class="fa-solid fa-file-invoice-dollar"></i>
-                    <span>Orçamentos</span>
                 </a>
 
                 <a asp-page="/Carrinho/Index"
@@ -316,7 +335,6 @@
                 </a>
             }
 
-            @* Gestão de clientes para admin e colaborador. *@
             @if (canManageClientes)
             {
                 <a asp-page="/Clientes/Index"
@@ -327,7 +345,6 @@
                 </a>
             }
 
-            @* Link público para contactos. *@
             <a asp-page="/Contactos"
                class="@NavClass("/Contactos", true)"
                aria-current="@AriaCurrent("/Contactos", true)">
@@ -403,9 +420,6 @@
 
             if (!trigger || !closeBtn || !drawer || !overlay) return;
 
-            /// <summary>
-            /// Abre o menu lateral mobile.
-            /// </summary>
             function openMenu() {
                 drawer.classList.add('is-open');
                 overlay.hidden = false;
@@ -415,9 +429,6 @@
                 body.classList.add('menu-open');
             }
 
-            /// <summary>
-            /// Fecha o menu lateral mobile.
-            /// </summary>
             function closeMenu() {
                 drawer.classList.remove('is-open');
                 overlay.classList.remove('is-visible');

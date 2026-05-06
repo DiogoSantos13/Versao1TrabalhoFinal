@@ -13,34 +13,44 @@
                 <form method="post">
                     <input type="hidden" asp-for="VeiculoStand.Id" />
 
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
                     <div class="mb-3">
                         <label asp-for="VeiculoStand.VeiculoId" class="form-label">Veículo</label>
                         <select asp-for="VeiculoStand.VeiculoId" asp-items="Model.VeiculosSelect" class="form-select"></select>
+                        <span asp-validation-for="VeiculoStand.VeiculoId" class="text-danger"></span>
                     </div>
 
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label asp-for="VeiculoStand.Preco" class="form-label"></label>
                             <input asp-for="VeiculoStand.Preco" class="form-control" />
+                            <span asp-validation-for="VeiculoStand.Preco" class="text-danger"></span>
                         </div>
+
                         <div class="col-md-4 mb-3">
                             <label asp-for="VeiculoStand.Estado" class="form-label"></label>
                             <input asp-for="VeiculoStand.Estado" class="form-control" />
+                            <span asp-validation-for="VeiculoStand.Estado" class="text-danger"></span>
                         </div>
+
                         <div class="col-md-4 mb-3">
                             <label asp-for="VeiculoStand.Quilometros" class="form-label"></label>
                             <input asp-for="VeiculoStand.Quilometros" class="form-control" />
+                            <span asp-validation-for="VeiculoStand.Quilometros" class="text-danger"></span>
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="VeiculoStand.Descricao" class="form-label"></label>
                         <textarea asp-for="VeiculoStand.Descricao" class="form-control"></textarea>
+                        <span asp-validation-for="VeiculoStand.Descricao" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="VeiculoStand.ImagemUrl" class="form-label"></label>
                         <input asp-for="VeiculoStand.ImagemUrl" class="form-control" />
+                        <span asp-validation-for="VeiculoStand.ImagemUrl" class="text-danger"></span>
                     </div>
 
                     <button type="submit" class="btn btn-primary">Guardar alterações</button>
@@ -50,3 +60,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

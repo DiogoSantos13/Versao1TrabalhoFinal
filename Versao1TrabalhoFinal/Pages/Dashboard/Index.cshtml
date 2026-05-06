@@ -4,76 +4,131 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<h1 class="page-title">Dashboard</h1>
+<section class="dashboard-page">
+    <div class="dashboard-container">
 
-<div class="row g-4">
-    <div class="col-12 col-md-6 col-xl-3">
-        <div class="card stat-card h-100">
-            <div class="card-body d-flex justify-content-between align-items-start">
-                <div>
-                    <div class="stat-label">Clientes</div>
-                    <div class="stat-value">@Model.TotalClientes</div>
-                </div>
-                <div class="stat-icon icon-blue">
-                    <i class="bi bi-people-fill"></i>
-                </div>
+        <div class="dashboard-hero">
+            <div>
+                <p class="page-eyebrow">Painel administrativo</p>
+                <h1 class="page-title">Dashboard geral</h1>
+                <p class="page-subtitle">
+                    Visão rápida sobre clientes, stock, serviços e atividade da oficina.
+                </p>
+            </div>
+
+            <div class="dashboard-hero-badge">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Resumo em tempo real</span>
             </div>
         </div>
-    </div>
 
-    <div class="col-12 col-md-6 col-xl-3">
-        <div class="card stat-card h-100">
-            <div class="card-body d-flex justify-content-between align-items-start">
-                <div>
-                    <div class="stat-label">Veículos</div>
-                    <div class="stat-value">@Model.TotalVeiculos</div>
+        <div class="dashboard-kpi-grid">
+            <div class="dashboard-kpi-card card-cliente">
+                <div class="dashboard-kpi-top">
+                    <span class="dashboard-kpi-label">Clientes</span>
+                    <div class="dashboard-kpi-icon">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
                 </div>
-                <div class="stat-icon icon-green">
-                    <i class="bi bi-car-front-fill"></i>
+                <div class="dashboard-kpi-value">@Model.TotalClientes</div>
+                <p class="dashboard-kpi-note">Total de clientes registados na plataforma.</p>
+            </div>
+
+            <div class="dashboard-kpi-card card-veiculo">
+                <div class="dashboard-kpi-top">
+                    <span class="dashboard-kpi-label">Veículos</span>
+                    <div class="dashboard-kpi-icon">
+                        <i class="fa-solid fa-car-side"></i>
+                    </div>
                 </div>
+                <div class="dashboard-kpi-value">@Model.TotalVeiculos</div>
+                <p class="dashboard-kpi-note">Viaturas associadas aos clientes.</p>
+            </div>
+
+            <div class="dashboard-kpi-card card-produto">
+                <div class="dashboard-kpi-top">
+                    <span class="dashboard-kpi-label">Produtos</span>
+                    <div class="dashboard-kpi-icon">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                </div>
+                <div class="dashboard-kpi-value">@Model.TotalProdutos</div>
+                <p class="dashboard-kpi-note">Itens disponíveis para venda ou utilização.</p>
+            </div>
+
+            <div class="dashboard-kpi-card card-servico">
+                <div class="dashboard-kpi-top">
+                    <span class="dashboard-kpi-label">Serviços</span>
+                    <div class="dashboard-kpi-icon">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                    </div>
+                </div>
+                <div class="dashboard-kpi-value">@Model.TotalServicos</div>
+                <p class="dashboard-kpi-note">Serviços atualmente registados no sistema.</p>
             </div>
         </div>
-    </div>
 
-    <div class="col-12 col-md-6 col-xl-3">
-        <div class="card stat-card h-100">
-            <div class="card-body d-flex justify-content-between align-items-start">
-                <div>
-                    <div class="stat-label">Produtos</div>
-                    <div class="stat-value">@Model.TotalProdutos</div>
+        <div class="dashboard-bottom-grid">
+            <div class="dashboard-panel dashboard-panel-large">
+                <div class="dashboard-panel-header">
+                    <div>
+                        <h2 class="dashboard-panel-title">Estado operacional</h2>
+                        <p class="dashboard-panel-subtitle">Indicadores rápidos para apoio à gestão.</p>
+                    </div>
                 </div>
-                <div class="stat-icon icon-yellow">
-                    <i class="bi bi-box-seam-fill"></i>
+
+                <div class="dashboard-mini-stats">
+                    <div class="dashboard-mini-card warning">
+                        <div class="dashboard-mini-label">Ordens abertas</div>
+                        <div class="dashboard-mini-value">@Model.OrdensAbertas</div>
+                        <small>Ordens atualmente em curso ou por tratar.</small>
+                    </div>
+
+                    <div class="dashboard-mini-card neutral">
+                        <div class="dashboard-mini-label">Total geral registado</div>
+                        <div class="dashboard-mini-value">
+                            @(Model.TotalClientes + Model.TotalVeiculos + Model.TotalProdutos + Model.TotalServicos)
+                        </div>
+                        <small>Soma global dos principais registos do sistema.</small>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="col-12 col-md-6 col-xl-3">
-        <div class="card stat-card h-100">
-            <div class="card-body d-flex justify-content-between align-items-start">
-                <div>
-                    <div class="stat-label">Serviços</div>
-                    <div class="stat-value">@Model.TotalServicos</div>
+            <aside class="dashboard-panel dashboard-panel-side">
+                <div class="dashboard-panel-header">
+                    <div>
+                        <h2 class="dashboard-panel-title">Resumo rápido</h2>
+                        <p class="dashboard-panel-subtitle">Leitura administrativa imediata.</p>
+                    </div>
                 </div>
-                <div class="stat-icon icon-red">
-                    <i class="bi bi-tools"></i>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="col-12 col-md-6 col-xl-3">
-        <div class="card stat-card h-100">
-            <div class="card-body d-flex justify-content-between align-items-start">
-                <div>
-                    <div class="stat-label">Ordens abertas</div>
-                    <div class="stat-value text-warning">@Model.OrdensAbertas</div>
+                <div class="dashboard-summary-list">
+                    <div class="dashboard-summary-item">
+                        <span>Clientes ativos no sistema</span>
+                        <strong>@Model.TotalClientes</strong>
+                    </div>
+
+                    <div class="dashboard-summary-item">
+                        <span>Viaturas registadas</span>
+                        <strong>@Model.TotalVeiculos</strong>
+                    </div>
+
+                    <div class="dashboard-summary-item">
+                        <span>Catálogo de produtos</span>
+                        <strong>@Model.TotalProdutos</strong>
+                    </div>
+
+                    <div class="dashboard-summary-item">
+                        <span>Serviços disponíveis</span>
+                        <strong>@Model.TotalServicos</strong>
+                    </div>
+
+                    <div class="dashboard-summary-item highlight">
+                        <span>Ordens abertas</span>
+                        <strong>@Model.OrdensAbertas</strong>
+                    </div>
                 </div>
-                <div class="stat-icon icon-yellow">
-                    <i class="bi bi-clipboard-check-fill"></i>
-                </div>
-            </div>
+            </aside>
         </div>
     </div>
-</div>
+</section>

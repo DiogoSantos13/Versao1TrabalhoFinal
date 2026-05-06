@@ -9,23 +9,55 @@
         <div class="page-header-block">
             <p class="page-eyebrow">Carrinho</p>
             <h1 class="page-title">Adicionar veículo</h1>
-            <p class="page-subtitle">Neste momento o carrinho está configurado apenas para produtos e serviços.</p>
+            <p class="page-subtitle">O veículo foi processado para adição ao carrinho.</p>
         </div>
 
         <div class="client-form-card">
             @if (TempData["ErrorMessage"] != null)
             {
-                <div class="alert alert-danger mb-3">@TempData["ErrorMessage"]</div>
+                <div class="alert alert-danger mb-3" role="alert">
+                    @TempData["ErrorMessage"]
+                </div>
             }
 
             @if (TempData["SuccessMessage"] != null)
             {
-                <div class="alert alert-success mb-3">@TempData["SuccessMessage"]</div>
+                <div class="alert alert-success mb-3" role="alert">
+                    @TempData["SuccessMessage"]
+                </div>
             }
 
-            <p class="text-muted mb-4">
-                Se quiseres guardar veículos no carrinho, precisas de criar uma entidade própria para isso.
-            </p>
+            @if (Model.VeiculoStand != null)
+            {
+                <div class="client-summary-card mb-4">
+                    <h3 class="client-summary-name">
+                        @(Model.VeiculoStand.Veiculo?.Marca ?? "Marca")
+                        @(Model.VeiculoStand.Veiculo?.Modelo ?? "Modelo")
+                    </h3>
+
+                    <div class="client-summary-divider"></div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">Preço</span>
+                        <strong>@Model.VeiculoStand.Preco.ToString("N2") €</strong>
+                    </div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">Estado</span>
+                        <strong>@(string.IsNullOrWhiteSpace(Model.VeiculoStand.Estado) ? "Disponível" : Model.VeiculoStand.Estado)</strong>
+                    </div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">Quilómetros</span>
+                        <strong>@Model.VeiculoStand.Quilometros.ToString("N0")</strong>
+                    </div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">Ano</span>
+                        <strong>@(Model.VeiculoStand.Veiculo?.Ano.ToString() ?? "-")</strong>
+                    </div>
+                </div>
+            }
 
             <div class="client-form-actions">
                 <a asp-page="/VeiculosStand/Index" class="auth-button auth-button-secondary">

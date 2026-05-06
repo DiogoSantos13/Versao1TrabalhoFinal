@@ -15,12 +15,16 @@
         <div class="client-form-card">
             @if (TempData["SuccessMessage"] != null)
             {
-                <div class="alert alert-success mb-3">@TempData["SuccessMessage"]</div>
+                <div class="alert alert-success mb-3" role="alert">
+                    @TempData["SuccessMessage"]
+                </div>
             }
 
             @if (TempData["ErrorMessage"] != null)
             {
-                <div class="alert alert-danger mb-3">@TempData["ErrorMessage"]</div>
+                <div class="alert alert-danger mb-3" role="alert">
+                    @TempData["ErrorMessage"]
+                </div>
             }
 
             <div class="client-form-actions">

@@ -8,9 +8,6 @@ using Versao1TrabalhoFinal.Models;
 
 namespace Versao1TrabalhoFinal.Pages.VeiculosStand
 {
-    /// <summary>
-    /// Página de edição de veículos do stand.
-    /// </summary>
     [Authorize(Roles = "Admin")]
     public class EditModel : PageModel
     {
@@ -22,31 +19,75 @@ namespace Versao1TrabalhoFinal.Pages.VeiculosStand
         }
 
         [BindProperty]
-        public VeiculoStand VeiculoStand { get; set; } = new();
+        public VeiculoStand VeiculoStand { get; set; } = default!;
 
         public SelectList VeiculosSelect { get; set; } = default!;
 
+        private async Task LoadVeiculosSelectAsync(object? selectedValue = null)
+        {
+            var veiculos = await _context.Veiculos
+                .AsNoTracking()
+                .OrderBy(v => v.Marca)
+                .ThenBy(v => v.Modelo)
+                .Select(v => new
+                {
+                    v.Id,
+                    NomeCompleto = (v.Marca ?? "") + " " + (v.Modelo ?? "")
+                })
+                .ToListAsync();
+
+            VeiculosSelect = new SelectList(veiculos, "Id", "NomeCompleto", selectedValue);
+        }
+
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var item = await _context.VeiculosStand.FindAsync(id);
+            var item = await _context.VeiculosStand
+                .AsNoTracking()
+                .FirstOrDefaultAsync(vs => vs.Id == id);
 
             if (item == null)
                 return NotFound();
 
             VeiculoStand = item;
-            VeiculosSelect = new SelectList(await _context.Veiculos.OrderBy(v => v.Marca).ThenBy(v => v.Modelo).ToListAsync(), "Id", "Modelo", VeiculoStand.VeiculoId);
+
+            await LoadVeiculosSelectAsync(VeiculoStand.VeiculoId);
+
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int id)
         {
             if (!ModelState.IsValid)
             {
-                VeiculosSelect = new SelectList(await _context.Veiculos.OrderBy(v => v.Marca).ThenBy(v => v.Modelo).ToListAsync(), "Id", "Modelo", VeiculoStand.VeiculoId);
+                await LoadVeiculosSelectAsync(VeiculoStand.VeiculoId);
                 return Page();
             }
 
-            _context.Attach(VeiculoStand).State = EntityState.Modified;
+            var entityToUpdate = await _context.VeiculosStand
+                .FirstOrDefaultAsync(vs => vs.Id == id);
+
+            if (entityToUpdate == null)
+                return NotFound();
+
+            var updated = await TryUpdateModelAsync(
+                entityToUpdate,
+                "VeiculoStand",
+                v => v.VeiculoId,
+                v => v.Preco,
+                v => v.Estado,
+                v => v.Quilometros,
+                v => v.Descricao,
+                v => v.DataEntrada,
+                v => v.Cilindrada,
+                v => v.ImagemUrl
+            );
+
+            if (!updated)
+            {
+                await LoadVeiculosSelectAsync(entityToUpdate.VeiculoId);
+                return Page();
+            }
+
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

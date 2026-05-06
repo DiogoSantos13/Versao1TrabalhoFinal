@@ -35,5 +35,10 @@
         /// Produtos adicionados ao carrinho.
         /// </summary>
         public ICollection<CarrinhoProdutos> Produtos { get; set; } = new List<CarrinhoProdutos>();
+
+        /// <summary>
+        /// Veículos do stand associados ao carrinho.
+        /// </summary>
+        public ICollection<CarrinhoVeiculoStand> CarrinhoVeiculosStand { get; set; } = new List<CarrinhoVeiculoStand>();
     }
 }

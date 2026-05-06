@@ -8,8 +8,7 @@ using Versao1TrabalhoFinal.Models;
 namespace Versao1TrabalhoFinal.Pages.Carrinho
 {
     /// <summary>
-    /// Página principal do carrinho do cliente.
-    /// Apresenta os produtos e serviços atualmente associados ao carrinho.
+    /// Página responsável por apresentar o conteúdo do carrinho do cliente autenticado.
     /// </summary>
     [Authorize(Roles = "Cliente")]
     public class IndexModel : PageModel
@@ -18,8 +17,10 @@ namespace Versao1TrabalhoFinal.Pages.Carrinho
         private readonly UserManager<IdentityUser> _userManager;
 
         /// <summary>
-        /// Inicializa uma nova instância da página principal do carrinho.
+        /// Inicializa uma nova instância da página do carrinho.
         /// </summary>
+        /// <param name="context">Contexto da base de dados.</param>
+        /// <param name="userManager">Gestor de utilizadores do Identity.</param>
         public IndexModel(StandDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
@@ -27,22 +28,43 @@ namespace Versao1TrabalhoFinal.Pages.Carrinho
         }
 
         /// <summary>
-        /// Itens de serviços presentes no carrinho.
+        /// Carrinho do cliente autenticado.
         /// </summary>
-        public IList<CarrinhoServico> ItensServicos { get; set; } = new List<CarrinhoServico>();
+        public Versao1TrabalhoFinal.Models.Carrinho? Carrinho { get; set; }
 
         /// <summary>
-        /// Itens de produtos presentes no carrinho.
+        /// Total monetário dos produtos presentes no carrinho.
         /// </summary>
-        public IList<CarrinhoProdutos> ItensProdutos { get; set; } = new List<CarrinhoProdutos>();
+        public decimal TotalProdutos { get; set; }
 
         /// <summary>
-        /// Total atual do carrinho.
+        /// Total monetário dos serviços presentes no carrinho.
         /// </summary>
-        public decimal Total { get; set; }
+        public decimal TotalServicos { get; set; }
 
         /// <summary>
-        /// Carrega os dados do carrinho do cliente autenticado.
+        /// Total monetário dos veículos do stand presentes no carrinho.
+        /// </summary>
+        public decimal TotalVeiculosStand { get; set; }
+
+        /// <summary>
+        /// Total global do carrinho.
+        /// </summary>
+        public decimal TotalGeral { get; set; }
+
+        /// <summary>
+        /// Indica se o carrinho existe e contém pelo menos um item.
+        /// </summary>
+        public bool TemItens =>
+            Carrinho != null &&
+            (
+                Carrinho.Produtos.Any() ||
+                Carrinho.Servicos.Any() ||
+                Carrinho.CarrinhoVeiculosStand.Any()
+            );
+
+        /// <summary>
+        /// Carrega o carrinho do cliente autenticado e os respetivos itens.
         /// </summary>
         public async Task OnGetAsync()
         {
@@ -62,31 +84,26 @@ namespace Versao1TrabalhoFinal.Pages.Carrinho
                 return;
             }
 
-            var carrinho = await _context.Carrinhos
+            Carrinho = await _context.Carrinhos
                 .AsNoTracking()
+                .Include(c => c.Produtos)
+                    .ThenInclude(cp => cp.Produto)
+                .Include(c => c.Servicos)
+                    .ThenInclude(cs => cs.Servico)
+                .Include(c => c.CarrinhoVeiculosStand)
+                    .ThenInclude(cvs => cvs.VeiculoStand)
+                        .ThenInclude(vs => vs.Veiculo)
                 .FirstOrDefaultAsync(c => c.ClienteId == cliente.Id);
 
-            if (carrinho == null)
+            if (Carrinho == null)
             {
                 return;
             }
 
-            ItensServicos = await _context.CarrinhoServicos
-                .AsNoTracking()
-                .Where(cs => cs.CarrinhoId == carrinho.Id)
-                .Include(cs => cs.Servico)
-                .OrderByDescending(cs => cs.DataAdicao)
-                .ToListAsync();
-
-            ItensProdutos = await _context.CarrinhoProdutos
-                .AsNoTracking()
-                .Where(cp => cp.CarrinhoId == carrinho.Id)
-                .Include(cp => cp.Produto)
-                .OrderByDescending(cp => cp.DataAdicao)
-                .ToListAsync();
-
-            Total = ItensServicos.Sum(s => s.PrecoNoMomento)
-                + ItensProdutos.Sum(p => p.PrecoNoMomento * p.Quantidade);
+            TotalProdutos = Carrinho.Produtos.Sum(p => p.PrecoNoMomento);
+            TotalServicos = Carrinho.Servicos.Sum(s => s.PrecoNoMomento);
+            TotalVeiculosStand = Carrinho.CarrinhoVeiculosStand.Sum(v => v.PrecoNoMomento);
+            TotalGeral = TotalProdutos + TotalServicos + TotalVeiculosStand;
         }
     }
 }
