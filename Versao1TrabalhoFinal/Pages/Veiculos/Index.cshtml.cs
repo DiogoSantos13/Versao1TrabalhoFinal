@@ -17,11 +17,6 @@ namespace Versao1TrabalhoFinal.Pages.Veiculos
         private readonly StandDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
 
-        /// <summary>
-        /// Inicializa uma nova instância da página de listagem de veículos.
-        /// </summary>
-        /// <param name="context">Contexto da base de dados.</param>
-        /// <param name="userManager">Gestor de utilizadores do Identity.</param>
         public IndexModel(StandDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
@@ -36,7 +31,6 @@ namespace Versao1TrabalhoFinal.Pages.Veiculos
         /// <summary>
         /// Carrega os veículos associados ao cliente autenticado.
         /// </summary>
-        /// <returns>A página com os veículos do utilizador ou um redirecionamento apropriado.</returns>
         public async Task<IActionResult> OnGetAsync()
         {
             var userId = _userManager.GetUserId(User);
@@ -61,6 +55,27 @@ namespace Versao1TrabalhoFinal.Pages.Veiculos
                 .OrderBy(v => v.Marca)
                 .ThenBy(v => v.Modelo)
                 .ToListAsync();
+
+            var ids = Veiculos.Select(v => v.Id).ToList();
+
+            if (ids.Any())
+            {
+                var imagens = await _context.ImagensEntidade
+                    .AsNoTracking()
+                    .Where(i => i.TipoEntidade == "Veiculo" && ids.Contains(i.EntidadeId))
+                    .OrderByDescending(i => i.Principal)
+                    .ThenBy(i => i.Ordem)
+                    .ToListAsync();
+
+                foreach (var veiculo in Veiculos)
+                {
+                    veiculo.Imagens = imagens
+                        .Where(i => i.EntidadeId == veiculo.Id)
+                        .OrderByDescending(i => i.Principal)
+                        .ThenBy(i => i.Ordem)
+                        .ToList();
+                }
+            }
 
             return Page();
         }

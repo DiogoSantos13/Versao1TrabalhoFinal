@@ -2,22 +2,13 @@
 @model Versao1TrabalhoFinal.Pages.Produtos.DeleteModel
 
 @{
-    /// <summary>
-    /// Define o título da página.
-    /// </summary>
     ViewData["Title"] = "Eliminar Produto";
 
-    /// <summary>
-    /// Define a imagem de pré-visualização do produto.
-    /// </summary>
-    var imagemPreview = !string.IsNullOrWhiteSpace(Model.Produto.ImagemUrl)
-        ? Url.Content(Model.Produto.ImagemUrl)
-        : Url.Content("~/images/produtos/sem-imagem.png");
+    var imagemPreview = Url.Content(Model.ImagemPreview);
 }
 
 <div class="produto-delete-page py-4 py-lg-5">
     <div class="produto-delete-shell">
-        @* Cabeçalho da página. *@
         <section class="produto-delete-hero mb-4">
             <div class="produto-delete-hero-content">
                 <div>
@@ -51,7 +42,6 @@
         </div>
 
         <div class="row g-4">
-            @* Cartão com resumo visual do produto. *@
             <div class="col-12 col-xl-8">
                 <div class="produto-delete-card h-100">
                     <div class="produto-delete-card-header">
@@ -103,7 +93,6 @@
                 </div>
             </div>
 
-            @* Cartão lateral com ações. *@
             <div class="col-12 col-xl-4">
                 <div class="produto-delete-card h-100">
                     <div class="produto-delete-card-header">
@@ -117,7 +106,7 @@
 
                             <div class="produto-delete-note mb-4">
                                 <i class="fa-solid fa-circle-info me-2"></i>
-                                O produto será removido da listagem atual.
+                                O produto e as imagens associadas serão removidos.
                             </div>
 
                             <div class="d-grid gap-2">

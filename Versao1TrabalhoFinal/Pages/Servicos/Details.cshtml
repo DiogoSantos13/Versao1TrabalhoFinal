@@ -1,60 +1,210 @@
 ﻿@page "{id:int}"
-@model Versao1TrabalhoFinal.Pages.Servicos.EditModel
+@model Versao1TrabalhoFinal.Pages.Servicos.DetailsModel
 @{
-    ViewData["Title"] = "Editar Serviço";
+    ViewData["Title"] = "Detalhes do Serviço";
+    var servico = Model.Servico;
+    var imagens = servico?.Imagens
+        .OrderByDescending(i => i.Principal)
+        .ThenBy(i => i.Ordem)
+        .ToList() ?? new();
 }
 
-<h2 class="mb-4">Editar Serviço</h2>
-
-<div class="row">
-    <div class="col-md-8 col-lg-6">
-        <form method="post">
-            <input type="hidden" asp-for="Servico.Id" />
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-            <div class="mb-3">
-                <label asp-for="Servico.Nome" class="form-label"></label>
-                <input asp-for="Servico.Nome" class="form-control" />
-                <span asp-validation-for="Servico.Nome" class="text-danger"></span>
+@if (servico != null)
+{
+    <section class="service-details-page">
+        <div class="service-details-container">
+            <div class="service-details-breadcrumb">
+                <a asp-page="./Index">Serviços</a>
+                <span>/</span>
+                <span>@servico.Nome</span>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="Servico.Descricao" class="form-label"></label>
-                <textarea asp-for="Servico.Descricao" class="form-control" rows="4"></textarea>
-                <span asp-validation-for="Servico.Descricao" class="text-danger"></span>
+            <div class="service-hero-card">
+                <div class="service-hero-gallery">
+                    <div class="service-carousel" id="serviceCarousel">
+                        @for (int i = 0; i < imagens.Count; i++)
+                        {
+                            var imagem = imagens[i];
+                            <div class="service-slide @(i == 0 ? "active" : "")" data-index="@i">
+                                <img src="@imagem.Url"
+                                     alt="@(string.IsNullOrWhiteSpace(imagem.Alt) ? servico.Nome : imagem.Alt)"
+                                     class="service-main-image"
+                                     onerror="this.onerror=null;this.src='@Url.Content("~/images/services/default-service.jpg")';" />
+                            </div>
+                        }
+
+                        @if (imagens.Count > 1)
+                        {
+                            <button type="button" class="service-arrow service-arrow-left" id="servicePrev" aria-label="Imagem anterior">
+                                &#8249;
+                            </button>
+                            <button type="button" class="service-arrow service-arrow-right" id="serviceNext" aria-label="Imagem seguinte">
+                                &#8250;
+                            </button>
+
+                            <div class="service-counter">
+                                <span id="serviceCurrentSlide">1</span>/<span>@imagens.Count</span>
+                            </div>
+                        }
+                    </div>
+
+                    @if (imagens.Count > 1)
+                    {
+                        <div class="service-thumbnails">
+                            @for (int i = 0; i < imagens.Count; i++)
+                            {
+                                var imagem = imagens[i];
+                                <button type="button"
+                                        class="service-thumb @(i == 0 ? "active" : "")"
+                                        data-thumb-index="@i"
+                                        aria-label="Ver imagem @(i + 1)">
+                                    <img src="@imagem.Url"
+                                         alt="Miniatura @(i + 1)"
+                                         onerror="this.onerror=null;this.src='@Url.Content("~/images/services/default-service.jpg")';" />
+                                </button>
+                            }
+                        </div>
+                    }
             </div>
 
-            <div class="mb-3">
-                <label asp-for="Servico.PrecoBase" class="form-label"></label>
-                <input asp-for="Servico.PrecoBase" class="form-control" />
-                <span asp-validation-for="Servico.PrecoBase" class="text-danger"></span>
+            <div class="service-hero-summary">
+                <div class="service-summary-header">
+                    <p class="service-summary-eyebrow">Serviço disponível</p>
+                    <h1>@servico.Nome</h1>
+                    <p class="service-summary-status @(servico.Ativo ? "status-active" : "status-inactive")">
+                        @(servico.Ativo ? "Ativo" : "Inativo")
+                    </p>
+                </div>
+
+                <div class="service-price-box">
+                    <span class="service-price-label">Preço base</span>
+                    <strong class="service-price-value">€ @servico.PrecoBase.ToString("N2")</strong>
+                </div>
+
+                <div class="service-highlight-grid">
+                    <div class="service-highlight-item">
+                        <span>Duração estimada</span>
+                        <strong>@servico.TempoEstimado min</strong>
+                    </div>
+                    <div class="service-highlight-item">
+                        <span>Estado</span>
+                        <strong>@(servico.Ativo ? "Disponível" : "Indisponível")</strong>
+                    </div>
+                </div>
+
+                <div class="service-summary-actions">
+                    <a asp-page="/Marcacoes/Create" class="details-action-button">
+                        Marcar serviço
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="service-details-content">
+            <div class="service-details-main">
+                <section class="details-section-card">
+                    <div class="details-section-heading">
+                        <h2>Descrição</h2>
+                    </div>
+
+                    <p class="service-description-text">
+                        @(string.IsNullOrWhiteSpace(servico.Descricao)
+                                                ? "Sem descrição adicional disponível."
+                                                : servico.Descricao)
+                    </p>
+                </section>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="Servico.TempoEstimado" class="form-label"></label>
-                <input asp-for="Servico.TempoEstimado" class="form-control" />
-                <span asp-validation-for="Servico.TempoEstimado" class="text-danger"></span>
-            </div>
+                <aside class="service-details-side">
+                    <section class="details-section-card sticky-side-card">
+                        <div class="details-section-heading">
+                            <h2>Resumo</h2>
+                        </div>
 
-            <div class="mb-3">
-                <label asp-for="Servico.ImagemUrl" class="form-label"></label>
-                <input asp-for="Servico.ImagemUrl" class="form-control" />
-                <span asp-validation-for="Servico.ImagemUrl" class="text-danger"></span>
-            </div>
+                        <div class="service-side-list">
+                            <div class="service-side-row">
+                                <span>Nome</span>
+                                <strong>@servico.Nome</strong>
+                            </div>
+                            <div class="service-side-row">
+                                <span>Preço base</span>
+                                <strong>€ @servico.PrecoBase.ToString("N2")</strong>
+                            </div>
+                            <div class="service-side-row">
+                                <span>Tempo estimado</span>
+                                <strong>@servico.TempoEstimado min</strong>
+                            </div>
+                            <div class="service-side-row">
+                                <span>Estado</span>
+                                <strong>@(servico.Ativo ? "Ativo" : "Inativo")</strong>
+                            </div>
+                            <div class="service-side-row">
+                                <span>Fotos</span>
+                                <strong>@imagens.Count</strong>
+                            </div>
+                        </div>
 
-            <div class="form-check mb-3">
-                <input asp-for="Servico.Ativo" class="form-check-input" />
-                <label asp-for="Servico.Ativo" class="form-check-label"></label>
+                        <div class="service-side-actions">
+                            <a asp-page="./Index" class="details-secondary-button">
+                                Voltar à lista
+                            </a>
+                        </div>
+                    </section>
+                </aside>
             </div>
-
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-warning">Guardar alterações</button>
-                <a asp-page="/Servicos/Index" class="btn btn-secondary">Cancelar</a>
-            </div>
-        </form>
-    </div>
-</div>
+        </div>
+    </section>
+}
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const slides = document.querySelectorAll('.service-slide');
+            const thumbs = document.querySelectorAll('.service-thumb');
+            const prev = document.getElementById('servicePrev');
+            const next = document.getElementById('serviceNext');
+            const current = document.getElementById('serviceCurrentSlide');
+
+            if (!slides.length) return;
+
+            let index = 0;
+
+            function updateSlider() {
+                slides.forEach((slide, i) => {
+                    slide.classList.toggle('active', i === index);
+                });
+
+                thumbs.forEach((thumb, i) => {
+                    thumb.classList.toggle('active', i === index);
+                });
+
+                if (current) {
+                    current.textContent = (index + 1).toString();
+                }
+            }
+
+            if (prev) {
+                prev.addEventListener('click', function () {
+                    index = (index - 1 + slides.length) % slides.length;
+                    updateSlider();
+                });
+            }
+
+            if (next) {
+                next.addEventListener('click', function () {
+                    index = (index + 1) % slides.length;
+                    updateSlider();
+                });
+            }
+
+            thumbs.forEach((thumb, thumbIndex) => {
+                thumb.addEventListener('click', function () {
+                    index = thumbIndex;
+                    updateSlider();
+                });
+            });
+
+            updateSlider();
+        })();
+    </script>
 }

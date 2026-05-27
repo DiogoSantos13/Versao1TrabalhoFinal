@@ -17,11 +17,6 @@ namespace Versao1TrabalhoFinal.Pages.Veiculos
         private readonly StandDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
 
-        /// <summary>
-        /// Inicializa uma nova instância da página de detalhes de veículo.
-        /// </summary>
-        /// <param name="context">Contexto da base de dados.</param>
-        /// <param name="userManager">Gestor de utilizadores do Identity.</param>
         public DetailsModel(StandDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
@@ -69,6 +64,35 @@ namespace Versao1TrabalhoFinal.Pages.Veiculos
             if (veiculo == null)
             {
                 return NotFound();
+            }
+
+            veiculo.Imagens = await _context.ImagensEntidade
+                .AsNoTracking()
+                .Where(i => i.TipoEntidade == "Veiculo" && i.EntidadeId == veiculo.Id)
+                .OrderByDescending(i => i.Principal)
+                .ThenBy(i => i.Ordem)
+                .ToListAsync();
+
+            if (!veiculo.Imagens.Any() && !string.IsNullOrWhiteSpace(veiculo.ImagemUrl))
+            {
+                veiculo.Imagens.Add(new ImagemEntidade
+                {
+                    Url = veiculo.ImagemUrl,
+                    Alt = $"{veiculo.Marca} {veiculo.Modelo}",
+                    Principal = true,
+                    Ordem = 0
+                });
+            }
+
+            if (!veiculo.Imagens.Any())
+            {
+                veiculo.Imagens.Add(new ImagemEntidade
+                {
+                    Url = "/images/cars/default-car.jpg",
+                    Alt = "Imagem por defeito",
+                    Principal = true,
+                    Ordem = 0
+                });
             }
 
             Veiculo = veiculo;

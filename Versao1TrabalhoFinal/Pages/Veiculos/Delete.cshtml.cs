@@ -17,28 +17,15 @@ namespace Versao1TrabalhoFinal.Pages.Veiculos
         private readonly StandDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
 
-        /// <summary>
-        /// Inicializa uma nova instância da página de eliminação de veículos.
-        /// </summary>
-        /// <param name="context">Contexto da base de dados.</param>
-        /// <param name="userManager">Gestor de utilizadores do Identity.</param>
         public DeleteModel(StandDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _userManager = userManager;
         }
 
-        /// <summary>
-        /// Veículo a apresentar na confirmação de eliminação.
-        /// </summary>
         [BindProperty]
         public Veiculo Veiculo { get; set; } = new();
 
-        /// <summary>
-        /// Carrega a página de confirmação de eliminação do veículo.
-        /// </summary>
-        /// <param name="id">Identificador do veículo.</param>
-        /// <returns>A página de confirmação ou um resultado adequado caso não exista acesso.</returns>
         public async Task<IActionResult> OnGetAsync(int id)
         {
             var identityUser = await _userManager.GetUserAsync(User);
@@ -77,15 +64,39 @@ namespace Versao1TrabalhoFinal.Pages.Veiculos
                 return NotFound();
             }
 
+            veiculo.Imagens = await _context.ImagensEntidade
+                .AsNoTracking()
+                .Where(i => i.TipoEntidade == "Veiculo" && i.EntidadeId == id)
+                .OrderByDescending(i => i.Principal)
+                .ThenBy(i => i.Ordem)
+                .ToListAsync();
+
+            if (!veiculo.Imagens.Any() && !string.IsNullOrWhiteSpace(veiculo.ImagemUrl))
+            {
+                veiculo.Imagens.Add(new ImagemEntidade
+                {
+                    Url = veiculo.ImagemUrl,
+                    Alt = $"{veiculo.Marca} {veiculo.Modelo}",
+                    Principal = true,
+                    Ordem = 0
+                });
+            }
+
+            if (!veiculo.Imagens.Any())
+            {
+                veiculo.Imagens.Add(new ImagemEntidade
+                {
+                    Url = "/images/cars/default-car.jpg",
+                    Alt = "Imagem por defeito",
+                    Principal = true,
+                    Ordem = 0
+                });
+            }
+
             Veiculo = veiculo;
             return Page();
         }
 
-        /// <summary>
-        /// Remove o veículo selecionado, respeitando as permissões do utilizador autenticado.
-        /// </summary>
-        /// <param name="id">Identificador do veículo.</param>
-        /// <returns>Redireciona para a listagem após a eliminação.</returns>
         public async Task<IActionResult> OnPostAsync(int id)
         {
             var identityUser = await _userManager.GetUserAsync(User);
@@ -121,6 +132,15 @@ namespace Versao1TrabalhoFinal.Pages.Veiculos
             if (veiculo == null)
             {
                 return NotFound();
+            }
+
+            var imagens = await _context.ImagensEntidade
+                .Where(i => i.TipoEntidade == "Veiculo" && i.EntidadeId == id)
+                .ToListAsync();
+
+            if (imagens.Any())
+            {
+                _context.ImagensEntidade.RemoveRange(imagens);
             }
 
             _context.Veiculos.Remove(veiculo);

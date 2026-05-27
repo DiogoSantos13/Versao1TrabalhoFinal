@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Versao1TrabalhoFinal.Models
 {
     [Table("Veiculos")]
-    public class Veiculo
+    public class Veiculo : EntidadeComGaleria
     {
         [Key]
         public int Id { get; set; }
@@ -27,11 +27,13 @@ namespace Versao1TrabalhoFinal.Models
 
         public string? ImagemUrl { get; set; }
 
-        public int ClienteId { get; set; }
+        public int? ClienteId { get; set; }
 
         [ForeignKey(nameof(ClienteId))]
         public Cliente? Cliente { get; set; } //algo que não é necessário para criar um veículo, mas que pode ser útil para exibir informações do cliente associado ao veículo<
         
         public string? VIN { get; set; }
+
+        public int quilometragem { get; set; }
     }
 }

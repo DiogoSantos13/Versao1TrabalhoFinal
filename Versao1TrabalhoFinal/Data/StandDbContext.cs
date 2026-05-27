@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 using Versao1TrabalhoFinal.Models;
 
 namespace Versao1TrabalhoFinal.Data
@@ -87,6 +88,8 @@ namespace Versao1TrabalhoFinal.Data
         /// Tabela de itens de veículos do stand no carrinho.
         /// </summary>
         public DbSet<CarrinhoVeiculoStand> CarrinhoVeiculosStand { get; set; } = null!;
+
+        public DbSet<ImagemEntidade> ImagensEntidade => Set<ImagemEntidade>();
 
         /// <summary>
         /// Configura o modelo da base de dados, incluindo tabelas, propriedades e relações.
@@ -215,6 +218,27 @@ namespace Versao1TrabalhoFinal.Data
             builder.Entity<CarrinhoVeiculoStand>()
                 .HasIndex(cvs => new { cvs.CarrinhoId, cvs.VeiculoStandId })
                 .IsUnique();
+
+            builder.Entity<ImagemEntidade>()
+               .HasIndex(i => new { i.TipoEntidade ,i.EntidadeId });
+
+            builder.Entity<ImagemEntidade>()
+                .Property(i => i.Url)
+                .HasMaxLength(500)
+                .IsRequired();
+
+            builder.Entity<ImagemEntidade>()
+                .Property(i => i.TipoEntidade)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            builder.Entity<ImagemEntidade>()
+                .Property(i => i.Alt)
+                .HasMaxLength(200);
+
+            builder.Entity<VeiculoStand>()
+                .Property(vs => vs.Preco)
+                .HasColumnType("decimal(18,2)");
         }
     }
 }

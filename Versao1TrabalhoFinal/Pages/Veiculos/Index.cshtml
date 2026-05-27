@@ -30,11 +30,23 @@
             <div class="vehicle-grid">
                 @foreach (var item in Model.Veiculos)
                 {
+                    var imagemPrincipal = item.Imagens?
+                    .OrderByDescending(i => i.Principal)
+                    .ThenBy(i => i.Ordem)
+                    .FirstOrDefault()?.Url;
+
+                    var imagemFinal = !string.IsNullOrWhiteSpace(imagemPrincipal)
+                    ? imagemPrincipal
+                    : !string.IsNullOrWhiteSpace(item.ImagemUrl)
+                    ? item.ImagemUrl
+                    : Url.Content("~/images/cars/default-car.jpg");
+
                     <div class="vehicle-admin-card">
                         <div class="vehicle-admin-image-wrap">
-                            <img src="@(string.IsNullOrWhiteSpace(item.ImagemUrl) ? "/images/cars/default-car.jpg" : item.ImagemUrl)"
+                            <img src="@imagemFinal"
                                  class="vehicle-admin-image"
-                                 alt="@item.Marca @item.Modelo" />
+                                 alt="@item.Marca @item.Modelo"
+                                 onerror="this.onerror=null;this.src='@Url.Content("~/images/cars/default-car.jpg")';" />
                         </div>
 
                         <div class="vehicle-admin-body">
@@ -53,6 +65,13 @@
                                 <div class="vehicle-admin-meta-item">
                                     <span class="vehicle-admin-meta-label">Matrícula</span>
                                     <strong>@(string.IsNullOrWhiteSpace(item.Matricula) ? "-" : item.Matricula)</strong>
+                                </div>
+                            </div>
+
+                            <div class="vehicle-admin-meta mt-3">
+                                <div class="vehicle-admin-meta-item">
+                                    <span class="vehicle-admin-meta-label">Fotos</span>
+                                    <strong>@(item.Imagens?.Count ?? 0)</strong>
                                 </div>
                             </div>
 

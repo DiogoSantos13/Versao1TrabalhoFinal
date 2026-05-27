@@ -50,7 +50,7 @@ namespace Versao1TrabalhoFinal.Pages.Servicos
         }
 
         /// <summary>
-        /// Elimina o serviço selecionado.
+        /// Elimina o serviço selecionado e remove também as imagens associadas da galeria.
         /// </summary>
         /// <returns>Redireciona para a listagem.</returns>
         public async Task<IActionResult> OnPostAsync()
@@ -60,16 +60,27 @@ namespace Versao1TrabalhoFinal.Pages.Servicos
                 return NotFound();
             }
 
-            var servico = await _context.Servicos.FindAsync(Servico.Id);
+            var servico = await _context.Servicos
+                .FirstOrDefaultAsync(s => s.Id == Servico.Id);
 
             if (servico == null)
             {
                 return NotFound();
             }
 
+            var imagensGaleria = await _context.ImagensEntidade
+                .Where(i => i.TipoEntidade == "Servico" && i.EntidadeId == servico.Id)
+                .ToListAsync();
+
+            if (imagensGaleria.Any())
+            {
+                _context.ImagensEntidade.RemoveRange(imagensGaleria);
+            }
+
             _context.Servicos.Remove(servico);
             await _context.SaveChangesAsync();
 
+            TempData["SuccessMessage"] = "Serviço eliminado com sucesso.";
             return RedirectToPage("/Servicos/Index");
         }
     }

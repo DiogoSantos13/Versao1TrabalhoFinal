@@ -2,42 +2,73 @@
 @model Versao1TrabalhoFinal.Pages.Servicos.IndexModel
 @{
     ViewData["Title"] = "Serviços";
+
+    var podeGerir = User.Identity?.IsAuthenticated == true &&
+                    (User.IsInRole("Colaborador") || User.IsInRole("Admin"));
+
+    var eCliente = User.Identity?.IsAuthenticated == true && User.IsInRole("Cliente");
 }
 
 <section class="dashboard-page">
     <div class="dashboard-container">
         <div class="page-header-block d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <p class="page-eyebrow">Gestão interna</p>
+                <p class="page-eyebrow">Oficina</p>
                 <h1 class="page-title">Serviços</h1>
-                <p class="page-subtitle">Consulte e gira os serviços disponíveis na oficina.</p>
+                <p class="page-subtitle">Consulte os serviços disponíveis na oficina.</p>
             </div>
 
-            <div>
-                <a asp-page="/Servicos/Create" class="auth-button">Novo serviço</a>
-            </div>
+            @if (podeGerir)
+            {
+                <div>
+                    <a asp-page="/Servicos/Create" class="auth-button">Novo serviço</a>
+                </div>
+            }
         </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="success-banner">
+                @TempData["SuccessMessage"]
+            </div>
+        }
 
         @if (Model.Servicos.Any())
         {
             <div class="vehicle-grid">
                 @foreach (var servico in Model.Servicos)
                 {
+                    var imagemPrincipal = servico.Imagens?
+                    .OrderByDescending(i => i.Principal)
+                    .ThenBy(i => i.Ordem)
+                    .FirstOrDefault()?.Url;
+
+                    var imagemFinal = !string.IsNullOrWhiteSpace(imagemPrincipal)
+                    ? imagemPrincipal
+                    : !string.IsNullOrWhiteSpace(servico.ImagemUrl)
+                    ? servico.ImagemUrl
+                    : Url.Content("~/images/servicos/sem-imagem.png");
+
                     <div class="vehicle-admin-card">
                         <div class="vehicle-admin-image-wrap">
-                            <img src="@(string.IsNullOrWhiteSpace(servico.ImagemUrl) ? "/images/cars/default-car.jpg" : servico.ImagemUrl)"
+                            <img src="@imagemFinal"
                                  class="vehicle-admin-image"
-                                 alt="@servico.Nome" />
+                                 alt="@servico.Nome"
+                                 onerror="this.onerror=null;this.src='@Url.Content("~/images/servicos/sem-imagem.png")';" />
                         </div>
 
                         <div class="vehicle-admin-body">
                             <h3 class="vehicle-admin-title">@servico.Nome</h3>
 
-                            <p class="vehicle-admin-status">
+                            <p class="vehicle-admin-status @(servico.Ativo ? "status-available" : "status-sold")">
                                 @(servico.Ativo ? "Ativo" : "Inativo")
                             </p>
 
-                            <p class="page-subtitle mb-3">@servico.Descricao</p>
+                            <p class="page-subtitle mb-3">
+                                @(string.IsNullOrWhiteSpace(servico.Descricao)
+                                                        ? "Sem descrição disponível."
+                                                        : servico.Descricao)
+                    </p>
 
                             <div class="vehicle-admin-meta">
                                 <div class="vehicle-admin-meta-item">
@@ -52,26 +83,34 @@
                             </div>
 
                             <div class="vehicle-admin-actions">
-                                <a asp-page="/Servicos/Details" asp-route-id="@servico.Id" class="action-link action-link-primary">
+                                <a asp-page="/Servicos/Details"
+                                   asp-route-id="@servico.Id"
+                                   class="action-link action-link-primary">
                                     Detalhes
                                 </a>
 
-                                <a asp-page="/Servicos/Edit" asp-route-id="@servico.Id" class="action-link action-link-warning">
-                                    Editar
-                                </a>
+                        @if (podeGerir)
+                                {
+                                    <a asp-page="/Servicos/Edit"
+                                       asp-route-id="@servico.Id"
+                                       class="action-link action-link-warning">
+                                        Editar
+                                    </a>
 
-                                <a asp-page="/Servicos/Delete" asp-route-id="@servico.Id" class="action-link action-link-danger">
-                                    Eliminar
-                                </a>
-                                @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Cliente"))
+                                    <a asp-page="/Servicos/Delete"
+                                       asp-route-id="@servico.Id"
+                                       class="action-link action-link-danger">
+                                        Eliminar
+                                    </a>
+                                }
+
+                                @if (eCliente)
                                 {
                                     <a href="/Carrinho/AdicionarServico?servicoId=@servico.Id"
                                        class="action-link action-link-primary">
                                         Adicionar ao carrinho
                                     </a>
-
                                 }
-
                             </div>
                         </div>
                     </div>
@@ -83,7 +122,11 @@
             <div class="empty-state-card">
                 <h3>Sem serviços registados</h3>
                 <p>Ainda não existem serviços criados no sistema.</p>
-                <a asp-page="/Servicos/Create" class="auth-button">Criar primeiro serviço</a>
+
+                @if (podeGerir)
+                {
+                    <a asp-page="/Servicos/Create" class="auth-button">Criar primeiro serviço</a>
+                }
             </div>
         }
     </div>

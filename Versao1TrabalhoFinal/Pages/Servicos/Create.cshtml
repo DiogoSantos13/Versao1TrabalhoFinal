@@ -4,55 +4,79 @@
     ViewData["Title"] = "Novo Serviço";
 }
 
-<h2 class="mb-4">Novo Serviço</h2>
-
-<div class="row">
-    <div class="col-md-8 col-lg-6">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-            <div class="mb-3">
-                <label asp-for="Servico.Nome" class="form-label"></label>
-                <input asp-for="Servico.Nome" class="form-control" />
-                <span asp-validation-for="Servico.Nome" class="text-danger"></span>
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="list-header">
+            <div>
+                <p class="page-eyebrow">Gestão de serviços</p>
+                <h1 class="page-title">Novo serviço</h1>
+                <p class="page-subtitle">Crie um novo serviço e adicione imagens para apresentação.</p>
             </div>
+        </div>
 
-            <div class="mb-3">
-                <label asp-for="Servico.Descricao" class="form-label"></label>
-                <textarea asp-for="Servico.Descricao" class="form-control" rows="4"></textarea>
-                <span asp-validation-for="Servico.Descricao" class="text-danger"></span>
-            </div>
+        <div class="form-card">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-            <div class="mb-3">
-                <label asp-for="Servico.PrecoBase" class="form-label"></label>
-                <input asp-for="Servico.PrecoBase" class="form-control" />
-                <span asp-validation-for="Servico.PrecoBase" class="text-danger"></span>
-            </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label asp-for="Servico.Nome" class="form-label"></label>
+                        <input asp-for="Servico.Nome" class="form-control" />
+                        <span asp-validation-for="Servico.Nome" class="text-danger"></span>
+                    </div>
 
-            <div class="mb-3">
-                <label asp-for="Servico.TempoEstimado" class="form-label"></label>
-                <input asp-for="Servico.TempoEstimado" class="form-control" />
-                <span asp-validation-for="Servico.TempoEstimado" class="text-danger"></span>
-            </div>
+                    <div class="form-group">
+                        <label asp-for="Servico.PrecoBase" class="form-label"></label>
+                        <input asp-for="Servico.PrecoBase" class="form-control" />
+                        <span asp-validation-for="Servico.PrecoBase" class="text-danger"></span>
+                    </div>
 
-            <div class="mb-3">
-                <label asp-for="Servico.ImagemUrl" class="form-label"></label>
-                <input asp-for="Servico.ImagemUrl" class="form-control" />
-                <span asp-validation-for="Servico.ImagemUrl" class="text-danger"></span>
-            </div>
+                    <div class="form-group">
+                        <label asp-for="Servico.TempoEstimado" class="form-label"></label>
+                        <input asp-for="Servico.TempoEstimado" class="form-control" />
+                        <span asp-validation-for="Servico.TempoEstimado" class="text-danger"></span>
+                    </div>
 
-            <div class="form-check mb-3">
-                <input asp-for="Servico.Ativo" class="form-check-input" />
-                <label asp-for="Servico.Ativo" class="form-check-label"></label>
-            </div>
+                    <div class="form-group">
+                        <label asp-for="Servico.ImagemUrl" class="form-label"></label>
+                        <input asp-for="Servico.ImagemUrl" class="form-control" />
+                        <span asp-validation-for="Servico.ImagemUrl" class="text-danger"></span>
+                    </div>
 
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-success">Guardar</button>
-                <a asp-page="/Servicos/Index" class="btn btn-secondary">Cancelar</a>
-            </div>
-        </form>
+                    <div class="form-group form-group-full">
+                        <label asp-for="Servico.Descricao" class="form-label"></label>
+                        <textarea asp-for="Servico.Descricao" class="form-control" rows="5"></textarea>
+                        <span asp-validation-for="Servico.Descricao" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label asp-for="GaleriaUrls" class="form-label">Galeria de imagens</label>
+                        <textarea asp-for="GaleriaUrls"
+                                  class="form-control"
+                                  rows="6"
+                                  placeholder="https://site.com/imagem1.jpg&#10;https://site.com/imagem2.jpg&#10;https://site.com/imagem3.jpg"></textarea>
+                        <small class="form-help">
+                            Introduza um link por linha. A primeira imagem será marcada como principal.
+                        </small>
+                        <span asp-validation-for="GaleriaUrls" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <div class="form-check">
+                            <input asp-for="Servico.Ativo" class="form-check-input" />
+                            <label asp-for="Servico.Ativo" class="form-check-label"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="auth-button">Guardar serviço</button>
+                    <a asp-page="/Servicos/Index" class="secondary-button">Cancelar</a>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
+</section>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

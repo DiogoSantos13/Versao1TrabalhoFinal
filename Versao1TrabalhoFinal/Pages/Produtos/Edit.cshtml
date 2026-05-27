@@ -2,29 +2,27 @@
 @model Versao1TrabalhoFinal.Pages.Produtos.EditModel
 
 @{
-    /// <summary>
-    /// Define o título da página.
-    /// </summary>
     ViewData["Title"] = "Editar Produto";
 
-    /// <summary>
-    /// Define a imagem de pré-visualização do produto.
-    /// </summary>
-    var imagemPreview = !string.IsNullOrWhiteSpace(Model.Produto.ImagemUrl)
-        ? Url.Content(Model.Produto.ImagemUrl)
+    var imagemPrincipal = Model.Produto.Imagens?
+        .OrderByDescending(i => i.Principal)
+        .ThenBy(i => i.Ordem)
+        .FirstOrDefault();
+
+    var imagemPreview = imagemPrincipal != null
+        ? Url.Content(imagemPrincipal.Url)
         : Url.Content("~/images/produtos/sem-imagem.png");
 }
 
 <div class="produto-edit-page py-4 py-lg-5">
     <div class="produto-edit-shell">
-        @* Cabeçalho da página de edição. *@
         <section class="produto-edit-hero mb-4">
             <div class="produto-edit-hero-content">
                 <div>
                     <span class="produto-edit-kicker">Gestão de produtos</span>
                     <h1 class="produto-edit-title">Editar produto</h1>
                     <p class="produto-edit-subtitle">
-                        Atualize os dados do produto, mantenha a informação organizada e confirme a imagem apresentada no catálogo.
+                        Atualize os dados do produto, mantenha a informação organizada e gira a galeria de imagens.
                     </p>
                 </div>
 
@@ -37,14 +35,12 @@
             </div>
         </section>
 
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             <input type="hidden" asp-for="Produto.Id" />
 
-            @* Resumo de erros de validação. *@
             <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 shadow-sm rounded-4 mb-4"></div>
 
             <div class="row g-4">
-                @* Coluna principal com os campos do formulário. *@
                 <div class="col-12 col-xl-8">
                     <div class="produto-form-card mb-4">
                         <div class="produto-form-card-header">
@@ -133,14 +129,84 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="produto-form-card mb-4">
+                        <div class="produto-form-card-header">
+                            <h2>Adicionar novas imagens</h2>
+                            <p>Selecione uma ou várias imagens para juntar à galeria atual.</p>
+                        </div>
+
+                        <div class="produto-form-card-body">
+                            <div class="mb-0">
+                                <label asp-for="UploadImagens" class="form-label produto-form-label">Novas imagens</label>
+                                <input asp-for="UploadImagens" type="file" multiple accept="image/*" class="form-control produto-form-input" />
+                                <span asp-validation-for="UploadImagens" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="produto-form-card">
+                        <div class="produto-form-card-header">
+                            <h2>Galeria atual</h2>
+                            <p>Defina a imagem principal ou remova imagens da galeria.</p>
+                        </div>
+
+                        <div class="produto-form-card-body">
+                            @if (Model.Produto.Imagens != null && Model.Produto.Imagens.Any())
+                            {
+                                <div class="row g-3">
+                                    @foreach (var imagem in Model.Produto.Imagens.OrderByDescending(i => i.Principal).ThenBy(i => i.Ordem))
+                                    {
+                                        <div class="col-md-6 col-lg-4">
+                                            <div class="border rounded-4 p-3 h-100">
+                                                <img src="@Url.Content(imagem.Url)"
+                                                     alt="@imagem.Alt"
+                                                     class="img-fluid rounded-3 mb-3"
+                                                     style="height:200px; width:100%; object-fit:cover;"
+                                                     onerror="this.onerror=null;this.src='@Url.Content("~/images/produtos/sem-imagem.png")';" />
+
+                                                <div class="d-flex flex-column gap-2">
+                                                    @if (imagem.Principal)
+                                                    {
+                                                        <span class="badge bg-success">Imagem principal</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <form method="post" asp-page-handler="DefinirPrincipal">
+                                                            <input type="hidden" name="id" value="@Model.Produto.Id" />
+                                                            <input type="hidden" name="imagemId" value="@imagem.Id" />
+                                                            <button type="submit" class="btn btn-outline-primary btn-sm w-100">
+                                                                Definir como principal
+                                                            </button>
+                                                        </form>
+                                                    }
+
+                                                    <form method="post" asp-page-handler="DeleteImagem" onsubmit="return confirm('Tem a certeza que deseja remover esta imagem?');">
+                                                        <input type="hidden" name="id" value="@Model.Produto.Id" />
+                                                        <input type="hidden" name="imagemId" value="@imagem.Id" />
+                                                        <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                                            Remover imagem
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted mb-0">Este produto ainda não tem imagens associadas.</p>
+                            }
+                        </div>
+                    </div>
                 </div>
 
-                @* Coluna lateral com imagem e ações principais. *@
                 <div class="col-12 col-xl-4">
                     <div class="produto-form-card mb-4 sticky-xl-top produto-sticky-card">
                         <div class="produto-form-card-header">
-                            <h2>Imagem do produto</h2>
-                            <p>Verifique a imagem usada no catálogo antes de guardar.</p>
+                            <h2>Pré-visualização</h2>
+                            <p>Imagem principal atual do produto no catálogo.</p>
                         </div>
 
                         <div class="produto-form-card-body">
@@ -151,13 +217,8 @@
                                      onerror="this.onerror=null;this.src='@Url.Content("~/images/produtos/sem-imagem.png")';" />
                             </div>
 
-                            <div class="mb-0">
-                                <label asp-for="Produto.ImagemUrl" class="form-label produto-form-label"></label>
-                                <input asp-for="Produto.ImagemUrl" class="form-control produto-form-input" id="imagemUrlInput" />
-                                <span asp-validation-for="Produto.ImagemUrl" class="text-danger small"></span>
-                                <div class="form-text">
-                                    Exemplo: <code>~/images/produtos/filtro-oleo.jpg</code>
-                                </div>
+                            <div class="form-text">
+                                A imagem principal será usada como destaque visual do produto.
                             </div>
                         </div>
                     </div>
@@ -190,30 +251,6 @@
 
 @section Scripts {
     @{
-        /// <summary>
-        /// Renderiza os scripts de validação do projeto.
-        /// </summary>
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
-    <script>
-        (function () {
-            const input = document.getElementById('imagemUrlInput');
-            const preview = document.querySelector('.produto-preview-image');
-            const fallback = '@Url.Content("~/images/produtos/sem-imagem.png")';
-
-            if (!input || !preview) return;
-
-            function atualizarPreview() {
-                const valor = input.value.trim();
-                preview.src = valor ? valor : fallback;
-            }
-
-            input.addEventListener('input', atualizarPreview);
-
-            preview.addEventListener('error', function () {
-                preview.src = fallback;
-            });
-        })();
-    </script>
 }

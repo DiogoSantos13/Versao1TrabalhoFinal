@@ -1,7 +1,7 @@
 ﻿@page
 @model Versao1TrabalhoFinal.Pages.VeiculosStand.CreateModel
 @{
-    ViewData["Title"] = "Novo Veículo Stand";
+    ViewData["Title"] = "Novo Veículo do Stand";
 }
 
 <section class="dashboard-page">
@@ -9,21 +9,119 @@
         <div class="page-header-block">
             <p class="page-eyebrow">Gestão de stock</p>
             <h1 class="page-title">Criar veículo do stand</h1>
-            <p class="page-subtitle">Adicione uma nova viatura ao stock disponível.</p>
+            <p class="page-subtitle">
+                Escolha um veículo existente ou crie uma nova viatura e associe-a ao stand.
+            </p>
         </div>
 
         <div class="form-card">
             <form method="post" class="modern-form">
                 <div asp-validation-summary="ModelOnly" class="auth-validation"></div>
 
+                @* Opção para criar um novo veículo em vez de escolher um já existente. *@
                 <div class="form-grid form-grid-1">
                     <div class="form-field">
-                        <label asp-for="VeiculoStand.VeiculoId" class="auth-label">Veículo</label>
-                        <select asp-for="VeiculoStand.VeiculoId" asp-items="Model.VeiculosSelect" class="auth-input form-select-modern">
+                        <div class="form-check-modern">
+                            <input asp-for="CriarNovoVeiculo"
+                                   class="form-check-input"
+                                   type="checkbox"
+                                   id="criarNovoVeiculoCheck" />
+                            <label asp-for="CriarNovoVeiculo" class="auth-label mb-0">
+                                Criar novo veículo
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                @* Bloco para selecionar um veículo já existente. *@
+                <div id="blocoVeiculoExistente" class="form-grid form-grid-1">
+                    <div class="form-field">
+                        <label asp-for="VeiculoStand.VeiculoId" class="auth-label">Veículo existente</label>
+                        <select asp-for="VeiculoStand.VeiculoId"
+                                asp-items="Model.VeiculosSelect"
+                                class="auth-input form-select-modern">
                             <option value="">Selecione um veículo</option>
                         </select>
                         <span asp-validation-for="VeiculoStand.VeiculoId" class="auth-error"></span>
                     </div>
+                </div>
+
+                @* Bloco para criar um veículo novo. *@
+                <div id="blocoNovoVeiculo" class="d-none">
+                    <div class="form-section-title">
+                        <h2>Dados do novo veículo</h2>
+                        <p>Preencha a informação base da viatura que será adicionada ao stand.</p>
+                    </div>
+
+                    <div class="form-grid form-grid-3">
+                        <div class="form-field">
+                            <label asp-for="NovoVeiculo.Marca" class="auth-label"></label>
+                            <input asp-for="NovoVeiculo.Marca" class="auth-input" />
+                            <span asp-validation-for="NovoVeiculo.Marca" class="auth-error"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label asp-for="NovoVeiculo.Modelo" class="auth-label"></label>
+                            <input asp-for="NovoVeiculo.Modelo" class="auth-input" />
+                            <span asp-validation-for="NovoVeiculo.Modelo" class="auth-error"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label asp-for="NovoVeiculo.Ano" class="auth-label"></label>
+                            <input asp-for="NovoVeiculo.Ano" class="auth-input" />
+                            <span asp-validation-for="NovoVeiculo.Ano" class="auth-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-grid form-grid-3">
+                        <div class="form-field">
+                            <label asp-for="NovoVeiculo.Tipo" class="auth-label"></label>
+                            <input asp-for="NovoVeiculo.Tipo" class="auth-input" placeholder="Ex.: Ligeiro" />
+                            <span asp-validation-for="NovoVeiculo.Tipo" class="auth-error"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label asp-for="NovoVeiculo.Cilindrada" class="auth-label"></label>
+                            <input asp-for="NovoVeiculo.Cilindrada" class="auth-input" />
+                            <span asp-validation-for="NovoVeiculo.Cilindrada" class="auth-error"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label asp-for="NovoVeiculo.Combustivel" class="auth-label"></label>
+                            <input asp-for="NovoVeiculo.Combustivel" class="auth-input" placeholder="Ex.: Gasóleo" />
+                            <span asp-validation-for="NovoVeiculo.Combustivel" class="auth-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-grid form-grid-3">
+                        <div class="form-field">
+                            <label asp-for="NovoVeiculo.Matricula" class="auth-label"></label>
+                            <input asp-for="NovoVeiculo.Matricula" class="auth-input" />
+                            <span asp-validation-for="NovoVeiculo.Matricula" class="auth-error"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label asp-for="NovoVeiculo.VIN" class="auth-label"></label>
+                            <input asp-for="NovoVeiculo.VIN" class="auth-input" />
+                            <span asp-validation-for="NovoVeiculo.VIN" class="auth-error"></span>
+                        </div>
+
+                      
+                    </div>
+
+                    <div class="form-grid form-grid-1">
+                        <div class="form-field">
+                            <label asp-for="NovoVeiculo.quilometragem" class="auth-label"></label>
+                            <input asp-for="NovoVeiculo.quilometragem" class="auth-input" />
+                            <span asp-validation-for="NovoVeiculo.quilometragem" class="auth-error"></span>
+                        </div>
+                    </div>
+                </div>
+
+                @* Dados comerciais do veículo no stand. *@
+                <div class="form-section-title">
+                    <h2>Dados do stand</h2>
+                    <p>Defina o preço, estado e restantes dados comerciais da viatura.</p>
                 </div>
 
                 <div class="form-grid form-grid-3">
@@ -35,7 +133,7 @@
 
                     <div class="form-field">
                         <label asp-for="VeiculoStand.Estado" class="auth-label"></label>
-                        <input asp-for="VeiculoStand.Estado" class="auth-input" placeholder="Disponível" />
+                        <input asp-for="VeiculoStand.Estado" class="auth-input" placeholder="Ex.: Disponível" />
                         <span asp-validation-for="VeiculoStand.Estado" class="auth-error"></span>
                     </div>
 
@@ -46,25 +144,39 @@
                     </div>
                 </div>
 
-                <div class="form-grid form-grid-2">
+                <div class="form-grid form-grid-1">
                     <div class="form-field">
                         <label asp-for="VeiculoStand.DataEntrada" class="auth-label"></label>
                         <input asp-for="VeiculoStand.DataEntrada" class="auth-input" type="datetime-local" />
                         <span asp-validation-for="VeiculoStand.DataEntrada" class="auth-error"></span>
-                    </div>
-
-                    <div class="form-field">
-                        <label asp-for="VeiculoStand.ImagemUrl" class="auth-label"></label>
-                        <input asp-for="VeiculoStand.ImagemUrl" class="auth-input" placeholder="https://..." />
-                        <span asp-validation-for="VeiculoStand.ImagemUrl" class="auth-error"></span>
                     </div>
                 </div>
 
                 <div class="form-grid form-grid-1">
                     <div class="form-field">
                         <label asp-for="VeiculoStand.Descricao" class="auth-label"></label>
-                        <textarea asp-for="VeiculoStand.Descricao" class="auth-input auth-textarea" placeholder="Descrição do veículo"></textarea>
+                        <textarea asp-for="VeiculoStand.Descricao"
+                                  class="auth-input auth-textarea"
+                                  rows="5"
+                                  placeholder="Descrição comercial do veículo"></textarea>
                         <span asp-validation-for="VeiculoStand.Descricao" class="auth-error"></span>
+                    </div>
+                </div>
+
+                @* Links das imagens da galeria. *@
+                <div class="form-section-title">
+                    <h2>Galeria de imagens</h2>
+                    <p>Introduza um link por linha. O primeiro será considerado a imagem principal.</p>
+                </div>
+
+                <div class="form-grid form-grid-1">
+                    <div class="form-field">
+                        <label asp-for="GaleriaUrls" class="auth-label">Links das imagens</label>
+                        <textarea asp-for="GaleriaUrls"
+                                  class="auth-input auth-textarea"
+                                  rows="6"
+                                  placeholder="https://site.com/imagem1.jpg&#10;https://site.com/imagem2.jpg&#10;https://site.com/imagem3.jpg"></textarea>
+                        <span asp-validation-for="GaleriaUrls" class="auth-error"></span>
                     </div>
                 </div>
 
@@ -79,4 +191,29 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        (function () {
+            const checkbox = document.getElementById('criarNovoVeiculoCheck');
+            const blocoExistente = document.getElementById('blocoVeiculoExistente');
+            const blocoNovo = document.getElementById('blocoNovoVeiculo');
+
+            function atualizarVisibilidade() {
+                const criarNovo = checkbox && checkbox.checked;
+
+                if (criarNovo) {
+                    blocoExistente.classList.add('d-none');
+                    blocoNovo.classList.remove('d-none');
+                } else {
+                    blocoExistente.classList.remove('d-none');
+                    blocoNovo.classList.add('d-none');
+                }
+            }
+
+            if (checkbox) {
+                checkbox.addEventListener('change', atualizarVisibilidade);
+                atualizarVisibilidade();
+            }
+        })();
+    </script>
 }

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Versao1TrabalhoFinal.Data;
@@ -9,8 +8,6 @@ namespace Versao1TrabalhoFinal.Pages.Servicos
     /// <summary>
     /// Página responsável pela listagem de serviços.
     /// </summary>
-    [Authorize(Roles = "Cliente,Colaborador,Admin")]
-
     public class IndexModel : PageModel
     {
         private readonly StandDbContext _context;
@@ -32,12 +29,33 @@ namespace Versao1TrabalhoFinal.Pages.Servicos
         /// <summary>
         /// Carrega a lista de serviços.
         /// </summary>
-        /// <returns>Tarefa assíncrona.</returns>
         public async Task OnGetAsync()
         {
             Servicos = await _context.Servicos
+                .AsNoTracking()
                 .OrderBy(s => s.Nome)
                 .ToListAsync();
+
+            var ids = Servicos.Select(s => s.Id).ToList();
+
+            if (ids.Any())
+            {
+                var imagens = await _context.ImagensEntidade
+                    .AsNoTracking()
+                    .Where(i => i.TipoEntidade == "Servico" && ids.Contains(i.EntidadeId))
+                    .OrderByDescending(i => i.Principal)
+                    .ThenBy(i => i.Ordem)
+                    .ToListAsync();
+
+                foreach (var servico in Servicos)
+                {
+                    servico.Imagens = imagens
+                        .Where(i => i.EntidadeId == servico.Id)
+                        .OrderByDescending(i => i.Principal)
+                        .ThenBy(i => i.Ordem)
+                        .ToList();
+                }
+            }
         }
     }
 }

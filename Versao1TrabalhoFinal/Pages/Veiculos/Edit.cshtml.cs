@@ -17,11 +17,6 @@ namespace Versao1TrabalhoFinal.Pages.Veiculos
         private readonly StandDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
 
-        /// <summary>
-        /// Inicializa uma nova instância da página de edição de veículos.
-        /// </summary>
-        /// <param name="context">Contexto da base de dados.</param>
-        /// <param name="userManager">Gestor de utilizadores do Identity.</param>
         public EditModel(StandDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
@@ -35,10 +30,14 @@ namespace Versao1TrabalhoFinal.Pages.Veiculos
         public Veiculo Veiculo { get; set; } = new();
 
         /// <summary>
+        /// URLs da galeria, uma por linha.
+        /// </summary>
+        [BindProperty]
+        public string? GaleriaUrls { get; set; }
+
+        /// <summary>
         /// Carrega os dados do veículo a editar.
         /// </summary>
-        /// <param name="id">Identificador do veículo.</param>
-        /// <returns>A página de edição ou um resultado adequado caso o veículo não exista.</returns>
         public async Task<IActionResult> OnGetAsync(int id)
         {
             var identityUser = await _userManager.GetUserAsync(User);
@@ -78,13 +77,23 @@ namespace Versao1TrabalhoFinal.Pages.Veiculos
             }
 
             Veiculo = veiculo;
+
+            var imagens = await _context.ImagensEntidade
+                .AsNoTracking()
+                .Where(i => i.TipoEntidade == "Veiculo" && i.EntidadeId == id)
+                .OrderByDescending(i => i.Principal)
+                .ThenBy(i => i.Ordem)
+                .Select(i => i.Url)
+                .ToListAsync();
+
+            GaleriaUrls = string.Join(Environment.NewLine, imagens);
+
             return Page();
         }
 
         /// <summary>
         /// Guarda as alterações efetuadas ao veículo.
         /// </summary>
-        /// <returns>Redireciona para a listagem após guardar as alterações.</returns>
         public async Task<IActionResult> OnPostAsync()
         {
             var identityUser = await _userManager.GetUserAsync(User);
@@ -103,6 +112,13 @@ namespace Versao1TrabalhoFinal.Pages.Veiculos
             ModelState.Remove("Veiculo.OrdensReparacao");
             ModelState.Remove("Veiculo.HistoricoReparacoes");
             ModelState.Remove("Veiculo.VeiculosStand");
+
+            var linksGaleria = ObterLinksValidos(GaleriaUrls);
+
+            if (!string.IsNullOrWhiteSpace(GaleriaUrls) && linksGaleria.Count == 0)
+            {
+                ModelState.AddModelError("GaleriaUrls", "Introduza pelo menos um URL válido, um por linha.");
+            }
 
             if (!ModelState.IsValid)
             {
@@ -140,12 +156,51 @@ namespace Versao1TrabalhoFinal.Pages.Veiculos
             veiculoDb.Combustivel = Veiculo.Combustivel;
             veiculoDb.Matricula = Veiculo.Matricula;
             veiculoDb.VIN = Veiculo.VIN;
-            veiculoDb.ImagemUrl = Veiculo.ImagemUrl;
+            veiculoDb.ImagemUrl = string.IsNullOrWhiteSpace(Veiculo.ImagemUrl) ? null : Veiculo.ImagemUrl;
+
+            var imagensExistentes = await _context.ImagensEntidade
+                .Where(i => i.TipoEntidade == "Veiculo" && i.EntidadeId == Veiculo.Id)
+                .ToListAsync();
+
+            if (imagensExistentes.Any())
+            {
+                _context.ImagensEntidade.RemoveRange(imagensExistentes);
+            }
+
+            for (int i = 0; i < linksGaleria.Count; i++)
+            {
+                _context.ImagensEntidade.Add(new ImagemEntidade
+                {
+                    Url = linksGaleria[i],
+                    Alt = $"{veiculoDb.Marca} {veiculoDb.Modelo}".Trim(),
+                    Ordem = i,
+                    Principal = i == 0,
+                    EntidadeId = veiculoDb.Id,
+                    TipoEntidade = "Veiculo"
+                });
+            }
 
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Veículo atualizado com sucesso.";
             return RedirectToPage("./Index");
+        }
+
+        private static List<string> ObterLinksValidos(string? texto)
+        {
+            if (string.IsNullOrWhiteSpace(texto))
+            {
+                return new List<string>();
+            }
+
+            return texto
+                .Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(l => l.Trim())
+                .Where(l => !string.IsNullOrWhiteSpace(l))
+                .Where(l => Uri.TryCreate(l, UriKind.Absolute, out var uri) &&
+                            (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+                .Distinct()
+                .ToList();
         }
     }
 }

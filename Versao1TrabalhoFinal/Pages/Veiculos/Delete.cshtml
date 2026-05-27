@@ -2,6 +2,13 @@
 @model Versao1TrabalhoFinal.Pages.Veiculos.DeleteModel
 @{
     ViewData["Title"] = "Eliminar veículo";
+
+    var imagens = Model.Veiculo.Imagens?
+        .OrderByDescending(i => i.Principal)
+        .ThenBy(i => i.Ordem)
+        .ToList() ?? new();
+
+    var nomeVeiculo = $"{Model.Veiculo.Marca} {Model.Veiculo.Modelo}".Trim();
 }
 
 <section class="dashboard-page">
@@ -12,39 +19,153 @@
             <p class="page-subtitle">Confirme a remoção do veículo associado à conta.</p>
         </div>
 
-        <div class="delete-card">
-            <div class="delete-alert">
-                <h2>Tem a certeza que quer eliminar este veículo?</h2>
-                <p>Esta ação remove o veículo da sua lista.</p>
+        <div class="delete-vehicle-layout">
+            <div class="delete-vehicle-gallery-card">
+                <div class="delete-vehicle-carousel" id="deleteVehicleCarousel">
+                    @for (int i = 0; i < imagens.Count; i++)
+                    {
+                        var imagem = imagens[i];
+                        <div class="delete-vehicle-slide @(i == 0 ? "active" : "")" data-index="@i">
+                            <img src="@imagem.Url"
+                                 alt="@(string.IsNullOrWhiteSpace(imagem.Alt) ? nomeVeiculo : imagem.Alt)"
+                                 class="delete-vehicle-main-image"
+                                 onerror="this.onerror=null;this.src='@Url.Content("~/images/cars/default-car.jpg")';" />
+                        </div>
+                    }
+
+                    @if (imagens.Count > 1)
+                    {
+                        <button type="button" class="delete-vehicle-arrow delete-vehicle-arrow-left" id="deleteVehiclePrev" aria-label="Imagem anterior">
+                            &#8249;
+                        </button>
+                        <button type="button" class="delete-vehicle-arrow delete-vehicle-arrow-right" id="deleteVehicleNext" aria-label="Imagem seguinte">
+                            &#8250;
+                        </button>
+
+                        <div class="delete-vehicle-counter">
+                            <span id="deleteVehicleCurrentSlide">1</span>/<span>@imagens.Count</span>
+                        </div>
+                    }
+                </div>
+
+                @if (imagens.Count > 1)
+                {
+                    <div class="delete-vehicle-thumbnails">
+                        @for (int i = 0; i < imagens.Count; i++)
+                        {
+                            var imagem = imagens[i];
+                            <button type="button"
+                                    class="delete-vehicle-thumb @(i == 0 ? "active" : "")"
+                                    data-thumb-index="@i"
+                                    aria-label="Ver imagem @(i + 1)">
+                                <img src="@imagem.Url"
+                                     alt="Miniatura @(i + 1)"
+                                     onerror="this.onerror=null;this.src='@Url.Content("~/images/cars/default-car.jpg")';" />
+                            </button>
+                        }
+                    </div>
+                }
             </div>
 
-            <div class="delete-summary">
-                <div class="delete-summary-row">
-                    <span class="delete-summary-label">Marca</span>
-                    <strong>@Model.Veiculo.Marca</strong>
+            <div class="delete-card">
+                <div class="delete-alert">
+                    <h2>Tem a certeza que quer eliminar este veículo?</h2>
+                    <p>Esta ação remove o veículo da sua lista.</p>
                 </div>
 
-                <div class="delete-summary-row">
-                    <span class="delete-summary-label">Modelo</span>
-                    <strong>@Model.Veiculo.Modelo</strong>
+                <div class="delete-summary">
+                    <div class="delete-summary-row">
+                        <span class="delete-summary-label">Marca</span>
+                        <strong>@Model.Veiculo.Marca</strong>
+                    </div>
+
+                    <div class="delete-summary-row">
+                        <span class="delete-summary-label">Modelo</span>
+                        <strong>@Model.Veiculo.Modelo</strong>
+                    </div>
+
+                    <div class="delete-summary-row">
+                        <span class="delete-summary-label">Matrícula</span>
+                        <strong>@(string.IsNullOrWhiteSpace(Model.Veiculo.Matricula) ? "-" : Model.Veiculo.Matricula)</strong>
+                    </div>
+
+                    <div class="delete-summary-row">
+                        <span class="delete-summary-label">Combustível</span>
+                        <strong>@(string.IsNullOrWhiteSpace(Model.Veiculo.Combustivel) ? "-" : Model.Veiculo.Combustivel)</strong>
+                    </div>
+
+                    <div class="delete-summary-row">
+                        <span class="delete-summary-label">Ano</span>
+                        <strong>@Model.Veiculo.Ano</strong>
+                    </div>
+
+                    <div class="delete-summary-row">
+                        <span class="delete-summary-label">Fotos</span>
+                        <strong>@imagens.Count</strong>
+                    </div>
                 </div>
 
-                <div class="delete-summary-row">
-                    <span class="delete-summary-label">Matrícula</span>
-                    <strong>@(string.IsNullOrWhiteSpace(Model.Veiculo.Matricula) ? "-" : Model.Veiculo.Matricula)</strong>
-                </div>
-
-                <div class="delete-summary-row">
-                    <span class="delete-summary-label">Combustível</span>
-                    <strong>@(string.IsNullOrWhiteSpace(Model.Veiculo.Combustivel) ? "-" : Model.Veiculo.Combustivel)</strong>
-                </div>
+                <form method="post" asp-route-id="@Model.Veiculo.Id" class="form-actions">
+                    <input type="hidden" asp-for="Veiculo.Id" />
+                    <button type="submit" class="auth-button auth-button-danger">Eliminar</button>
+                    <a asp-page="./Index" class="auth-button auth-button-secondary">Cancelar</a>
+                </form>
             </div>
-
-            <form method="post" asp-route-id="@Model.Veiculo.Id" class="form-actions">
-                <input type="hidden" asp-for="Veiculo.Id" />
-                <button type="submit" class="auth-button auth-button-danger">Eliminar</button>
-                <a asp-page="./Index" class="auth-button auth-button-secondary">Cancelar</a>
-            </form>
         </div>
     </div>
 </section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        (function () {
+            const slides = document.querySelectorAll('.delete-vehicle-slide');
+            const thumbs = document.querySelectorAll('.delete-vehicle-thumb');
+            const prev = document.getElementById('deleteVehiclePrev');
+            const next = document.getElementById('deleteVehicleNext');
+            const current = document.getElementById('deleteVehicleCurrentSlide');
+
+            if (!slides.length) return;
+
+            let index = 0;
+
+            function updateSlider() {
+                slides.forEach((slide, i) => {
+                    slide.classList.toggle('active', i === index);
+                });
+
+                thumbs.forEach((thumb, i) => {
+                    thumb.classList.toggle('active', i === index);
+                });
+
+                if (current) {
+                    current.textContent = (index + 1).toString();
+                }
+            }
+
+            if (prev) {
+                prev.addEventListener('click', function () {
+                    index = (index - 1 + slides.length) % slides.length;
+                    updateSlider();
+                });
+            }
+
+            if (next) {
+                next.addEventListener('click', function () {
+                    index = (index + 1) % slides.length;
+                    updateSlider();
+                });
+            }
+
+            thumbs.forEach((thumb, thumbIndex) => {
+                thumb.addEventListener('click', function () {
+                    index = thumbIndex;
+                    updateSlider();
+                });
+            });
+
+            updateSlider();
+        })();
+    </script>
+}

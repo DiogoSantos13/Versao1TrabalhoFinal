@@ -8,7 +8,7 @@ using Versao1TrabalhoFinal.Models;
 
 namespace Versao1TrabalhoFinal.Pages.Veiculos
 {
-    [Authorize]
+    [Authorize(Roles = "Cliente")]
     public class CreateModel : PageModel
     {
         private readonly StandDbContext _context;
@@ -31,6 +31,7 @@ namespace Versao1TrabalhoFinal.Pages.Veiculos
         public async Task<IActionResult> OnPostAsync()
         {
             var user = await _userManager.GetUserAsync(User);
+
             if (user == null)
             {
                 return Challenge();
@@ -45,7 +46,6 @@ namespace Versao1TrabalhoFinal.Pages.Veiculos
             }
 
             var cliente = await _context.Clientes
-                .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Email != null && c.Email.Trim().ToLower() == email);
 
             if (cliente == null)
@@ -61,6 +61,11 @@ namespace Versao1TrabalhoFinal.Pages.Veiculos
             ModelState.Remove("Veiculo.OrdensReparacao");
             ModelState.Remove("Veiculo.HistoricoReparacoes");
             ModelState.Remove("Veiculo.VeiculosStand");
+
+            if (await _context.Veiculos.AnyAsync(v => v.Matricula == Veiculo.Matricula))
+            {
+                ModelState.AddModelError("Veiculo.Matricula", "Já existe um veículo registado com esta matrícula.");
+            }
 
             if (!ModelState.IsValid)
             {

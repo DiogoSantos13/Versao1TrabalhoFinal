@@ -2,7 +2,7 @@
 
 namespace Versao1TrabalhoFinal.Models
 {
-    public class Servico
+    public class Servico : EntidadeComGaleria
     {
         public int Id { get; set; }
         public string? Nome { get; set; }

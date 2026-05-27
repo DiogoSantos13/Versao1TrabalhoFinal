@@ -1,9 +1,7 @@
 ﻿@page
 @model Versao1TrabalhoFinal.Pages.Produtos.CreateModel
 @{
-
-
-     ViewData["Title"] = "Criar Produto";
+    ViewData["Title"] = "Criar Produto";
 }
 
 <section class="dashboard-page">
@@ -17,7 +15,7 @@
         <div class="client-edit-layout">
             <div class="client-edit-main">
                 <div class="client-form-card">
-                    <form method="post">
+                    <form method="post" enctype="multipart/form-data">
                         <div asp-validation-summary="ModelOnly" class="auth-validation mb-4"></div>
 
                         <div class="client-form-grid">
@@ -48,6 +46,7 @@
                             <div class="client-field">
                                 <label asp-for="Produto.Categoria" class="client-label"></label>
                                 <input asp-for="Produto.Categoria" class="client-input" />
+                                <span asp-validation-for="Produto.Categoria" class="text-danger"></span>
                             </div>
 
                             <div class="client-field">
@@ -59,18 +58,22 @@
                             </div>
 
                             <div class="client-field client-field-full">
-                                <label asp-for="Produto.ImagemUrl" class="client-label"></label>
-                                <input asp-for="Produto.ImagemUrl" class="client-input" />
+                                <label asp-for="UploadImagens" class="client-label">Imagens do Produto</label>
+                                <input asp-for="UploadImagens" type="file" multiple accept="image/*" class="client-input" />
+                                <span asp-validation-for="UploadImagens" class="text-danger"></span>
+                                <small class="text-muted">Pode selecionar várias imagens.</small>
                             </div>
 
                             <div class="client-field">
                                 <label asp-for="Produto.MarcaVeiculo" class="client-label"></label>
                                 <input asp-for="Produto.MarcaVeiculo" class="client-input" />
+                                <span asp-validation-for="Produto.MarcaVeiculo" class="text-danger"></span>
                             </div>
 
                             <div class="client-field">
                                 <label asp-for="Produto.ModeloVeiculo" class="client-label"></label>
                                 <input asp-for="Produto.ModeloVeiculo" class="client-input" />
+                                <span asp-validation-for="Produto.ModeloVeiculo" class="text-danger"></span>
                             </div>
                         </div>
 

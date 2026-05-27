@@ -2,14 +2,8 @@
 @model Versao1TrabalhoFinal.Pages.Servicos.EditModel
 
 @{
-    /// <summary>
-    /// Define o título da página.
-    /// </summary>
     ViewData["Title"] = "Editar Serviço";
 
-    /// <summary>
-    /// Define a imagem de pré-visualização do serviço.
-    /// </summary>
     var imagemPreview = !string.IsNullOrWhiteSpace(Model.Servico.ImagemUrl)
         ? Url.Content(Model.Servico.ImagemUrl)
         : Url.Content("~/images/servicos/sem-imagem.png");
@@ -90,7 +84,7 @@
                                     <label asp-for="Servico.TempoEstimado" class="form-label produto-form-label"></label>
                                     <input asp-for="Servico.TempoEstimado"
                                            class="form-control produto-form-input"
-                                           placeholder="Ex.: 2 horas" />
+                                           placeholder="Ex.: 60 min" />
                                     <span asp-validation-for="Servico.TempoEstimado" class="text-danger small"></span>
                                 </div>
                             </div>
@@ -101,6 +95,27 @@
                                     <label asp-for="Servico.Ativo" class="form-check-label produto-form-label mb-0"></label>
                                 </div>
                                 <div class="form-text">Desative esta opção se não quiser mostrar o serviço aos clientes.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="produto-form-card mb-4">
+                        <div class="produto-form-card-header">
+                            <h2>Galeria do serviço</h2>
+                            <p>Introduza um link por linha. A primeira imagem será marcada como principal.</p>
+                        </div>
+
+                        <div class="produto-form-card-body">
+                            <div class="mb-0">
+                                <label asp-for="GaleriaUrls" class="form-label produto-form-label">Galeria de imagens</label>
+                                <textarea asp-for="GaleriaUrls"
+                                          class="form-control produto-form-input produto-textarea"
+                                          rows="6"
+                                          placeholder="https://site.com/imagem1.jpg&#10;https://site.com/imagem2.jpg&#10;https://site.com/imagem3.jpg"></textarea>
+                                <span asp-validation-for="GaleriaUrls" class="text-danger small"></span>
+                                <div class="form-text">
+                                    Pode colar vários links, um por linha.
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -1,274 +1,242 @@
 ﻿@page
-@model Versao1TrabalhoFinal.Pages.IndexModel
+@model Versao1TrabalhoFinal.Pages.VeiculosStand.IndexModel
 @{
-    ViewData["Title"] = "Stand e Oficina Automóvel - Stand Premium";
+    ViewData["Title"] = "Veículos do Stand";
 }
 
-<section class="hero">
-    <h1>
-        SOMOS <span>ESPECIALISTAS EM OPORTUNIDADES</span>,<br />
-        COM UM SERVIÇO DE QUALIDADE COMPLETO.
-    </h1>
-    <p class="hero-subtitle">
-        Descubra as últimas entradas em stock, os nossos serviços e os produtos disponíveis para o seu veículo.
-    </p>
-</section>
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="list-header">
+            <div>
+                <p class="page-eyebrow">Stand automóvel</p>
+                <h1 class="page-title">Veículos disponíveis</h1>
+                <p class="page-subtitle">Explore o stock atualmente disponível no stand.</p>
+            </div>
 
-<section class="stock-section">
-    <div class="section-title">
-        <p>Os mais recentes</p>
-        <h2>Últimas Entradas</h2>
-    </div>
-
-    <div class="swiper swiper-container-stock">
-        <div class="swiper-wrapper">
-            @if (Model.VeiculosDestaque != null && Model.VeiculosDestaque.Any())
+            @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
             {
-                foreach (var veiculo in Model.VeiculosDestaque)
+                <a asp-page="/VeiculosStand/Create" class="auth-button list-header-button">
+                    Novo veículo do stand
+                </a>
+            }
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="success-banner">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="error-banner">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        @if (Model.VeiculosStand != null && Model.VeiculosStand.Any())
+        {
+            <div class="vehicle-grid">
+                @foreach (var item in Model.VeiculosStand)
                 {
-                    <div class="swiper-slide">
-                        <a asp-page="/VeiculosStand/Details" asp-route-id="@veiculo.Id" class="stock-card-link">
-                            <div class="destaques_box">
-                                <div class="image-container">
-                                    <img src="@(string.IsNullOrWhiteSpace(veiculo.ImagemUrl) ? "/images/cars/default-car.jpg" : veiculo.ImagemUrl)"
-                                         alt="Veículo @veiculo.Id" />
+                    var imagens = item.Imagens?
+                    .OrderByDescending(i => i.Principal)
+                    .ThenBy(i => i.Ordem)
+                    .ToList() ?? new List<Versao1TrabalhoFinal.Models.ImagemEntidade>();
 
-                                    <div class="carro_listagem_specs">
-                                        <div class="destaques_listagem_specs_item">
-                                            <i class="fa-regular fa-calendar"></i>
-                                            @veiculo.DataEntrada.ToString("MMM. yyyy")
-                                        </div>
+                    if (!imagens.Any() && !string.IsNullOrWhiteSpace(item.Veiculo?.ImagemUrl))
+                    {
+                        imagens.Add(new Versao1TrabalhoFinal.Models.ImagemEntidade
+                        {
+                            Url = item.Veiculo.ImagemUrl,
+                            Alt = $"{item.Veiculo?.Marca} {item.Veiculo?.Modelo}",
+                            Principal = true,
+                            Ordem = 0
+                        });
+                    }
 
-                                        <div class="destaques_listagem_specs_item">
-                                            <i class="fa-solid fa-circle-check"></i>
-                                            @(string.IsNullOrWhiteSpace(veiculo.Estado) ? "Disponível" : veiculo.Estado)
-                                        </div>
+                    if (!imagens.Any())
+                    {
+                        imagens.Add(new Versao1TrabalhoFinal.Models.ImagemEntidade
+                        {
+                            Url = Url.Content("~/images/cars/default-car.jpg"),
+                            Alt = "Imagem por defeito",
+                            Principal = true,
+                            Ordem = 0
+                        });
+                    }
 
-                                        <div class="destaques_listagem_specs_item">
-                                            <i class="fa-solid fa-road"></i>
-                                            @veiculo.Quilometros.ToString("N0") KM
-                                        </div>
+                    var titulo = $"{item.Veiculo?.Marca ?? "Veículo"} {item.Veiculo?.Modelo ?? ""}".Trim();
+                    var combustivel = string.IsNullOrWhiteSpace(item.Veiculo?.Combustivel) ? "-" : item.Veiculo?.Combustivel;
+                    var estado = string.IsNullOrWhiteSpace(item.Estado) ? "Disponível" : item.Estado;
+                    var carouselId = $"carousel-{item.Id}";
+                    <article class="vehicle-admin-card">
+                        <div class="vehicle-carousel" id="@carouselId">
+                            <div class="vehicle-carousel-track">
+                                @for (int i = 0; i < imagens.Count; i++)
+                                {
+                                    var imagem = imagens[i];
+                                    <div class="vehicle-carousel-slide @(i == 0 ? "active" : "")" data-index="@i">
+                                        <img src="@imagem.Url"
+                                             class="vehicle-admin-image"
+                                             alt="@(string.IsNullOrWhiteSpace(imagem.Alt) ? titulo : imagem.Alt)"
+                                             onerror="this.onerror=null;this.src='@Url.Content("~/images/cars/default-car.jpg")';" />
                                     </div>
+                                }
+                            </div>
+
+                            @if (imagens.Count > 1)
+                            {
+                                <button type="button" class="carousel-arrow carousel-arrow-left" data-direction="prev" aria-label="Imagem anterior">
+                                    &#8249;
+                                </button>
+
+                                <button type="button" class="carousel-arrow carousel-arrow-right" data-direction="next" aria-label="Imagem seguinte">
+                                    &#8250;
+                                </button>
+
+                                <div class="carousel-counter">
+                                    <span class="current-slide">1</span>/<span class="total-slides">@imagens.Count</span>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="vehicle-admin-body">
+                            <h3 class="vehicle-admin-title">@titulo</h3>
+
+                            <p class="vehicle-admin-status @(estado.ToLower().Contains("vendido") ? "status-sold" : "status-available")">
+                                @estado
+                            </p>
+
+                            <div class="vehicle-admin-meta">
+                                <div class="vehicle-admin-meta-item">
+                                    <span class="vehicle-admin-meta-label">Preço</span>
+                                    <strong>€ @item.Preco.ToString("N2")</strong>
                                 </div>
 
-                                <div class="listagem_info">
-                                    <div class="destaques_texto_listagem_marca">Viatura</div>
-                                    <div class="destaques_texto_listagem_modelo">
-                                        @(string.IsNullOrWhiteSpace(veiculo.Descricao) ? $"Stock #{veiculo.Id}" : veiculo.Descricao)
-                                    </div>
-                                    <div class="destaques_nocampanha">Preço</div>
-                                    <div class="boxPrecoFicha">
-                                        <span>@veiculo.Preco.ToString("N0")</span> €
-                                    </div>
-                                    <div class="carro_Mais">
-                                        <svg width="22" height="4" fill="#ccc" aria-hidden="true">
-                                            <circle cx="2" cy="2" r="2"></circle>
-                                            <circle cx="11" cy="2" r="2"></circle>
-                                            <circle cx="20" cy="2" r="2"></circle>
-                                        </svg>
-                                    </div>
+                                <div class="vehicle-admin-meta-item">
+                                    <span class="vehicle-admin-meta-label">Quilómetros</span>
+                                    <strong>@item.Quilometros.ToString("N0")</strong>
                                 </div>
                             </div>
-                        </a>
-                    </div>
+
+                            <div class="vehicle-admin-meta">
+                                <div class="vehicle-admin-meta-item">
+                                    <span class="vehicle-admin-meta-label">Ano</span>
+                                    <strong>@(item.Veiculo?.Ano)</strong>
+                                </div>
+
+                                <div class="vehicle-admin-meta-item">
+                                    <span class="vehicle-admin-meta-label">Combustível</span>
+                                    <strong>@combustivel</strong>
+                                </div>
+                            </div>
+
+                            <div class="vehicle-admin-actions">
+                                <a asp-page="/VeiculosStand/Details"
+                                   asp-route-id="@item.Id"
+                                   class="action-link action-link-primary">
+                                    Detalhes
+                                </a>
+
+                                @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                                {
+                                    <a asp-page="/VeiculosStand/Edit"
+                                       asp-route-id="@item.Id"
+                                       class="action-link action-link-primary">
+                                        Editar
+                                    </a>
+
+                                    <a asp-page="/VeiculosStand/Delete"
+                                       asp-route-id="@item.Id"
+                                       class="action-link action-link-danger">
+                                        Eliminar
+                                    </a>
+                                }
+                                else
+                                {
+                                    if (User.Identity != null && User.Identity.IsAuthenticated)
+                                    {
+                                        <a asp-page="/Carrinho/Adicionar"
+                                           asp-route-veiculoStandId="@item.Id"
+                                           class="action-link action-link-primary">
+                                            Adicionar ao carrinho
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-page="/Account/Login"
+                                           asp-route-returnUrl="@Url.Page("/VeiculosStand/Index")"
+                                           class="action-link action-link-primary">
+                                            Iniciar sessão
+                                        </a>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </article>
                 }
-            }
-            else
-            {
-                <div class="swiper-slide">
-                    <div class="destaques_box">
-                        <div class="image-container">
-                            <img src="/images/cars/default-car.jpg" alt="Sem veículos" />
-                        </div>
-                        <div class="listagem_info">
-                            <div class="destaques_texto_listagem_marca">Sem stock</div>
-                            <div class="destaques_texto_listagem_modelo">
-                                Não existem viaturas disponíveis para mostrar neste momento.
-                            </div>
-                            <div class="destaques_nocampanha">Informação</div>
-                            <div class="boxPrecoFicha">
-                                <span>0</span> €
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-
-        <div class="swiper-pagination"></div>
-    </div>
-</section>
-
-<section class="stock-section">
-    <div class="section-title">
-        <p>Oficina</p>
-        <h2>Serviços em destaque</h2>
-    </div>
-
-    <div class="vehicle-grid">
-        @if (Model.ServicosDestaque != null && Model.ServicosDestaque.Any())
-        {
-            foreach (var servico in Model.ServicosDestaque)
-            {
-                <div class="vehicle-admin-card">
-                    <div class="vehicle-admin-body pt-4">
-                        <h3 class="vehicle-admin-title">@servico.Nome</h3>
-
-                        <p class="page-subtitle">
-                            @(string.IsNullOrWhiteSpace(servico.Descricao)
-                                                ? "Serviço disponível na nossa oficina."
-                                                : servico.Descricao)
-                </p>
-
-                        <div class="vehicle-admin-meta">
-                            <div class="vehicle-admin-meta-item">
-                                <span class="vehicle-admin-meta-label">Preço base</span>
-                                <strong>€ @servico.PrecoBase.ToString("N2")</strong>
-                            </div>
-
-                            <div class="vehicle-admin-meta-item">
-                                <span class="vehicle-admin-meta-label">Tempo estimado</span>
-                                <strong>@servico.TempoEstimado min</strong>
-                            </div>
-                        </div>
-
-                        <div class="vehicle-admin-actions">
-                            <a asp-page="/Servicos/Index" class="action-link action-link-primary">
-                                Ver serviços
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                }
+            </div>
         }
         else
         {
             <div class="empty-state-card">
-                <h3>Sem serviços em destaque</h3>
-                <p>Não existem serviços disponíveis para apresentar neste momento.</p>
-            </div>
-        }
-    </div>
-</section>
+                <h3>Sem veículos em stock</h3>
+                <p>Não existem viaturas disponíveis para mostrar neste momento.</p>
 
-<section class="stock-section">
-    <div class="section-title">
-        <p>Loja</p>
-        <h2>Produtos em destaque</h2>
-    </div>
-
-    <div class="vehicle-grid">
-        @if (Model.ProdutosDestaque != null && Model.ProdutosDestaque.Any())
-        {
-            foreach (var produto in Model.ProdutosDestaque)
-            {
-                <div class="vehicle-admin-card">
-                    <div class="vehicle-admin-image-wrap">
-                        <img src="@(string.IsNullOrWhiteSpace(produto.ImagemUrl) ? "/images/products/default-product.jpg" : produto.ImagemUrl)"
-                             class="vehicle-admin-image"
-                             alt="@(produto.Nome ?? "Produto")" />
-                    </div>
-
-                    <div class="vehicle-admin-body">
-                        <h3 class="vehicle-admin-title">@produto.Nome</h3>
-
-                        <p class="page-subtitle">
-                            @(string.IsNullOrWhiteSpace(produto.Descricao)
-                                                ? "Produto disponível para o seu veículo."
-                                                : produto.Descricao)
-                </p>
-
-                        <div class="vehicle-admin-meta">
-                            <div class="vehicle-admin-meta-item">
-                                <span class="vehicle-admin-meta-label">Preço</span>
-                                <strong>€ @produto.Preco.ToString("N2")</strong>
-                            </div>
-
-                            <div class="vehicle-admin-meta-item">
-                                <span class="vehicle-admin-meta-label">Stock</span>
-                                <strong>@produto.Stock</strong>
-                            </div>
-                        </div>
-
-                        <div class="vehicle-admin-actions">
-                            <a asp-page="/Produtos/Index" class="action-link action-link-primary">
-                                Ver produtos
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                {
+                    <a asp-page="/VeiculosStand/Create" class="auth-button">
+                        Adicionar veículo ao stand
+                    </a>
                 }
-        }
-        else
-        {
-            <div class="empty-state-card">
-                <h3>Sem produtos em destaque</h3>
-                <p>Não existem produtos disponíveis para apresentar neste momento.</p>
             </div>
         }
-    </div>
-</section>
-
-<section class="map-section">
-    <div class="map-card">
-        <iframe class="map-iframe"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3083.473534575!2d-8.4116!3d39.6015!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMznCsDM2JzA1LjQiTiA4wrAyNCc0MS44Ilc!5e0!3m2!1spt-PT!2spt!4v1700000000000"
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade">
-        </iframe>
-
-        <div class="map-info">
-            <h3>Onde estamos?</h3>
-
-            <div class="contact-row">
-                <i class="fa-solid fa-location-dot"></i>
-                <div>
-                    <span>Morada</span>
-                    <p>Av. Dr. Aurélio Ribeiro, 42-A, 2300-305 Tomar</p>
-                </div>
-            </div>
-
-            <div class="contact-row">
-                <i class="fa-solid fa-phone"></i>
-                <div>
-                    <span>Telefone</span>
-                    <p>+351 968 XXX XXX</p>
-                </div>
-            </div>
-
-            <div class="contact-row">
-                <i class="fa-solid fa-clock"></i>
-                <div>
-                    <span>Horário</span>
-                    <p>Seg - Sex: 09:00 - 19:00</p>
-                </div>
-            </div>
-
-            <a href="https://maps.google.com/?q=Av.+Dr.+Aurélio+Ribeiro,+42-A,+2300-305+Tomar"
-               target="_blank"
-               rel="noopener noreferrer"
-               class="btn-map">
-                OBTER DIREÇÕES
-            </a>
-        </div>
     </div>
 </section>
 
 @section Scripts {
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            new Swiper('.swiper-container-stock', {
-                slidesPerView: 1,
-                spaceBetween: 20,
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true
-                },
-                breakpoints: {
-                    768: { slidesPerView: 2 },
-                    1100: { slidesPerView: 3 }
+        (function () {
+            const carousels = document.querySelectorAll('.vehicle-carousel');
+
+            carousels.forEach(carousel => {
+                const slides = carousel.querySelectorAll('.vehicle-carousel-slide');
+                const prevButton = carousel.querySelector('.carousel-arrow-left');
+                const nextButton = carousel.querySelector('.carousel-arrow-right');
+                const currentSlideElement = carousel.querySelector('.current-slide');
+
+                if (!slides.length) return;
+
+                let currentIndex = 0;
+
+                function updateCarousel() {
+                    slides.forEach((slide, index) => {
+                        slide.classList.toggle('active', index === currentIndex);
+                    });
+
+                    if (currentSlideElement) {
+                        currentSlideElement.textContent = (currentIndex + 1).toString();
+                    }
                 }
+
+                if (prevButton) {
+                    prevButton.addEventListener('click', function () {
+                        currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+                        updateCarousel();
+                    });
+                }
+
+                if (nextButton) {
+                    nextButton.addEventListener('click', function () {
+                        currentIndex = (currentIndex + 1) % slides.length;
+                        updateCarousel();
+                    });
+                }
+
+                updateCarousel();
             });
-        });
+        })();
     </script>
 }

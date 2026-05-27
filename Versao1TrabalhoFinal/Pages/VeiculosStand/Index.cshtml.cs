@@ -5,30 +5,17 @@ using Versao1TrabalhoFinal.Models;
 
 namespace Versao1TrabalhoFinal.Pages.VeiculosStand
 {
-    /// <summary>
-    /// Página responsável pela listagem dos veículos disponíveis no stand.
-    /// </summary>
     public class IndexModel : PageModel
     {
         private readonly StandDbContext _context;
 
-        /// <summary>
-        /// Inicializa uma nova instância da página de listagem de veículos do stand.
-        /// </summary>
-        /// <param name="context">Contexto da base de dados.</param>
         public IndexModel(StandDbContext context)
         {
             _context = context;
         }
 
-        /// <summary>
-        /// Lista de veículos do stand a apresentar na página.
-        /// </summary>
         public IList<VeiculoStand> VeiculosStand { get; set; } = new List<VeiculoStand>();
 
-        /// <summary>
-        /// Carrega os veículos do stand com os respetivos dados do veículo associado.
-        /// </summary>
         public async Task OnGetAsync()
         {
             VeiculosStand = await _context.VeiculosStand
@@ -36,6 +23,24 @@ namespace Versao1TrabalhoFinal.Pages.VeiculosStand
                 .Include(vs => vs.Veiculo)
                 .OrderByDescending(vs => vs.DataEntrada)
                 .ToListAsync();
+
+            var ids = VeiculosStand.Select(vs => vs.Id).ToList();
+
+            var imagens = await _context.ImagensEntidade
+                .AsNoTracking()
+                .Where(i => i.TipoEntidade == "VeiculoStand" && ids.Contains(i.EntidadeId))
+                .OrderByDescending(i => i.Principal)
+                .ThenBy(i => i.Ordem)
+                .ToListAsync();
+
+            foreach (var item in VeiculosStand)
+            {
+                item.Imagens = imagens
+                    .Where(i => i.EntidadeId == item.Id)
+                    .OrderByDescending(i => i.Principal)
+                    .ThenBy(i => i.Ordem)
+                    .ToList();
+            }
         }
     }
 }

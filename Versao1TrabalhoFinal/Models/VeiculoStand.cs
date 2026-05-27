@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Versao1TrabalhoFinal.Models
 {
     [Table("VeiculoStand")]
-    public class VeiculoStand
+    public class VeiculoStand : EntidadeComGaleria
     {
         [Key]
         public int Id { get; set; }
@@ -24,7 +24,7 @@ namespace Versao1TrabalhoFinal.Models
 
         public int? Cilindrada { get; set; }
 
-        public string? ImagemUrl { get; set; }
+     //   public string? ImagemUrl { get; set; }
 
         [ForeignKey(nameof(VeiculoId))]
         public Veiculo? Veiculo { get; set; }

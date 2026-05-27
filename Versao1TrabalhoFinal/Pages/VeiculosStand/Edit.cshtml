@@ -1,65 +1,234 @@
 ﻿@page "{id:int}"
 @model Versao1TrabalhoFinal.Pages.VeiculosStand.EditModel
 @{
-    ViewData["Title"] = "Editar Veículo Stand";
+    ViewData["Title"] = "Editar Veículo do Stand";
 }
 
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h2 class="mb-4">Editar veículo do stand</h2>
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="page-header-block">
+            <p class="page-eyebrow">Gestão de stock</p>
+            <h1 class="page-title">Editar veículo do stand</h1>
+            <p class="page-subtitle">
+                Atualize os dados do veículo, a informação comercial e a galeria de imagens.
+            </p>
+        </div>
 
-                <form method="post">
-                    <input type="hidden" asp-for="VeiculoStand.Id" />
-
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-                    <div class="mb-3">
-                        <label asp-for="VeiculoStand.VeiculoId" class="form-label">Veículo</label>
-                        <select asp-for="VeiculoStand.VeiculoId" asp-items="Model.VeiculosSelect" class="form-select"></select>
-                        <span asp-validation-for="VeiculoStand.VeiculoId" class="text-danger"></span>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label asp-for="VeiculoStand.Preco" class="form-label"></label>
-                            <input asp-for="VeiculoStand.Preco" class="form-control" />
-                            <span asp-validation-for="VeiculoStand.Preco" class="text-danger"></span>
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <label asp-for="VeiculoStand.Estado" class="form-label"></label>
-                            <input asp-for="VeiculoStand.Estado" class="form-control" />
-                            <span asp-validation-for="VeiculoStand.Estado" class="text-danger"></span>
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <label asp-for="VeiculoStand.Quilometros" class="form-label"></label>
-                            <input asp-for="VeiculoStand.Quilometros" class="form-control" />
-                            <span asp-validation-for="VeiculoStand.Quilometros" class="text-danger"></span>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="VeiculoStand.Descricao" class="form-label"></label>
-                        <textarea asp-for="VeiculoStand.Descricao" class="form-control"></textarea>
-                        <span asp-validation-for="VeiculoStand.Descricao" class="text-danger"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="VeiculoStand.ImagemUrl" class="form-label"></label>
-                        <input asp-for="VeiculoStand.ImagemUrl" class="form-control" />
-                        <span asp-validation-for="VeiculoStand.ImagemUrl" class="text-danger"></span>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Guardar alterações</button>
-                    <a asp-page="./Index" class="btn btn-outline-secondary">Cancelar</a>
-                </form>
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="success-banner">
+                @TempData["SuccessMessage"]
             </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="error-banner">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <div class="form-card">
+            <form method="post" class="modern-form">
+                <input type="hidden" asp-for="VeiculoStand.Id" />
+                <input type="hidden" asp-for="Veiculo.Id" />
+                <input type="hidden" asp-for="VeiculoStand.VeiculoId" />
+
+                <div asp-validation-summary="ModelOnly" class="auth-validation"></div>
+
+                <div class="form-section-title">
+                    <h2>Dados do veículo</h2>
+                    <p>Edite os dados base da viatura associada.</p>
+                </div>
+
+                <div class="form-grid form-grid-3">
+                    <div class="form-field">
+                        <label asp-for="Veiculo.Marca" class="auth-label"></label>
+                        <input asp-for="Veiculo.Marca" class="auth-input" />
+                        <span asp-validation-for="Veiculo.Marca" class="auth-error"></span>
+                    </div>
+
+                    <div class="form-field">
+                        <label asp-for="Veiculo.Modelo" class="auth-label"></label>
+                        <input asp-for="Veiculo.Modelo" class="auth-input" />
+                        <span asp-validation-for="Veiculo.Modelo" class="auth-error"></span>
+                    </div>
+
+                    <div class="form-field">
+                        <label asp-for="Veiculo.Ano" class="auth-label"></label>
+                        <input asp-for="Veiculo.Ano" class="auth-input" />
+                        <span asp-validation-for="Veiculo.Ano" class="auth-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-grid form-grid-3">
+                    <div class="form-field">
+                        <label asp-for="Veiculo.Tipo" class="auth-label"></label>
+                        <input asp-for="Veiculo.Tipo" class="auth-input" />
+                        <span asp-validation-for="Veiculo.Tipo" class="auth-error"></span>
+                    </div>
+
+                    <div class="form-field">
+                        <label asp-for="Veiculo.Cilindrada" class="auth-label"></label>
+                        <input asp-for="Veiculo.Cilindrada" class="auth-input" />
+                        <span asp-validation-for="Veiculo.Cilindrada" class="auth-error"></span>
+                    </div>
+
+                    <div class="form-field">
+                        <label asp-for="Veiculo.Combustivel" class="auth-label"></label>
+                        <input asp-for="Veiculo.Combustivel" class="auth-input" />
+                        <span asp-validation-for="Veiculo.Combustivel" class="auth-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-grid form-grid-3">
+                    <div class="form-field">
+                        <label asp-for="Veiculo.Matricula" class="auth-label"></label>
+                        <input asp-for="Veiculo.Matricula" class="auth-input" />
+                        <span asp-validation-for="Veiculo.Matricula" class="auth-error"></span>
+                    </div>
+
+                    <div class="form-field">
+                        <label asp-for="Veiculo.VIN" class="auth-label"></label>
+                        <input asp-for="Veiculo.VIN" class="auth-input" />
+                        <span asp-validation-for="Veiculo.VIN" class="auth-error"></span>
+                    </div>
+
+                    
+                </div>
+
+                <div class="form-grid form-grid-1">
+                    <div class="form-field">
+                        <label asp-for="Veiculo.quilometragem" class="auth-label"></label>
+                        <input asp-for="Veiculo.quilometragem" class="auth-input" />
+                        <span asp-validation-for="Veiculo.quilometragem" class="auth-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-section-title">
+                    <h2>Dados do stand</h2>
+                    <p>Atualize os dados comerciais do veículo.</p>
+                </div>
+
+                <div class="form-grid form-grid-3">
+                    <div class="form-field">
+                        <label asp-for="VeiculoStand.Preco" class="auth-label"></label>
+                        <input asp-for="VeiculoStand.Preco" class="auth-input" />
+                        <span asp-validation-for="VeiculoStand.Preco" class="auth-error"></span>
+                    </div>
+
+                    <div class="form-field">
+                        <label asp-for="VeiculoStand.Estado" class="auth-label"></label>
+                        <input asp-for="VeiculoStand.Estado" class="auth-input" />
+                        <span asp-validation-for="VeiculoStand.Estado" class="auth-error"></span>
+                    </div>
+
+                    <div class="form-field">
+                        <label asp-for="VeiculoStand.Quilometros" class="auth-label"></label>
+                        <input asp-for="VeiculoStand.Quilometros" class="auth-input" />
+                        <span asp-validation-for="VeiculoStand.Quilometros" class="auth-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-grid form-grid-1">
+                    <div class="form-field">
+                        <label asp-for="VeiculoStand.DataEntrada" class="auth-label"></label>
+                        <input asp-for="VeiculoStand.DataEntrada" class="auth-input" type="datetime-local" />
+                        <span asp-validation-for="VeiculoStand.DataEntrada" class="auth-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-grid form-grid-1">
+                    <div class="form-field">
+                        <label asp-for="VeiculoStand.Descricao" class="auth-label"></label>
+                        <textarea asp-for="VeiculoStand.Descricao"
+                                  class="auth-input auth-textarea"
+                                  rows="5"></textarea>
+                        <span asp-validation-for="VeiculoStand.Descricao" class="auth-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-section-title">
+                    <h2>Galeria atual</h2>
+                    <p>Defina a imagem principal ou remova imagens da galeria.</p>
+                </div>
+
+                @if (Model.VeiculoStand.Imagens != null && Model.VeiculoStand.Imagens.Any())
+                {
+                    <div class="vehicle-gallery-grid">
+                        @foreach (var imagem in Model.VeiculoStand.Imagens)
+                        {
+                            <div class="vehicle-gallery-card">
+                                <img src="@imagem.Url"
+                                     alt="@imagem.Alt"
+                                     class="vehicle-gallery-image"
+                                     onerror="this.onerror=null;this.src='@Url.Content("~/images/cars/default-car.jpg")';" />
+
+                                <div class="vehicle-gallery-body">
+                                    <p class="vehicle-gallery-url">@imagem.Url</p>
+
+                                    @if (imagem.Principal)
+                                    {
+                                        <span class="gallery-badge-main">Principal</span>
+                                    }
+
+                                    <div class="vehicle-gallery-actions">
+                                        @if (!imagem.Principal)
+                                        {
+                                            <form method="post" asp-page-handler="DefinirPrincipal">
+                                                <input type="hidden" name="id" value="@Model.VeiculoStand.Id" />
+                                                <input type="hidden" name="imagemId" value="@imagem.Id" />
+                                                <button type="submit" class="auth-button auth-button-secondary">
+                                                    Tornar principal
+                                                </button>
+                                            </form>
+                                        }
+
+                                        <form method="post" asp-page-handler="DeleteImagem">
+                                            <input type="hidden" name="id" value="@Model.VeiculoStand.Id" />
+                                            <input type="hidden" name="imagemId" value="@imagem.Id" />
+                                            <button type="submit" class="auth-button auth-button-danger">
+                                                Remover
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state-card">
+                        <h3>Sem imagens</h3>
+                        <p>Ainda não existem imagens associadas a este veículo do stand.</p>
+                    </div>
+                }
+
+                <div class="form-section-title">
+                    <h2>Adicionar imagens</h2>
+                    <p>Introduza novos links, um por linha.</p>
+                </div>
+
+                <div class="form-grid form-grid-1">
+                    <div class="form-field">
+                        <label asp-for="NovasGaleriaUrls" class="auth-label">Novos links</label>
+                        <textarea asp-for="NovasGaleriaUrls"
+                                  class="auth-input auth-textarea"
+                                  rows="5"
+                                  placeholder="https://site.com/imagem1.jpg&#10;https://site.com/imagem2.jpg"></textarea>
+                        <span asp-validation-for="NovasGaleriaUrls" class="auth-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="auth-button">Guardar alterações</button>
+                    <a asp-page="./Index" class="auth-button auth-button-secondary">Cancelar</a>
+                </div>
+            </form>
         </div>
     </div>
-</div>
+</section>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

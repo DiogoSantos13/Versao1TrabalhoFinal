@@ -1,0 +1,292 @@
+﻿@page "{id:int}"
+@model Versao1TrabalhoFinal.Pages.VeiculosStand.DetailsModel
+@{
+    ViewData["Title"] = "Detalhes do Veículo";
+    var item = Model.VeiculoStand;
+    var veiculo = item.Veiculo;
+    var imagens = item.Imagens.OrderByDescending(i => i.Principal).ThenBy(i => i.Ordem).ToList();
+    var titulo = $"{veiculo?.Marca ?? "Veículo"} {veiculo?.Modelo ?? ""}".Trim();
+    var estado = string.IsNullOrWhiteSpace(item.Estado) ? "Disponível" : item.Estado;
+    var combustivel = string.IsNullOrWhiteSpace(veiculo?.Combustivel) ? "-" : veiculo?.Combustivel;
+    var tipo = string.IsNullOrWhiteSpace(veiculo?.Tipo) ? "-" : veiculo?.Tipo;
+    var vin = string.IsNullOrWhiteSpace(veiculo?.VIN) ? "-" : veiculo?.VIN;
+    var matricula = string.IsNullOrWhiteSpace(veiculo?.Matricula) ? "-" : veiculo?.Matricula;
+    var descricao = string.IsNullOrWhiteSpace(item.Descricao) ? "Sem descrição adicional disponível." : item.Descricao;
+}
+
+<section class="vehicle-details-page">
+    <div class="vehicle-details-container">
+        <div class="vehicle-details-breadcrumb">
+            <a asp-page="./Index">Veículos do stand</a>
+            <span>/</span>
+            <span>@titulo</span>
+        </div>
+
+        <div class="vehicle-hero-card">
+            <div class="vehicle-hero-gallery">
+                <div class="details-carousel" id="detailsCarousel">
+                    @for (int i = 0; i < imagens.Count; i++)
+                    {
+                        var imagem = imagens[i];
+                        <div class="details-slide @(i == 0 ? "active" : "")" data-index="@i">
+                            <img src="@imagem.Url"
+                                 alt="@(string.IsNullOrWhiteSpace(imagem.Alt) ? titulo : imagem.Alt)"
+                                 class="details-main-image"
+                                 onerror="this.onerror=null;this.src='@Url.Content("~/images/cars/default-car.jpg")';" />
+                        </div>
+                    }
+
+                    @if (imagens.Count > 1)
+                    {
+                        <button type="button" class="details-arrow details-arrow-left" id="detailsPrev" aria-label="Imagem anterior">
+                            &#8249;
+                        </button>
+                        <button type="button" class="details-arrow details-arrow-right" id="detailsNext" aria-label="Imagem seguinte">
+                            &#8250;
+                        </button>
+
+                        <div class="details-counter">
+                            <span id="detailsCurrentSlide">1</span>/<span>@imagens.Count</span>
+                        </div>
+                    }
+                </div>
+
+                @if (imagens.Count > 1)
+                {
+                    <div class="details-thumbnails">
+                        @for (int i = 0; i < imagens.Count; i++)
+                        {
+                            var imagem = imagens[i];
+                            <button type="button"
+                                    class="details-thumb @(i == 0 ? "active" : "")"
+                                    data-thumb-index="@i"
+                                    aria-label="Ver imagem @(i + 1)">
+                                <img src="@imagem.Url"
+                                     alt="Miniatura @(i + 1)"
+                                     onerror="this.onerror=null;this.src='@Url.Content("~/images/cars/default-car.jpg")';" />
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="vehicle-hero-summary">
+                <div class="vehicle-summary-header">
+                    <p class="vehicle-summary-eyebrow">Veículo do stand</p>
+                    <h1>@titulo</h1>
+                    <p class="vehicle-summary-status @(estado.ToLower().Contains("vendido") ? "status-sold" : "status-available")">
+                        @estado
+                    </p>
+                </div>
+
+                <div class="vehicle-price-box">
+                    <span class="vehicle-price-label">Preço</span>
+                    <strong class="vehicle-price-value">€ @item.Preco.ToString("N2")</strong>
+                </div>
+
+                <div class="vehicle-highlight-grid">
+                    <div class="vehicle-highlight-item">
+                        <span>Quilómetros</span>
+                        <strong>@item.Quilometros.ToString("N0")</strong>
+                    </div>
+                    <div class="vehicle-highlight-item">
+                        <span>Ano</span>
+                        <strong>@(veiculo?.Ano)</strong>
+                    </div>
+                    <div class="vehicle-highlight-item">
+                        <span>Combustível</span>
+                        <strong>@combustivel</strong>
+                    </div>
+                    <div class="vehicle-highlight-item">
+                        <span>Tipo</span>
+                        <strong>@tipo</strong>
+                    </div>
+                </div>
+
+                <div class="vehicle-summary-actions">
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <a asp-page="/Carrinho/Adicionar"
+                           asp-route-veiculoStandId="@item.Id"
+                           class="details-action-button">
+                            Adicionar ao carrinho
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-page="/Account/Login"
+                           asp-route-returnUrl="@Url.Page("/VeiculosStand/Details", new { id = item.Id })"
+                           class="details-action-button">
+                            Iniciar sessão para comprar
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="vehicle-details-content">
+            <div class="vehicle-details-main">
+                <section class="details-section-card">
+                    <div class="details-section-heading">
+                        <h2>Descrição</h2>
+                    </div>
+                    <p class="vehicle-description-text">@descricao</p>
+                </section>
+
+                <section class="details-section-card">
+                    <div class="details-section-heading">
+                        <h2>Características</h2>
+                    </div>
+
+                    <div class="vehicle-specs-grid">
+                        <div class="vehicle-spec-item">
+                            <span>Marca</span>
+                            <strong>@(veiculo?.Marca ?? "-")</strong>
+                        </div>
+                        <div class="vehicle-spec-item">
+                            <span>Modelo</span>
+                            <strong>@(veiculo?.Modelo ?? "-")</strong>
+                        </div>
+                        <div class="vehicle-spec-item">
+                            <span>Ano</span>
+                            <strong>@(veiculo?.Ano)</strong>
+                        </div>
+                        <div class="vehicle-spec-item">
+                            <span>Tipo</span>
+                            <strong>@tipo</strong>
+                        </div>
+                        <div class="vehicle-spec-item">
+                            <span>Cilindrada</span>
+                            <strong>@(veiculo?.Cilindrada.ToString() ?? "-")</strong>
+                        </div>
+                        <div class="vehicle-spec-item">
+                            <span>Combustível</span>
+                            <strong>@combustivel</strong>
+                        </div>
+                        <div class="vehicle-spec-item">
+                            <span>Matrícula</span>
+                            <strong>@matricula</strong>
+                        </div>
+                        <div class="vehicle-spec-item">
+                            <span>VIN</span>
+                            <strong>@vin</strong>
+                        </div>
+                        <div class="vehicle-spec-item">
+                            <span>Quilometragem do veículo</span>
+                            <strong>@veiculo?.quilometragem.ToString("N0")</strong>
+                        </div>
+                        <div class="vehicle-spec-item">
+                            <span>Quilómetros no stand</span>
+                            <strong>@item.Quilometros.ToString("N0")</strong>
+                        </div>
+                        <div class="vehicle-spec-item">
+                            <span>Data de entrada</span>
+                            <strong>@item.DataEntrada.ToString("dd/MM/yyyy HH:mm")</strong>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="vehicle-details-side">
+                <section class="details-section-card sticky-side-card">
+                    <div class="details-section-heading">
+                        <h2>Resumo</h2>
+                    </div>
+
+                    <div class="vehicle-side-list">
+                        <div class="vehicle-side-row">
+                            <span>Preço</span>
+                            <strong>€ @item.Preco.ToString("N2")</strong>
+                        </div>
+                        <div class="vehicle-side-row">
+                            <span>Estado</span>
+                            <strong>@estado</strong>
+                        </div>
+                        <div class="vehicle-side-row">
+                            <span>Marca</span>
+                            <strong>@(veiculo?.Marca ?? "-")</strong>
+                        </div>
+                        <div class="vehicle-side-row">
+                            <span>Modelo</span>
+                            <strong>@(veiculo?.Modelo ?? "-")</strong>
+                        </div>
+                        <div class="vehicle-side-row">
+                            <span>Combustível</span>
+                            <strong>@combustivel</strong>
+                        </div>
+                        <div class="vehicle-side-row">
+                            <span>Matrícula</span>
+                            <strong>@matricula</strong>
+                        </div>
+                    </div>
+
+                    <div class="vehicle-side-actions">
+                        <a asp-page="./Index" class="details-secondary-button">
+                            Voltar à lista
+                        </a>
+
+                        @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        {
+                            <a asp-page="./Edit" asp-route-id="@item.Id" class="details-secondary-button details-secondary-button-dark">
+                                Editar
+                            </a>
+                        }
+                    </div>
+                </section>
+            </aside>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        (function () {
+            const slides = document.querySelectorAll('.details-slide');
+            const thumbs = document.querySelectorAll('.details-thumb');
+            const prev = document.getElementById('detailsPrev');
+            const next = document.getElementById('detailsNext');
+            const current = document.getElementById('detailsCurrentSlide');
+
+            if (!slides.length) return;
+
+            let index = 0;
+
+            function updateSlider() {
+                slides.forEach((slide, i) => {
+                    slide.classList.toggle('active', i === index);
+                });
+
+                thumbs.forEach((thumb, i) => {
+                    thumb.classList.toggle('active', i === index);
+                });
+
+                if (current) {
+                    current.textContent = (index + 1).toString();
+                }
+            }
+
+            if (prev) {
+                prev.addEventListener('click', function () {
+                    index = (index - 1 + slides.length) % slides.length;
+                    updateSlider();
+                });
+            }
+
+            if (next) {
+                next.addEventListener('click', function () {
+                    index = (index + 1) % slides.length;
+                    updateSlider();
+                });
+            }
+
+            thumbs.forEach((thumb, thumbIndex) => {
+                thumb.addEventListener('click', function () {
+                    index = thumbIndex;
+                    updateSlider();
+                });
+            });
+
+            updateSlider();
+        })();
+    </script>
+}

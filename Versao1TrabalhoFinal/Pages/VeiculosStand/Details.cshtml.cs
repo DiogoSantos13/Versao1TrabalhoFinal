@@ -4,11 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using Versao1TrabalhoFinal.Data;
 using Versao1TrabalhoFinal.Models;
 
-namespace Versao1TrabalhoFinal.Pages.Servicos
+namespace Versao1TrabalhoFinal.Pages.VeiculosStand
 {
     /// <summary>
-    /// Página responsável pelos detalhes de um serviço.
-    /// Acesso público.
+    /// Página pública de detalhes de um veículo do stand.
     /// </summary>
     public class DetailsModel : PageModel
     {
@@ -20,55 +19,55 @@ namespace Versao1TrabalhoFinal.Pages.Servicos
         }
 
         /// <summary>
-        /// Serviço carregado.
+        /// Veículo do stand a apresentar.
         /// </summary>
-        public Servico? Servico { get; set; }
+        public VeiculoStand VeiculoStand { get; set; } = new();
 
         /// <summary>
-        /// Carrega os detalhes do serviço e respetiva galeria.
+        /// Carrega os detalhes do veículo do stand, do veículo associado e respetiva galeria.
         /// </summary>
-        /// <param name="id">Identificador do serviço.</param>
-        /// <returns>A página ou NotFound.</returns>
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            Servico = await _context.Servicos
+            var item = await _context.VeiculosStand
                 .AsNoTracking()
-                .FirstOrDefaultAsync(s => s.Id == id);
+                .Include(vs => vs.Veiculo)
+                .FirstOrDefaultAsync(vs => vs.Id == id);
 
-            if (Servico == null)
+            if (item == null)
             {
                 return NotFound();
             }
 
-            Servico.Imagens = await _context.ImagensEntidade
+            item.Imagens = await _context.ImagensEntidade
                 .AsNoTracking()
-                .Where(i => i.TipoEntidade == "Servico" && i.EntidadeId == id)
+                .Where(i => i.TipoEntidade == "VeiculoStand" && i.EntidadeId == item.Id)
                 .OrderByDescending(i => i.Principal)
                 .ThenBy(i => i.Ordem)
                 .ToListAsync();
 
-            if (!Servico.Imagens.Any() && !string.IsNullOrWhiteSpace(Servico.ImagemUrl))
+            if (!item.Imagens.Any() && !string.IsNullOrWhiteSpace(item.Veiculo?.ImagemUrl))
             {
-                Servico.Imagens.Add(new ImagemEntidade
+                item.Imagens.Add(new ImagemEntidade
                 {
-                    Url = Servico.ImagemUrl,
-                    Alt = Servico.Nome,
+                    Url = item.Veiculo.ImagemUrl,
+                    Alt = $"{item.Veiculo?.Marca} {item.Veiculo?.Modelo}",
                     Principal = true,
                     Ordem = 0
                 });
             }
 
-            if (!Servico.Imagens.Any())
+            if (!item.Imagens.Any())
             {
-                Servico.Imagens.Add(new ImagemEntidade
+                item.Imagens.Add(new ImagemEntidade
                 {
-                    Url = "/images/services/default-service.jpg",
+                    Url = "/images/cars/default-car.jpg",
                     Alt = "Imagem por defeito",
                     Principal = true,
                     Ordem = 0
                 });
             }
 
+            VeiculoStand = item;
             return Page();
         }
     }

@@ -2,6 +2,10 @@
 @model Versao1TrabalhoFinal.Pages.Veiculos.EditModel
 @{
     ViewData["Title"] = "Editar veículo";
+
+    var imagemPreview = !string.IsNullOrWhiteSpace(Model.Veiculo.ImagemUrl)
+        ? Model.Veiculo.ImagemUrl
+        : Url.Content("~/images/cars/default-car.jpg");
 }
 
 <section class="dashboard-page">
@@ -12,77 +16,125 @@
             <p class="page-subtitle">Atualize os dados do veículo associado à sua conta.</p>
         </div>
 
-        <div class="form-card">
-            <form method="post" class="modern-form">
-                <input type="hidden" asp-for="Veiculo.Id" />
+        <div class="vehicle-edit-shell">
+            <div class="form-card">
+                <form method="post" class="modern-form">
+                    <input type="hidden" asp-for="Veiculo.Id" />
 
-                <div asp-validation-summary="ModelOnly" class="auth-validation"></div>
+                    <div asp-validation-summary="ModelOnly" class="auth-validation"></div>
 
-                <div class="form-grid form-grid-2">
-                    <div class="form-field">
-                        <label asp-for="Veiculo.Marca" class="auth-label"></label>
-                        <input asp-for="Veiculo.Marca" class="auth-input" />
-                        <span asp-validation-for="Veiculo.Marca" class="auth-error"></span>
+                    <div class="form-grid form-grid-2">
+                        <div class="form-field">
+                            <label asp-for="Veiculo.Marca" class="auth-label"></label>
+                            <input asp-for="Veiculo.Marca" class="auth-input" />
+                            <span asp-validation-for="Veiculo.Marca" class="auth-error"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label asp-for="Veiculo.Modelo" class="auth-label"></label>
+                            <input asp-for="Veiculo.Modelo" class="auth-input" />
+                            <span asp-validation-for="Veiculo.Modelo" class="auth-error"></span>
+                        </div>
                     </div>
 
-                    <div class="form-field">
-                        <label asp-for="Veiculo.Modelo" class="auth-label"></label>
-                        <input asp-for="Veiculo.Modelo" class="auth-input" />
-                        <span asp-validation-for="Veiculo.Modelo" class="auth-error"></span>
+                    <div class="form-grid form-grid-3">
+                        <div class="form-field">
+                            <label asp-for="Veiculo.Ano" class="auth-label"></label>
+                            <input asp-for="Veiculo.Ano" class="auth-input" />
+                            <span asp-validation-for="Veiculo.Ano" class="auth-error"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label asp-for="Veiculo.Cilindrada" class="auth-label"></label>
+                            <input asp-for="Veiculo.Cilindrada" class="auth-input" />
+                            <span asp-validation-for="Veiculo.Cilindrada" class="auth-error"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label asp-for="Veiculo.Combustivel" class="auth-label"></label>
+                            <input asp-for="Veiculo.Combustivel" class="auth-input" />
+                            <span asp-validation-for="Veiculo.Combustivel" class="auth-error"></span>
+                        </div>
                     </div>
+
+                    <div class="form-grid form-grid-2">
+                        <div class="form-field">
+                            <label asp-for="Veiculo.Matricula" class="auth-label"></label>
+                            <input asp-for="Veiculo.Matricula" class="auth-input" />
+                            <span asp-validation-for="Veiculo.Matricula" class="auth-error"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label asp-for="Veiculo.VIN" class="auth-label"></label>
+                            <input asp-for="Veiculo.VIN" class="auth-input" />
+                            <span asp-validation-for="Veiculo.VIN" class="auth-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-grid form-grid-1">
+                        <div class="form-field">
+                            <label asp-for="Veiculo.ImagemUrl" class="auth-label"></label>
+                            <input asp-for="Veiculo.ImagemUrl" class="auth-input" id="imagemUrlInput" />
+                            <span asp-validation-for="Veiculo.ImagemUrl" class="auth-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-grid form-grid-1">
+                        <div class="form-field">
+                            <label asp-for="GaleriaUrls" class="auth-label">Galeria de imagens</label>
+                            <textarea asp-for="GaleriaUrls"
+                                      class="auth-input vehicle-gallery-textarea"
+                                      rows="6"
+                                      placeholder="https://site.com/imagem1.jpg&#10;https://site.com/imagem2.jpg&#10;https://site.com/imagem3.jpg"></textarea>
+                            <span asp-validation-for="GaleriaUrls" class="auth-error"></span>
+                            <small class="form-text">Introduza um link por linha. A primeira imagem será a principal.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="auth-button">Guardar alterações</button>
+                        <a asp-page="./Index" class="auth-button auth-button-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+
+            <aside class="vehicle-edit-preview-card">
+                <h2 class="vehicle-edit-preview-title">Pré-visualização</h2>
+                <p class="vehicle-edit-preview-subtitle">Confirme a imagem principal antes de guardar.</p>
+
+                <div class="vehicle-edit-preview-box">
+                    <img src="@imagemPreview"
+                         alt="@Model.Veiculo.Marca @Model.Veiculo.Modelo"
+                         class="vehicle-edit-preview-image"
+                         id="imagemPreview"
+                         onerror="this.onerror=null;this.src='@Url.Content("~/images/cars/default-car.jpg")';" />
                 </div>
-
-                <div class="form-grid form-grid-3">
-                    <div class="form-field">
-                        <label asp-for="Veiculo.Ano" class="auth-label"></label>
-                        <input asp-for="Veiculo.Ano" class="auth-input" />
-                        <span asp-validation-for="Veiculo.Ano" class="auth-error"></span>
-                    </div>
-
-                    <div class="form-field">
-                        <label asp-for="Veiculo.Cilindrada" class="auth-label"></label>
-                        <input asp-for="Veiculo.Cilindrada" class="auth-input" />
-                        <span asp-validation-for="Veiculo.Cilindrada" class="auth-error"></span>
-                    </div>
-
-                    <div class="form-field">
-                        <label asp-for="Veiculo.Combustivel" class="auth-label"></label>
-                        <input asp-for="Veiculo.Combustivel" class="auth-input" />
-                        <span asp-validation-for="Veiculo.Combustivel" class="auth-error"></span>
-                    </div>
-                </div>
-
-                <div class="form-grid form-grid-2">
-                    <div class="form-field">
-                        <label asp-for="Veiculo.Matricula" class="auth-label"></label>
-                        <input asp-for="Veiculo.Matricula" class="auth-input" />
-                        <span asp-validation-for="Veiculo.Matricula" class="auth-error"></span>
-                    </div>
-
-                    <div class="form-field">
-                        <label asp-for="Veiculo.VIN" class="auth-label"></label>
-                        <input asp-for="Veiculo.VIN" class="auth-input" />
-                        <span asp-validation-for="Veiculo.VIN" class="auth-error"></span>
-                    </div>
-                </div>
-
-                <div class="form-grid form-grid-1">
-                    <div class="form-field">
-                        <label asp-for="Veiculo.ImagemUrl" class="auth-label"></label>
-                        <input asp-for="Veiculo.ImagemUrl" class="auth-input" />
-                        <span asp-validation-for="Veiculo.ImagemUrl" class="auth-error"></span>
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="auth-button">Guardar alterações</button>
-                    <a asp-page="./Index" class="auth-button auth-button-secondary">Cancelar</a>
-                </div>
-            </form>
+            </aside>
         </div>
     </div>
 </section>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        (function () {
+            const input = document.getElementById('imagemUrlInput');
+            const preview = document.getElementById('imagemPreview');
+            const fallback = '@Url.Content("~/images/cars/default-car.jpg")';
+
+            if (!input || !preview) return;
+
+            function atualizarPreview() {
+                const valor = input.value.trim();
+                preview.src = valor ? valor : fallback;
+            }
+
+            input.addEventListener('input', atualizarPreview);
+
+            preview.addEventListener('error', function () {
+                preview.src = fallback;
+            });
+        })();
+    </script>
 }

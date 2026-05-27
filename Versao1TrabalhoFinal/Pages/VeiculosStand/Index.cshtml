@@ -28,16 +28,33 @@
             </div>
         }
 
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="error-banner">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
         @if (Model.VeiculosStand != null && Model.VeiculosStand.Any())
         {
             <div class="vehicle-grid">
                 @foreach (var item in Model.VeiculosStand)
                 {
+                    var imagemPrincipal = item.Imagens?
+                    .OrderByDescending(i => i.Principal)
+                    .ThenBy(i => i.Ordem)
+                    .FirstOrDefault();
+
+                    var imagem = imagemPrincipal != null
+                    ? imagemPrincipal.Url
+                    : Url.Content("~/images/cars/default-car.jpg");
+
                     <div class="vehicle-admin-card">
                         <div class="vehicle-admin-image-wrap">
-                            <img src="@(string.IsNullOrWhiteSpace(item.ImagemUrl) ? "/images/cars/default-car.jpg" : item.ImagemUrl)"
+                            <img src="@imagem"
                                  class="vehicle-admin-image"
-                                 alt="@(item.Veiculo?.Marca ?? "Veículo") @(item.Veiculo?.Modelo ?? "")" />
+                                 alt="@(item.Veiculo?.Marca ?? "Veículo") @(item.Veiculo?.Modelo ?? "")"
+                                 onerror="this.onerror=null;this.src='@Url.Content("~/images/cars/default-car.jpg")';" />
                         </div>
 
                         <div class="vehicle-admin-body">
@@ -74,23 +91,28 @@
                             </div>
 
                             <div class="vehicle-admin-actions">
-                                <a asp-page="/VeiculosStand/Details" asp-route-id="@item.Id" class="action-link action-link-primary">
+                                <a asp-page="/VeiculosStand/Details"
+                                   asp-route-id="@item.Id"
+                                   class="action-link action-link-primary">
                                     Ver detalhes
                                 </a>
 
                                 @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
                                 {
-                                    <a asp-page="/VeiculosStand/Edit" asp-route-id="@item.Id" class="action-link action-link-primary">
+                                    <a asp-page="/VeiculosStand/Edit"
+                                       asp-route-id="@item.Id"
+                                       class="action-link action-link-primary">
                                         Editar
                                     </a>
 
-                                    <a asp-page="/VeiculosStand/Delete" asp-route-id="@item.Id" class="action-link action-link-danger">
+                                    <a asp-page="/VeiculosStand/Delete"
+                                       asp-route-id="@item.Id"
+                                       class="action-link action-link-danger">
                                         Eliminar
                                     </a>
                                 }
                                 else
                                 {
-
                                     if (User.Identity != null && User.Identity.IsAuthenticated)
                                     {
                                         <a asp-page="/Carrinho/Adicionar"
@@ -98,13 +120,12 @@
                                            class="action-link action-link-primary">
                                             Adicionar ao carrinho
                                         </a>
-
                                     }
                                     else
                                     {
                                         <a asp-page="/Account/Login"
-                                        asp-route-returnUrl="@Url.Page("/VeiculosStand/Index")"
-                                        class="action-link action-link-primary">
+                                           asp-route-returnUrl="@Url.Page("/VeiculosStand/Index")"
+                                           class="action-link action-link-primary">
                                             Iniciar sessão
                                         </a>
                                     }

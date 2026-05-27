@@ -4,26 +4,111 @@
     ViewData["Title"] = "Eliminar Serviço";
 }
 
-<h2 class="mb-4">Eliminar Serviço</h2>
-
-@if (Model.Servico != null)
-{
-    <div class="alert alert-warning">
-        Tem a certeza que pretende eliminar este serviço?
-    </div>
-
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <h4>@Model.Servico.Nome</h4>
-            <p class="text-muted">@Model.Servico.Descricao</p>
-            <p><strong>Preço base:</strong> € @Model.Servico.PrecoBase</p>
-            <p><strong>Tempo estimado:</strong> @Model.Servico.TempoEstimado min</p>
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="list-header">
+            <div>
+                <p class="page-eyebrow">Gestão de serviços</p>
+                <h1 class="page-title">Eliminar serviço</h1>
+                <p class="page-subtitle">Confirme a remoção do serviço selecionado.</p>
+            </div>
         </div>
-    </div>
 
-    <form method="post">
-        <input type="hidden" asp-for="Servico.Id" />
-        <button type="submit" class="btn btn-danger">Eliminar</button>
-        <a asp-page="/Servicos/Index" class="btn btn-secondary">Cancelar</a>
-    </form>
+        @if (Model.Servico != null)
+        {
+            <div class="delete-layout">
+                <div class="delete-main-card">
+                    <div class="delete-warning-banner">
+                        <span class="delete-warning-icon">!</span>
+                        <div>
+                            <strong>Atenção:</strong> esta ação vai eliminar o serviço permanentemente.
+                        </div>
+                    </div>
+
+                    <div class="delete-service-card">
+                        @if (!string.IsNullOrWhiteSpace(Model.Servico.ImagemUrl))
+                        {
+                            <div class="delete-service-image-wrap">
+                                <img src="@Model.Servico.ImagemUrl"
+                                     alt="@Model.Servico.Nome"
+                                     class="delete-service-image"
+                                     onerror="this.onerror=null;this.src='@Url.Content("~/images/services/default-service.jpg")';" />
+                            </div>
+                        }
+
+                    <div class="delete-service-body">
+                        <div class="delete-service-header">
+                            <h2>@Model.Servico.Nome</h2>
+                            <span class="delete-service-status @(Model.Servico.Ativo ? "status-active" : "status-inactive")">
+                                @(Model.Servico.Ativo ? "Ativo" : "Inativo")
+                            </span>
+                        </div>
+
+                        <p class="delete-service-description">
+                            @(string.IsNullOrWhiteSpace(Model.Servico.Descricao)
+                                                        ? "Sem descrição disponível."
+                                                        : Model.Servico.Descricao)
+                        </p>
+
+                            <div class="delete-service-meta">
+                                <div class="delete-meta-item">
+                                    <span>Preço base</span>
+                                    <strong>€ @Model.Servico.PrecoBase.ToString("N2")</strong>
+                                </div>
+
+                                <div class="delete-meta-item">
+                                    <span>Tempo estimado</span>
+                                    <strong>@Model.Servico.TempoEstimado min</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="post" class="delete-form-actions">
+                        <input type="hidden" asp-for="Servico.Id" />
+                        <button type="submit" class="delete-confirm-button">Eliminar serviço</button>
+                        <a asp-page="/Servicos/Index" class="delete-cancel-button">Cancelar</a>
+                    </form>
+                </div>
+
+                <aside class="delete-side-card">
+                    <h3>Resumo</h3>
+
+                    <div class="delete-side-list">
+                        <div class="delete-side-row">
+                            <span>Nome</span>
+                            <strong>@Model.Servico.Nome</strong>
+                        </div>
+
+                        <div class="delete-side-row">
+                            <span>Preço</span>
+                            <strong>€ @Model.Servico.PrecoBase.ToString("N2")</strong>
+                        </div>
+
+                        <div class="delete-side-row">
+                            <span>Duração</span>
+                            <strong>@Model.Servico.TempoEstimado min</strong>
+                        </div>
+
+                        <div class="delete-side-row">
+                            <span>Estado</span>
+                            <strong>@(Model.Servico.Ativo ? "Ativo" : "Inativo")</strong>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+                }
+        else
+        {
+            <div class="empty-state-card">
+                <h3>Serviço não encontrado</h3>
+                <p>Não foi possível localizar o serviço solicitado.</p>
+                <a asp-page="/Servicos/Index" class="auth-button">Voltar à lista</a>
+            </div>
+        }
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
 }

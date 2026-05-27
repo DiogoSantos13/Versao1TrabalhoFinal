@@ -19,13 +19,13 @@
                 <div class="form-grid form-grid-2">
                     <div class="form-field">
                         <label asp-for="Veiculo.Marca" class="auth-label"></label>
-                        <input asp-for="Veiculo.Marca" class="auth-input" />
+                        <input asp-for="Veiculo.Marca" class="auth-input" placeholder="Ex.: BMW" />
                         <span asp-validation-for="Veiculo.Marca" class="auth-error"></span>
                     </div>
 
                     <div class="form-field">
                         <label asp-for="Veiculo.Modelo" class="auth-label"></label>
-                        <input asp-for="Veiculo.Modelo" class="auth-input" />
+                        <input asp-for="Veiculo.Modelo" class="auth-input" placeholder="Ex.: Série 3" />
                         <span asp-validation-for="Veiculo.Modelo" class="auth-error"></span>
                     </div>
                 </div>
@@ -33,19 +33,22 @@
                 <div class="form-grid form-grid-3">
                     <div class="form-field">
                         <label asp-for="Veiculo.Ano" class="auth-label"></label>
-                        <input asp-for="Veiculo.Ano" class="auth-input" />
+                        <input asp-for="Veiculo.Ano" class="auth-input" placeholder="Ex.: 2020" />
                         <span asp-validation-for="Veiculo.Ano" class="auth-error"></span>
                     </div>
 
                     <div class="form-field">
                         <label asp-for="Veiculo.Matricula" class="auth-label"></label>
-                        <input asp-for="Veiculo.Matricula" class="auth-input" />
+                        <input asp-for="Veiculo.Matricula"
+                               class="auth-input"
+                               placeholder="Ex.: 12-AB-34"
+                               style="text-transform: uppercase;" />
                         <span asp-validation-for="Veiculo.Matricula" class="auth-error"></span>
                     </div>
 
                     <div class="form-field">
                         <label asp-for="Veiculo.Combustivel" class="auth-label"></label>
-                        <input asp-for="Veiculo.Combustivel" class="auth-input" />
+                        <input asp-for="Veiculo.Combustivel" class="auth-input" placeholder="Ex.: Gasolina" />
                         <span asp-validation-for="Veiculo.Combustivel" class="auth-error"></span>
                     </div>
                 </div>
@@ -53,13 +56,13 @@
                 <div class="form-grid form-grid-2">
                     <div class="form-field">
                         <label asp-for="Veiculo.Cilindrada" class="auth-label"></label>
-                        <input asp-for="Veiculo.Cilindrada" class="auth-input" />
+                        <input asp-for="Veiculo.Cilindrada" class="auth-input" placeholder="Ex.: 1998" />
                         <span asp-validation-for="Veiculo.Cilindrada" class="auth-error"></span>
                     </div>
 
                     <div class="form-field">
                         <label asp-for="Veiculo.VIN" class="auth-label"></label>
-                        <input asp-for="Veiculo.VIN" class="auth-input" />
+                        <input asp-for="Veiculo.VIN" class="auth-input" placeholder="Número do chassis" />
                         <span asp-validation-for="Veiculo.VIN" class="auth-error"></span>
                     </div>
                 </div>

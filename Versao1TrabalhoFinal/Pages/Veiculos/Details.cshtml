@@ -2,6 +2,13 @@
 @model Versao1TrabalhoFinal.Pages.Veiculos.DetailsModel
 @{
     ViewData["Title"] = "Detalhes do veículo";
+
+    var imagens = Model.Veiculo.Imagens?
+        .OrderByDescending(i => i.Principal)
+        .ThenBy(i => i.Ordem)
+        .ToList() ?? new();
+
+    var nomeVeiculo = $"{Model.Veiculo.Marca} {Model.Veiculo.Modelo}".Trim();
 }
 
 <section class="dashboard-page">
@@ -12,14 +19,55 @@
             <p class="page-subtitle">Consulte as informações registadas para este veículo.</p>
         </div>
 
-        <div class="details-card">
-            <div class="details-layout">
-                <div class="details-image-column">
-                    <img src="@(string.IsNullOrWhiteSpace(Model.Veiculo.ImagemUrl) ? "/images/cars/default-car.jpg" : Model.Veiculo.ImagemUrl)"
-                         class="details-image"
-                         alt="@Model.Veiculo.Marca @Model.Veiculo.Modelo" />
+        <div class="vehicle-details-shell">
+            <div class="vehicle-details-gallery-card">
+                <div class="vehicle-details-carousel" id="vehicleDetailsCarousel">
+                    @for (int i = 0; i < imagens.Count; i++)
+                    {
+                        var imagem = imagens[i];
+                        <div class="vehicle-details-slide @(i == 0 ? "active" : "")" data-index="@i">
+                            <img src="@imagem.Url"
+                                 class="vehicle-details-main-image"
+                                 alt="@(string.IsNullOrWhiteSpace(imagem.Alt) ? nomeVeiculo : imagem.Alt)"
+                                 onerror="this.onerror=null;this.src='@Url.Content("~/images/cars/default-car.jpg")';" />
+                        </div>
+                    }
+
+                    @if (imagens.Count > 1)
+                    {
+                        <button type="button" class="vehicle-details-arrow vehicle-details-arrow-left" id="vehicleDetailsPrev" aria-label="Imagem anterior">
+                            &#8249;
+                        </button>
+                        <button type="button" class="vehicle-details-arrow vehicle-details-arrow-right" id="vehicleDetailsNext" aria-label="Imagem seguinte">
+                            &#8250;
+                        </button>
+
+                        <div class="vehicle-details-counter">
+                            <span id="vehicleDetailsCurrentSlide">1</span>/<span>@imagens.Count</span>
+                        </div>
+                    }
                 </div>
 
+                @if (imagens.Count > 1)
+                {
+                    <div class="vehicle-details-thumbnails">
+                        @for (int i = 0; i < imagens.Count; i++)
+                        {
+                            var imagem = imagens[i];
+                            <button type="button"
+                                    class="vehicle-details-thumb @(i == 0 ? "active" : "")"
+                                    data-thumb-index="@i"
+                                    aria-label="Ver imagem @(i + 1)">
+                                <img src="@imagem.Url"
+                                     alt="Miniatura @(i + 1)"
+                                     onerror="this.onerror=null;this.src='@Url.Content("~/images/cars/default-car.jpg")';" />
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="details-card">
                 <div class="details-info-column">
                     <h2 class="details-title">@Model.Veiculo.Marca @Model.Veiculo.Modelo</h2>
 
@@ -34,12 +82,12 @@
                             <strong>@Model.Veiculo.Ano</strong>
                         </div>
 
-                     
                         <div class="details-item">
                             <span class="details-label">Combustível</span>
                             <strong>@(string.IsNullOrWhiteSpace(Model.Veiculo.Combustivel) ? "-" : Model.Veiculo.Combustivel)</strong>
                         </div>
 
+                        
                         <div class="details-item details-item-full">
                             <span class="details-label">VIN</span>
                             <strong>@(string.IsNullOrWhiteSpace(Model.Veiculo.VIN) ? "-" : Model.Veiculo.VIN)</strong>
@@ -56,3 +104,56 @@
         </div>
     </div>
 </section>
+
+@section Scripts {
+    <script>
+        (function () {
+            const slides = document.querySelectorAll('.vehicle-details-slide');
+            const thumbs = document.querySelectorAll('.vehicle-details-thumb');
+            const prev = document.getElementById('vehicleDetailsPrev');
+            const next = document.getElementById('vehicleDetailsNext');
+            const current = document.getElementById('vehicleDetailsCurrentSlide');
+
+            if (!slides.length) return;
+
+            let index = 0;
+
+            function updateSlider() {
+                slides.forEach((slide, i) => {
+                    slide.classList.toggle('active', i === index);
+                });
+
+                thumbs.forEach((thumb, i) => {
+                    thumb.classList.toggle('active', i === index);
+                });
+
+                if (current) {
+                    current.textContent = (index + 1).toString();
+                }
+            }
+
+            if (prev) {
+                prev.addEventListener('click', function () {
+                    index = (index - 1 + slides.length) % slides.length;
+                    updateSlider();
+                });
+            }
+
+            if (next) {
+                next.addEventListener('click', function () {
+                    index = (index + 1) % slides.length;
+                    updateSlider();
+                });
+            }
+
+            thumbs.forEach((thumb, thumbIndex) => {
+                thumb.addEventListener('click', function () {
+                    index = thumbIndex;
+                    updateSlider();
+                });
+            });
+
+            updateSlider();
+        })();
+    </script>
+}

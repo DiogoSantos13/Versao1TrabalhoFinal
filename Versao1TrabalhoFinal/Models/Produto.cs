@@ -6,7 +6,7 @@ namespace Versao1TrabalhoFinal.Models
     /// <summary>
     /// Representa um produto disponível para venda na aplicação.
     /// </summary>
-    public class Produto
+    public class Produto : EntidadeComGaleria
     {
         /// <summary>
         /// Identificador único do produto.
