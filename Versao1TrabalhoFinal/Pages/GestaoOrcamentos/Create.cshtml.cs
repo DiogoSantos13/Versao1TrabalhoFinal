@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Versao1TrabalhoFinal.Data;
 using Versao1TrabalhoFinal.Models;
+using ClienteEntity = Versao1TrabalhoFinal.Models.Cliente;
 
 namespace Versao1TrabalhoFinal.Pages.GestaoOrcamentos
 {
@@ -16,7 +17,14 @@ namespace Versao1TrabalhoFinal.Pages.GestaoOrcamentos
     [Authorize(Roles = "Cliente")]
     public class CreateModel : PageModel
     {
+        /// <summary>
+        /// Contexto da base de dados da aplicação.
+        /// </summary>
         private readonly StandDbContext _context;
+
+        /// <summary>
+        /// Serviço de gestão de utilizadores do ASP.NET Core Identity.
+        /// </summary>
         private readonly UserManager<IdentityUser> _userManager;
 
         /// <summary>
@@ -47,15 +55,19 @@ namespace Versao1TrabalhoFinal.Pages.GestaoOrcamentos
         /// <returns>Resultado da execução da página.</returns>
         public async Task<IActionResult> OnGetAsync()
         {
+            // Obtém o cliente associado ao utilizador autenticado.
             var cliente = await ObterClienteAutenticadoAsync();
 
+            // Se não existir cliente associado, redireciona para a página inicial.
             if (cliente == null)
             {
                 TempData["ErrorMessage"] = "Não foi encontrado um cliente associado à conta autenticada.";
                 return RedirectToPage("/Index");
             }
 
+            // Carrega os veículos do cliente para o dropdown.
             await CarregarVeiculosAsync(cliente.Id);
+
             return Page();
         }
 
@@ -65,28 +77,34 @@ namespace Versao1TrabalhoFinal.Pages.GestaoOrcamentos
         /// <returns>Redireciona para a listagem após criação com sucesso.</returns>
         public async Task<IActionResult> OnPostAsync()
         {
+            // Obtém o cliente autenticado.
             var cliente = await ObterClienteAutenticadoAsync();
 
+            // Se não existir cliente associado, redireciona para a página inicial.
             if (cliente == null)
             {
                 TempData["ErrorMessage"] = "Não foi encontrado um cliente associado à conta autenticada.";
                 return RedirectToPage("/Index");
             }
 
+            // Verifica se o veículo selecionado pertence efetivamente ao cliente autenticado.
             var veiculoValido = await _context.Veiculos
                 .AnyAsync(v => v.Id == Input.VeiculoId && v.ClienteId == cliente.Id);
 
+            // Se o veículo não for válido, adiciona erro ao ModelState.
             if (!veiculoValido)
             {
                 ModelState.AddModelError("Input.VeiculoId", "Tem de selecionar um veículo válido.");
             }
 
+            // Se o formulário não for válido, volta a carregar o dropdown e mostra a página novamente.
             if (!ModelState.IsValid)
             {
                 await CarregarVeiculosAsync(cliente.Id);
                 return Page();
             }
 
+            // Cria a nova entidade de orçamento.
             var orcamento = new Orcamento
             {
                 ClienteId = cliente.Id,
@@ -98,6 +116,7 @@ namespace Versao1TrabalhoFinal.Pages.GestaoOrcamentos
                 Estado = "Pendente"
             };
 
+            // Guarda o novo orçamento na base de dados.
             _context.Orcamentos.Add(orcamento);
             await _context.SaveChangesAsync();
 
@@ -109,15 +128,18 @@ namespace Versao1TrabalhoFinal.Pages.GestaoOrcamentos
         /// Obtém o cliente associado ao utilizador autenticado.
         /// </summary>
         /// <returns>Cliente autenticado ou null.</returns>
-        private async Task<Cliente?> ObterClienteAutenticadoAsync()
+        private async Task<ClienteEntity?> ObterClienteAutenticadoAsync()
         {
+            // Obtém o utilizador autenticado do Identity.
             var user = await _userManager.GetUserAsync(User);
 
+            // Se não existir utilizador autenticado, devolve null.
             if (user == null)
             {
                 return null;
             }
 
+            // Procura o cliente associado ao IdentityUser autenticado.
             return await _context.Clientes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.IdentityUserId == user.Id);
@@ -129,6 +151,7 @@ namespace Versao1TrabalhoFinal.Pages.GestaoOrcamentos
         /// <param name="clienteId">Identificador do cliente.</param>
         private async Task CarregarVeiculosAsync(int clienteId)
         {
+            // Obtém os veículos do cliente ordenados pela matrícula.
             var veiculos = await _context.Veiculos
                 .AsNoTracking()
                 .Where(v => v.ClienteId == clienteId)
@@ -140,6 +163,7 @@ namespace Versao1TrabalhoFinal.Pages.GestaoOrcamentos
                 })
                 .ToListAsync();
 
+            // Preenche a SelectList usada no dropdown da Razor Page.
             VeiculosOptions = new SelectList(veiculos, "Id", "Nome");
         }
 

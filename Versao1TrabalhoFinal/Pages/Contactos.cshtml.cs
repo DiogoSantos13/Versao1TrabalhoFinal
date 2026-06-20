@@ -14,6 +14,7 @@ namespace Versao1TrabalhoFinal.Pages
     public class ContactosModel : PageModel
     {
         private readonly IConfiguration _configuration;
+        private const string AdminEmail = "dfpds2005@gmail.com";
 
         /// <summary>
         /// Inicializa a página de contactos.
@@ -57,32 +58,54 @@ namespace Versao1TrabalhoFinal.Pages
         {
             if (!ModelState.IsValid)
             {
-                ErrorMessage = "Verifique os campos do formulário e tente novamente.";
+                var erros = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => string.IsNullOrWhiteSpace(e.ErrorMessage) ? e.Exception?.Message : e.ErrorMessage)
+                    .Where(m => !string.IsNullOrWhiteSpace(m));
+
+                ErrorMessage = "ModelState inválido: " + string.Join(" | ", erros);
                 return Page();
             }
 
             try
             {
                 var smtpServer = _configuration["EmailSettings:SmtpServer"];
-                var port = int.Parse(_configuration["EmailSettings:Port"] ?? "587");
-                var senderName = _configuration["EmailSettings:SenderName"];
+                var senderName = _configuration["EmailSettings:SenderName"] ?? "Stand Premium";
                 var senderEmail = _configuration["EmailSettings:SenderEmail"];
                 var username = _configuration["EmailSettings:Username"];
                 var password = _configuration["EmailSettings:Password"];
-                var destinationEmail = _configuration["EmailSettings:DestinationEmail"];
-                var useStartTls = bool.Parse(_configuration["EmailSettings:UseStartTls"] ?? "true");
+
+                if (string.IsNullOrWhiteSpace(smtpServer) ||
+                    string.IsNullOrWhiteSpace(senderEmail) ||
+                    string.IsNullOrWhiteSpace(username) ||
+                    string.IsNullOrWhiteSpace(password))
+                {
+                    ErrorMessage = "A configuração de email está incompleta.";
+                    return Page();
+                }
+
+                var portValue = _configuration["EmailSettings:Port"];
+                if (!int.TryParse(portValue, out var port))
+                {
+                    port = 587;
+                }
+
+                var useStartTlsValue = _configuration["EmailSettings:UseStartTls"];
+                if (!bool.TryParse(useStartTlsValue, out var useStartTls))
+                {
+                    useStartTls = true;
+                }
 
                 var email = new MimeMessage();
 
                 email.From.Add(new MailboxAddress(senderName, senderEmail));
-                email.To.Add(MailboxAddress.Parse(destinationEmail));
-                email.ReplyTo.Add(MailboxAddress.Parse(Input.Email));
-                email.Subject = $"Novo contacto: {Input.Assunto}";
+                email.To.Add(MailboxAddress.Parse(AdminEmail));
+                email.ReplyTo.Add(new MailboxAddress($"{Input.Nome} {Input.Apelido}".Trim(), Input.Email));
+                email.Subject = $"[Stand Premium] Novo pedido de contacto - {Input.Assunto}";
 
-                email.Body = new TextPart(MimeKit.Text.TextFormat.Plain)
-                {
-                    Text =
-$@"Novo pedido de contacto
+                var bodyBuilder = new BodyBuilder();
+
+                bodyBuilder.TextBody = $@"Novo pedido de contacto
 
 Nome: {Input.Nome} {Input.Apelido}
 Email: {Input.Email}
@@ -90,8 +113,83 @@ Telefone: {Input.Telefone}
 Assunto: {Input.Assunto}
 
 Mensagem:
-{Input.Mensagem}"
-                };
+{Input.Mensagem}";
+
+                bodyBuilder.HtmlBody = $@"
+<!DOCTYPE html>
+<html lang='pt'>
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Novo pedido de contacto</title>
+</head>
+<body style='margin:0; padding:0; background-color:#f4f6f8; font-family:Arial, Helvetica, sans-serif; color:#1f2937;'>
+    <div style='width:100%; background-color:#f4f6f8; padding:32px 16px;'>
+        <table role='presentation' cellspacing='0' cellpadding='0' border='0' width='100%' style='max-width:680px; margin:0 auto; background:#ffffff; border-radius:16px; overflow:hidden; border:1px solid #e5e7eb;'>
+            <tr>
+                <td style='background:linear-gradient(135deg, #0f766e, #14b8a6); padding:28px 32px; color:#ffffff;'>
+                    <div style='font-size:12px; letter-spacing:1px; text-transform:uppercase; opacity:0.9;'>Stand Premium</div>
+                    <h1 style='margin:8px 0 0 0; font-size:26px; line-height:1.2;'>Novo pedido de contacto</h1>
+                    <p style='margin:10px 0 0 0; font-size:14px; line-height:1.6; opacity:0.95;'>
+                        Foi recebida uma nova mensagem através do formulário do site.
+                    </p>
+                </td>
+            </tr>
+
+            <tr>
+                <td style='padding:32px;'>
+                    <table role='presentation' cellspacing='0' cellpadding='0' border='0' width='100%' style='border-collapse:collapse;'>
+                        <tr>
+                            <td style='padding:0 0 18px 0;'>
+                                <div style='font-size:12px; font-weight:bold; color:#6b7280; text-transform:uppercase; margin-bottom:6px;'>Nome</div>
+                                <div style='font-size:16px; color:#111827;'>{System.Net.WebUtility.HtmlEncode(Input.Nome)} {System.Net.WebUtility.HtmlEncode(Input.Apelido)}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style='padding:0 0 18px 0;'>
+                                <div style='font-size:12px; font-weight:bold; color:#6b7280; text-transform:uppercase; margin-bottom:6px;'>Email</div>
+                                <div style='font-size:16px; color:#111827;'>
+                                    <a href='mailto:{System.Net.WebUtility.HtmlEncode(Input.Email)}' style='color:#0f766e; text-decoration:none;'>
+                                        {System.Net.WebUtility.HtmlEncode(Input.Email)}
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style='padding:0 0 18px 0;'>
+                                <div style='font-size:12px; font-weight:bold; color:#6b7280; text-transform:uppercase; margin-bottom:6px;'>Telefone</div>
+                                <div style='font-size:16px; color:#111827;'>{System.Net.WebUtility.HtmlEncode(Input.Telefone ?? "Não indicado")}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style='padding:0 0 18px 0;'>
+                                <div style='font-size:12px; font-weight:bold; color:#6b7280; text-transform:uppercase; margin-bottom:6px;'>Assunto</div>
+                                <div style='font-size:16px; color:#111827;'>{System.Net.WebUtility.HtmlEncode(Input.Assunto)}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style='padding:8px 0 0 0;'>
+                                <div style='font-size:12px; font-weight:bold; color:#6b7280; text-transform:uppercase; margin-bottom:8px;'>Mensagem</div>
+                                <div style='background:#f9fafb; border:1px solid #e5e7eb; border-radius:12px; padding:18px; font-size:15px; line-height:1.7; color:#111827; white-space:pre-line;'>
+                                    {System.Net.WebUtility.HtmlEncode(Input.Mensagem)}
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr>
+                <td style='padding:20px 32px; background:#f9fafb; border-top:1px solid #e5e7eb; font-size:13px; color:#6b7280; line-height:1.6;'>
+                    Este email foi enviado automaticamente a partir do formulário de contacto do site Stand Premium.
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>";
+
+                email.Body = bodyBuilder.ToMessageBody();
 
                 using var smtp = new SmtpClient();
 
@@ -109,9 +207,9 @@ Mensagem:
 
                 return RedirectToPage();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                ErrorMessage = "Ocorreu um erro ao enviar a mensagem. Confirme a configuração do email e tente novamente.";
+                ErrorMessage = $"Erro ao enviar email: {ex.Message}";
                 return Page();
             }
         }

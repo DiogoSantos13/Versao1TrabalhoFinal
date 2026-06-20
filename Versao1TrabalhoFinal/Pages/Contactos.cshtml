@@ -130,13 +130,21 @@
                     <div class="contact-form-row">
                         <div class="contact-form-group">
                             <label asp-for="Input.Nome"></label>
-                            <input asp-for="Input.Nome" class="contact-input" placeholder="O seu nome" />
+                            <input asp-for="Input.Nome"
+                                   type="text"
+                                   class="contact-input"
+                                   placeholder="O seu nome"
+                                   autocomplete="given-name" />
                             <span asp-validation-for="Input.Nome" class="text-danger"></span>
                         </div>
 
                         <div class="contact-form-group">
                             <label asp-for="Input.Apelido"></label>
-                            <input asp-for="Input.Apelido" class="contact-input" placeholder="O seu apelido" />
+                            <input asp-for="Input.Apelido"
+                                   type="text"
+                                   class="contact-input"
+                                   placeholder="O seu apelido"
+                                   autocomplete="family-name" />
                             <span asp-validation-for="Input.Apelido" class="text-danger"></span>
                         </div>
                     </div>
@@ -144,20 +152,31 @@
                     <div class="contact-form-row">
                         <div class="contact-form-group">
                             <label asp-for="Input.Email"></label>
-                            <input asp-for="Input.Email" class="contact-input" placeholder="email@exemplo.com" />
+                            <input asp-for="Input.Email"
+                                   type="email"
+                                   class="contact-input"
+                                   placeholder="email@exemplo.com"
+                                   autocomplete="email" />
                             <span asp-validation-for="Input.Email" class="text-danger"></span>
                         </div>
 
                         <div class="contact-form-group">
                             <label asp-for="Input.Telefone"></label>
-                            <input asp-for="Input.Telefone" class="contact-input" placeholder="+351 9xx xxx xxx" />
+                            <input asp-for="Input.Telefone"
+                                   type="tel"
+                                   class="contact-input"
+                                   placeholder="+351 9xx xxx xxx"
+                                   autocomplete="tel" />
                             <span asp-validation-for="Input.Telefone" class="text-danger"></span>
                         </div>
                     </div>
 
                     <div class="contact-form-group">
                         <label asp-for="Input.Assunto"></label>
-                        <input asp-for="Input.Assunto" class="contact-input" placeholder="Assunto da mensagem" />
+                        <input asp-for="Input.Assunto"
+                               type="text"
+                               class="contact-input"
+                               placeholder="Assunto da mensagem" />
                         <span asp-validation-for="Input.Assunto" class="text-danger"></span>
                     </div>
 

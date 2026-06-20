@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Versao1TrabalhoFinal.Data;
 using Versao1TrabalhoFinal.Models;
+using ClienteEntity = Versao1TrabalhoFinal.Models.Cliente;
 
 namespace Versao1TrabalhoFinal.Pages.Admin
 {
@@ -57,6 +58,7 @@ namespace Versao1TrabalhoFinal.Pages.Admin
             }
 
             var existingIdentityUser = await _userManager.FindByEmailAsync(NewUser.Email);
+
             if (existingIdentityUser != null)
             {
                 ModelState.AddModelError(string.Empty, "Já existe um utilizador com esse email.");
@@ -110,14 +112,15 @@ namespace Versao1TrabalhoFinal.Pages.Admin
 
                 if (existingCliente == null)
                 {
-                    var cliente = new Cliente
+                    var cliente = new ClienteEntity
                     {
                         Nome = NewUser.Nome,
                         Email = NewUser.Email,
                         Telefone = NewUser.Telefone,
                         NIF = null,
                         Morada = null,
-                        ImagemUrl = "/images/users/default-avatar.jpg"
+                        ImagemUrl = "/images/users/default-avatar.jpg",
+                        IdentityUserId = identityUser.Id
                     };
 
                     _context.Clientes.Add(cliente);

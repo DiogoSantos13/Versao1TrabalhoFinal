@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 using Versao1TrabalhoFinal.Models;
+using ClienteEntity = Versao1TrabalhoFinal.Models.Cliente;
 
 namespace Versao1TrabalhoFinal.Data
 {
@@ -21,7 +21,7 @@ namespace Versao1TrabalhoFinal.Data
         /// <summary>
         /// Tabela de clientes.
         /// </summary>
-        public DbSet<Cliente> Clientes { get; set; } = null!;
+        public DbSet<ClienteEntity> Clientes { get; set; } = null!;
 
         /// <summary>
         /// Tabela de veículos dos clientes.
@@ -38,7 +38,6 @@ namespace Versao1TrabalhoFinal.Data
         /// </summary>
         public DbSet<Orcamento> Orcamentos { get; set; } = null!;
 
-        
         /// <summary>
         /// Tabela de histórico de reparações.
         /// </summary>
@@ -89,6 +88,9 @@ namespace Versao1TrabalhoFinal.Data
         /// </summary>
         public DbSet<CarrinhoVeiculoStand> CarrinhoVeiculosStand { get; set; } = null!;
 
+        /// <summary>
+        /// Tabela de imagens associadas a entidades.
+        /// </summary>
         public DbSet<ImagemEntidade> ImagensEntidade => Set<ImagemEntidade>();
 
         /// <summary>
@@ -102,7 +104,7 @@ namespace Versao1TrabalhoFinal.Data
             // Mapeamento explícito das entidades para tabelas no schema dbo.
             builder.Entity<Veiculo>().ToTable("Veiculos", "dbo");
             builder.Entity<VeiculoStand>().ToTable("VeiculosStand", "dbo");
-            builder.Entity<Cliente>().ToTable("Clientes", "dbo");
+            builder.Entity<ClienteEntity>().ToTable("Clientes", "dbo");
             builder.Entity<Orcamento>().ToTable("Orcamentos", "dbo");
             builder.Entity<HistoricoReparacao>().ToTable("HistoricoReparacoes", "dbo");
             builder.Entity<Produto>().ToTable("Produtos", "dbo");
@@ -219,9 +221,11 @@ namespace Versao1TrabalhoFinal.Data
                 .HasIndex(cvs => new { cvs.CarrinhoId, cvs.VeiculoStandId })
                 .IsUnique();
 
+            // Índice para melhorar a pesquisa de imagens por entidade.
             builder.Entity<ImagemEntidade>()
-               .HasIndex(i => new { i.TipoEntidade ,i.EntidadeId });
+                .HasIndex(i => new { i.TipoEntidade, i.EntidadeId });
 
+            // Configuração da entidade de imagens.
             builder.Entity<ImagemEntidade>()
                 .Property(i => i.Url)
                 .HasMaxLength(500)
@@ -235,10 +239,6 @@ namespace Versao1TrabalhoFinal.Data
             builder.Entity<ImagemEntidade>()
                 .Property(i => i.Alt)
                 .HasMaxLength(200);
-
-            builder.Entity<VeiculoStand>()
-                .Property(vs => vs.Preco)
-                .HasColumnType("decimal(18,2)");
         }
     }
 }

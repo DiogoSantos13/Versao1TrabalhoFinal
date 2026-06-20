@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Versao1TrabalhoFinal.Data;
 using Versao1TrabalhoFinal.Models;
+using ClienteEntity = Versao1TrabalhoFinal.Models.Cliente;
 
 namespace Versao1TrabalhoFinal.Pages.Account
 {
@@ -83,6 +84,7 @@ namespace Versao1TrabalhoFinal.Pages.Account
             }
 
             var existingIdentityUser = await _userManager.FindByEmailAsync(Input.Email);
+
             if (existingIdentityUser != null)
             {
                 ModelState.AddModelError(string.Empty, "Já existe uma conta com esse email.");
@@ -148,7 +150,7 @@ namespace Versao1TrabalhoFinal.Pages.Account
                 return Page();
             }
 
-            var cliente = new Cliente
+            var cliente = new ClienteEntity
             {
                 Nome = Input.Nome,
                 Email = Input.Email,

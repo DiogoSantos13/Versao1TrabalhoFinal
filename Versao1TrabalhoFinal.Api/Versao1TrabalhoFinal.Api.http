@@ -1,0 +1,6 @@
+@Versao1TrabalhoFinal.Api_HostAddress = http://localhost:5018
+
+GET {{Versao1TrabalhoFinal.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

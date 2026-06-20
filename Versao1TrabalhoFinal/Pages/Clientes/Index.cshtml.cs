@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Versao1TrabalhoFinal.Data;
-using Versao1TrabalhoFinal.Models;
+using ClienteEntity = Versao1TrabalhoFinal.Models.Cliente;
 
 namespace Versao1TrabalhoFinal.Pages.Clientes
 {
@@ -12,6 +12,9 @@ namespace Versao1TrabalhoFinal.Pages.Clientes
     [Authorize(Roles = "Admin,Colaborador")]
     public class IndexModel : PageModel
     {
+        /// <summary>
+        /// Contexto da base de dados da aplicação.
+        /// </summary>
         private readonly StandDbContext _context;
 
         /// <summary>
@@ -26,7 +29,7 @@ namespace Versao1TrabalhoFinal.Pages.Clientes
         /// <summary>
         /// Lista de clientes.
         /// </summary>
-        public List<Cliente> Clientes { get; set; } = new();
+        public List<ClienteEntity> Clientes { get; set; } = new();
 
         /// <summary>
         /// Carrega a lista de clientes.
@@ -34,6 +37,7 @@ namespace Versao1TrabalhoFinal.Pages.Clientes
         /// <returns>Tarefa assíncrona.</returns>
         public async Task OnGetAsync()
         {
+            // Obtém a lista de clientes ordenada por nome.
             Clientes = await _context.Clientes
                 .OrderBy(c => c.Nome)
                 .ToListAsync();

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Versao1TrabalhoFinal.Data;
 using Versao1TrabalhoFinal.Models;
+using ClienteEntity = Versao1TrabalhoFinal.Models.Cliente;
 
 namespace Versao1TrabalhoFinal.Pages.Clientes
 {
@@ -65,6 +66,7 @@ namespace Versao1TrabalhoFinal.Pages.Clientes
             }
 
             var existingUser = await _userManager.FindByEmailAsync(Input.Email);
+
             if (existingUser != null)
             {
                 ModelState.AddModelError("Input.Email", "Já existe uma conta associada a este email.");
@@ -92,6 +94,7 @@ namespace Versao1TrabalhoFinal.Pages.Clientes
             }
 
             var roleResult = await _userManager.AddToRoleAsync(user, "Cliente");
+
             if (!roleResult.Succeeded)
             {
                 await _userManager.DeleteAsync(user);
@@ -104,7 +107,7 @@ namespace Versao1TrabalhoFinal.Pages.Clientes
                 return Page();
             }
 
-            var cliente = new Cliente
+            var cliente = new ClienteEntity
             {
                 Nome = Input.Nome,
                 Telefone = Input.Telefone,
@@ -136,64 +139,40 @@ namespace Versao1TrabalhoFinal.Pages.Clientes
         /// </summary>
         public class InputModel
         {
-            /// <summary>
-            /// Nome do cliente.
-            /// </summary>
             [Required(ErrorMessage = "O nome é obrigatório.")]
             [StringLength(100)]
             [Display(Name = "Nome")]
             public string Nome { get; set; } = string.Empty;
 
-            /// <summary>
-            /// Telefone do cliente.
-            /// </summary>
             [Phone(ErrorMessage = "Introduza um número de telefone válido.")]
             [Display(Name = "Telefone")]
             public string? Telefone { get; set; }
 
-            /// <summary>
-            /// Email do cliente e da conta associada.
-            /// </summary>
             [Required(ErrorMessage = "O email é obrigatório.")]
             [EmailAddress(ErrorMessage = "Introduza um email válido.")]
             [Display(Name = "Email")]
             public string Email { get; set; } = string.Empty;
 
-            /// <summary>
-            /// Palavra-passe inicial da conta.
-            /// </summary>
             [Required(ErrorMessage = "A palavra-passe é obrigatória.")]
             [StringLength(100, MinimumLength = 6, ErrorMessage = "A palavra-passe deve ter entre 6 e 100 caracteres.")]
             [DataType(DataType.Password)]
             [Display(Name = "Palavra-passe")]
             public string Password { get; set; } = string.Empty;
 
-            /// <summary>
-            /// Confirmação da palavra-passe.
-            /// </summary>
             [Required(ErrorMessage = "A confirmação da palavra-passe é obrigatória.")]
             [DataType(DataType.Password)]
             [Compare("Password", ErrorMessage = "A palavra-passe e a confirmação não coincidem.")]
             [Display(Name = "Confirmar palavra-passe")]
             public string ConfirmPassword { get; set; } = string.Empty;
 
-            /// <summary>
-            /// Número de identificação fiscal do cliente.
-            /// </summary>
             [Display(Name = "NIF")]
             [StringLength(20)]
             public string? NIF { get; set; }
 
-            /// <summary>
-            /// Morada do cliente.
-            /// </summary>
             [Display(Name = "Morada")]
             [StringLength(250)]
             public string? Morada { get; set; }
 
-            /// <summary>
-            /// URL da imagem do cliente.
-            /// </summary>
             [Display(Name = "Imagem")]
             [StringLength(500)]
             public string? ImagemUrl { get; set; }

@@ -1,28 +1,22 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 using Versao1TrabalhoFinal.Data;
 using Versao1TrabalhoFinal.Seed;
 using Versao1TrabalhoFinal.Services;
+using Versao1TrabalhoFinal.Cliente.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-/// <summary>
-/// Configuração da base de dados da aplicação.
-/// </summary>
+// Configuração da base de dados da aplicação.
 builder.Services.AddDbContext<StandDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("StandOficinaDB")));
 
-/// <summary>
-/// Configuração da cache em memória para suporte à sessão.
-/// </summary>
+// Configuração da cache em memória para suporte à sessão.
 builder.Services.AddDistributedMemoryCache();
 
-/// <summary>
-/// Configuração da sessão da aplicação.
-/// </summary>
+// Configuração da sessão da aplicação.
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -30,20 +24,15 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-/// <summary>
-/// Registo de serviços auxiliares do ASP.NET Core.
-/// </summary>
+// Registo de serviços auxiliares do ASP.NET Core.
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 
-/// <summary>
-/// Configuração do Identity com utilizadores e roles.
-/// </summary>
+// Configuração do Identity com utilizadores e roles.
 builder.Services
     .AddIdentity<IdentityUser, IdentityRole>(options =>
     {
         options.SignIn.RequireConfirmedAccount = false;
-
         options.Password.RequireDigit = false;
         options.Password.RequireNonAlphanumeric = false;
         options.Password.RequireUppercase = false;
@@ -54,22 +43,18 @@ builder.Services
     .AddEntityFrameworkStores<StandDbContext>()
     .AddDefaultTokenProviders();
 
-/// <summary>
-/// Configuração do cookie de autenticação.
-/// </summary>
+// Configuração do cookie de autenticação.
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
-    options.LogoutPath = "/Identity/Account/Logout";
-    options.AccessDeniedPath = "/Account/AccessDenied";
+    options.LogoutPath = "/Account/Logout";
+    options.AccessDeniedPath = "/AccessDenied";
     options.SlidingExpiration = true;
     options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
     options.Cookie.HttpOnly = true;
 });
 
-/// <summary>
-/// Configuração das policies de autorização por perfis.
-/// </summary>
+// Configuração das policies de autorização por perfis.
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("ClienteOnly", policy =>
@@ -85,14 +70,12 @@ builder.Services.AddAuthorization(options =>
         policy.RequireRole("Cliente", "Admin", "Colaborador"));
 });
 
-/// <summary>
-/// Configuração das Razor Pages e respetivas regras de acesso.
-/// </summary>
+// Configuração das Razor Pages e respetivas regras de acesso.
 builder.Services.AddRazorPages(options =>
 {
     options.Conventions.AllowAnonymousToPage("/Index");
     options.Conventions.AllowAnonymousToPage("/Account/Login");
-    options.Conventions.AllowAnonymousToPage("/Account/Register");
+    options.Conventions.AllowAnonymousToPage("/Account/Registar");
 
     options.Conventions.AllowAnonymousToPage("/VeiculosStand/Index");
     options.Conventions.AllowAnonymousToPage("/VeiculosStand/Details");
@@ -103,58 +86,48 @@ builder.Services.AddRazorPages(options =>
 
     options.Conventions.AuthorizeFolder("/ClienteArea", "ClienteOnly");
     options.Conventions.AuthorizeFolder("/Dashboard", "AdminOnly");
-
-    /// <summary>
-    /// Autoriza o acesso à pasta de produtos a clientes e membros do staff definidos.
-    /// </summary>
     options.Conventions.AuthorizeFolder("/Produtos", "ProdutosAccess");
 });
 
-/// <summary>
-/// Registo dos serviços da aplicação.
-/// </summary>
+// Registo dos controllers com views, caso existam páginas MVC no projeto.
+builder.Services.AddControllersWithViews();
+
+// Registo dos serviços da aplicação.
 builder.Services.AddScoped<OrcamentoService>();
+
+// Registo dos serviços de integração com a API.
+builder.Services.AddApiIntegration(builder.Configuration);
 
 var app = builder.Build();
 
-/// <summary>
-/// Configuração do pipeline HTTP para ambiente não desenvolvimento.
-/// </summary>
+// Configuração do pipeline HTTP para ambiente não desenvolvimento.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
 
-/// <summary>
-/// Middleware base da aplicação.
-/// </summary>
+// Middleware base da aplicação.
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 
-/// <summary>
-/// Middleware de sessão. Deve ser chamado após o routing.
-/// </summary>
+// Middleware de sessão. Deve ser chamado após o routing.
 app.UseSession();
 
-/// <summary>
-/// Middleware de autenticação e autorização.
-/// </summary>
+// Middleware de autenticação e autorização.
 app.UseAuthentication();
 app.UseAuthorization();
 
-/// <summary>
-/// Mapeamento das Razor Pages.
-/// </summary>
+// Mapeamento das Razor Pages.
 app.MapRazorPages();
 
-/// <summary>
-/// Aplicar migrações e executar o seed inicial de roles e utilizadores.
-/// - Garante que o esquema da BD está atualizado antes de usar RoleManager/UserManager.
-/// - Regista erros detalhados para diagnóstico (incl. InnerException).
-/// </summary>
+// Mapeamento de controllers MVC, caso existam.
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Aplicar migrações e executar o seed inicial de roles e utilizadores.
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -165,10 +138,8 @@ using (var scope = app.Services.CreateScope())
         var db = services.GetRequiredService<StandDbContext>();
         DbConnection? conn = db.Database.GetDbConnection();
 
-        // Logar a cadeia de conexão para diagnóstico (atenção a não expor credenciais em produção)
         logger.LogInformation("Connection string (masked): {ConnectionString}", conn?.ConnectionString);
 
-        // Tentar abrir explicitamente para capturar SqlException com número e mensagem detalhada
         try
         {
             if (conn != null)
@@ -180,7 +151,13 @@ using (var scope = app.Services.CreateScope())
         }
         catch (SqlException sqlEx)
         {
-            logger.LogError(sqlEx, "Falha ao abrir a ligação SQL (Number: {Number}, State: {State}): {Message}", sqlEx.Number, sqlEx.State, sqlEx.Message);
+            logger.LogError(
+                sqlEx,
+                "Falha ao abrir a ligação SQL (Number: {Number}, State: {State}): {Message}",
+                sqlEx.Number,
+                sqlEx.State,
+                sqlEx.Message);
+
             throw;
         }
         catch (Exception openEx)
@@ -189,15 +166,11 @@ using (var scope = app.Services.CreateScope())
             throw;
         }
 
-        // Aplica migrações pendentes (async)
         await db.Database.MigrateAsync();
-
-        // Executa o seed (pode lançar exceções; serão logadas)
         await IdentitySeeder.SeedAsync(services);
     }
     catch (Exception ex)
     {
-        // Registar a excepção completa, incluindo InnerException
         logger.LogError(ex, "Erro durante migração/seed: {Message}", ex.Message);
         throw;
     }
