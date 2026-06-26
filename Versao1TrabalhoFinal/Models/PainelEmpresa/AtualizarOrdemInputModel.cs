@@ -28,17 +28,17 @@ namespace Versao1TrabalhoFinal.Models.PainelEmpresa
         /// Valor de mão de obra introduzido no formulário.
         /// Não é guardado em coluna própria; serve para calcular o total.
         /// </summary>
-        [Range(0, 999999)]
+       
         public string MaoDeObra { get; set; }
 
         /// <summary>
         /// Valor das peças introduzido no formulário.
         /// Não é guardado em coluna própria; serve para calcular o total.
         /// </summary>
-        [Range(0, 999999)]
+       
         public string Pecas { get; set; }
 
-        [StringLength(1000)]
+   
         public string? Observacoes { get; set; }
     }
 }
