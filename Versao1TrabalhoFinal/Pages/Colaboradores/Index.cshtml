@@ -1,0 +1,116 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.Colaboradores.IndexModel
+@{
+    ViewData["Title"] = "Colaboradores";
+    var isAdmin = User.IsInRole("Admin");
+}
+
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="page-header-block">
+            <p class="page-eyebrow">Administração</p>
+            <h1 class="page-title">Colaboradores</h1>
+            <p class="page-subtitle">Gerir colaboradores e filtrar por role.</p>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success mb-4">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger mb-4">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <div class="client-form-card mb-4">
+            <form method="get" class="client-form-grid">
+                <div class="client-field">
+                    <label asp-for="Role" class="client-label">Filtrar por role</label>
+                    <select asp-for="Role" asp-items="Model.RolesFiltro" class="client-input"></select>
+                </div>
+
+                <div class="client-form-actions">
+                    <button type="submit" class="auth-button">
+                        <i class="fa-solid fa-filter"></i>
+                        <span>Filtrar</span>
+                    </button>
+
+                    @if (isAdmin)
+                    {
+                        <a asp-page="./Create" class="auth-button auth-button-secondary">
+                            <i class="fa-solid fa-user-plus"></i>
+                            <span>Novo colaborador</span>
+                        </a>
+                    }
+                </div>
+            </form>
+        </div>
+
+        <div class="client-form-card">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Telefone</th>
+                            <th>Cargo</th>
+                            <th>Roles</th>
+                            @if (isAdmin)
+                            {
+                                <th>Ações</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Colaboradores.Any())
+                        {
+                            foreach (var item in Model.Colaboradores)
+                            {
+                                <tr>
+                                    <td>@item.Nome</td>
+                                    <td>@item.Email</td>
+                                    <td>@(string.IsNullOrWhiteSpace(item.Telefone) ? "—" : item.Telefone)</td>
+                                    <td>@(string.IsNullOrWhiteSpace(item.Cargo) ? "—" : item.Cargo)</td>
+                                    <td>@string.Join(", ", item.Roles)</td>
+
+                                    @if (isAdmin)
+                                    {
+                                        <td>
+                                            <div class="d-flex gap-2 flex-wrap">
+                                                <a asp-page="./Edit"
+                                                   asp-route-id="@item.Id"
+                                                   class="auth-button auth-button-secondary">
+                                                    <i class="fa-solid fa-pen"></i>
+                                                    <span>Editar</span>
+                                                </a>
+
+                                                <a asp-page="./Delete"
+                                                   asp-route-id="@item.Id"
+                                                   class="auth-button">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                    <span>Eliminar</span>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="@(isAdmin ? 6 : 5)">Não existem colaboradores para o filtro selecionado.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>

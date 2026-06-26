@@ -1,0 +1,1192 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.PainelEmpresa.IndexModel
+@{
+    ViewData["Title"] = "Painel da Empresa";
+}
+
+@functions {
+    public string GetEstadoClass(string? estado)
+    {
+        if (string.IsNullOrWhiteSpace(estado))
+            return "status-neutral";
+
+        return estado.Trim().ToLower() switch
+        {
+            "concluído" => "status-success",
+            "entregue" => "status-success",
+            "aprovado" => "status-success",
+            "rejeitado" => "status-danger",
+            "aguarda peças" => "status-warning",
+            "em análise" => "status-warning",
+            "em diagnóstico" => "status-warning",
+            "em reparação" => "status-info",
+            "pendente" => "status-neutral",
+            _ => "status-neutral"
+        };
+    }
+}
+
+<section class="dashboard-page">
+    <div class="dashboard-container">
+
+        <div class="page-header-block">
+            <div>
+                <p class="page-eyebrow">Centro Operacional</p>
+                <h1 class="page-title">Painel de trabalho da empresa</h1>
+                <p class="page-subtitle">
+                    Área interna para acompanhar ordens de reparação, produtos associados,
+                    orçamentos, histórico de vendas e carrinhos dos clientes.
+                </p>
+            </div>
+
+            <div class="page-header-side">
+                <div class="page-header-chip">
+                    Atualização em tempo real da operação interna
+                </div>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="painel-alert painel-alert-success mb-4" role="alert">
+                <div class="painel-alert-icon">✓</div>
+                <div>
+                    <strong>Operação concluída</strong>
+                    <p class="mb-0">@TempData["SuccessMessage"]</p>
+                </div>
+            </div>
+        }
+
+        @if (!ViewContext.ModelState.IsValid && ViewContext.ModelState.ErrorCount > 0)
+        {
+            <div class="painel-alert painel-alert-danger mb-4" role="alert">
+                <div class="painel-alert-icon">!</div>
+                <div>
+                    <strong>Foram encontrados erros</strong>
+                    <div asp-validation-summary="All" class="text-danger mt-2"></div>
+                </div>
+            </div>
+        }
+
+        <div class="painel-kpi-grid">
+            <div class="painel-kpi-card">
+                <span class="painel-kpi-label">Total de vendas</span>
+                <strong class="painel-kpi-value">@Model.Painel.TotalVendas.ToString("C")</strong>
+                <small class="painel-kpi-helper">Valor acumulado registado</small>
+            </div>
+
+            <div class="painel-kpi-card">
+                <span class="painel-kpi-label">Vendas finalizadas</span>
+                <strong class="painel-kpi-value">@Model.Painel.TotalVendasFinalizadas</strong>
+                <small class="painel-kpi-helper">Total de registos de venda</small>
+            </div>
+
+            <div class="painel-kpi-card">
+                <span class="painel-kpi-label">Orçamentos pendentes</span>
+                <strong class="painel-kpi-value">@Model.Painel.TotalOrcamentosPendentes</strong>
+                <small class="painel-kpi-helper">Aguardam análise</small>
+            </div>
+
+            <div class="painel-kpi-card">
+                <span class="painel-kpi-label">Ordens em aberto</span>
+                <strong class="painel-kpi-value">@Model.Painel.TotalOrdensAbertas</strong>
+                <small class="painel-kpi-helper">Ainda não concluídas</small>
+            </div>
+        </div>
+
+        <div class="painel-section-card">
+            <div class="painel-section-header">
+                <div>
+                    <h2>Ordens de reparação</h2>
+                    <p>Gestão dos trabalhos de oficina em curso, com atualização de estado, responsável e custos.</p>
+                </div>
+                <span class="painel-section-counter">
+                    @(Model.Painel.OrdensReparacao?.Count ?? 0) registos
+                </span>
+            </div>
+
+            @if (Model.Painel.OrdensReparacao != null && Model.Painel.OrdensReparacao.Any())
+            {
+                foreach (var ordem in Model.Painel.OrdensReparacao)
+                {
+                    <div class="painel-subcard mb-4">
+                        <div class="painel-subcard-header">
+                            <div>
+                                <h3 class="painel-subcard-title">Ordem #@ordem.Id</h3>
+                                <p class="painel-subcard-subtitle">
+                                    @ordem.ClienteNome · @ordem.VeiculoDescricao
+                                </p>
+                            </div>
+                            <div class="painel-subcard-status">
+                                <span class="status-badge @GetEstadoClass(ordem.Estado)">@ordem.Estado</span>
+                            </div>
+                        </div>
+
+                        <div class="painel-ordem-grid">
+                            <div class="painel-ordem-info">
+                                <div class="painel-metric-grid">
+                                    <div class="painel-metric-box">
+                                        <span class="painel-metric-label">Cliente</span>
+                                        <strong>@ordem.ClienteNome</strong>
+                                    </div>
+                                    <div class="painel-metric-box">
+                                        <span class="painel-metric-label">Veículo</span>
+                                        <strong>@ordem.VeiculoDescricao</strong>
+                                    </div>
+                                    <div class="painel-metric-box">
+                                        <span class="painel-metric-label">Mecânico</span>
+                                        <strong>@ordem.MecanicoResponsavel</strong>
+                                    </div>
+                                    <div class="painel-metric-box">
+                                        <span class="painel-metric-label">Entrada</span>
+                                        <strong>@ordem.DataEntrada.ToString("dd/MM/yyyy")</strong>
+                                    </div>
+                                    <div class="painel-metric-box">
+                                        <span class="painel-metric-label">Mão de obra</span>
+                                        <strong>@ordem.MaoDeObra.ToString("C")</strong>
+                                    </div>
+                                    <div class="painel-metric-box">
+                                        <span class="painel-metric-label">Peças</span>
+                                        <strong>@ordem.Pecas.ToString("C")</strong>
+                                    </div>
+                                    <div class="painel-metric-box painel-metric-box-highlight">
+                                        <span class="painel-metric-label">Total</span>
+                                        <strong>@ordem.Total.ToString("C")</strong>
+                                    </div>
+                                </div>
+
+                                <div class="painel-note-box mt-3">
+                                    <span class="painel-note-label">Serviços pedidos / descrição</span>
+                                    <p class="mb-0">@ordem.ServicosPedidos</p>
+                                </div>
+                            </div>
+
+                            <div class="painel-ordem-form">
+                                <form method="post" asp-page-handler="AtualizarOrdem" class="painel-inline-form">
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="atualizacaoOrdem.OrdemReparacaoId"
+                                           value="@ordem.Id" />
+
+                                    <div class="painel-form-group">
+                                        <label class="painel-label">Colaborador responsável</label>
+                                        <select name="atualizacaoOrdem.ColaboradorId" class="painel-select">
+                                            <option value="">Selecionar colaborador</option>
+                                            @foreach (var colaborador in Model.ColaboradoresDisponiveis)
+                                            {
+                                                if (ordem.ColaboradorId.HasValue && colaborador.Value == ordem.ColaboradorId.Value.ToString())
+                                                {
+                                                    <option value="@colaborador.Value" selected>@colaborador.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@colaborador.Value">@colaborador.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+
+                                    <div class="painel-form-group">
+                                        <label class="painel-label">Estado</label>
+                                        <select name="atualizacaoOrdem.NovoEstado" class="painel-select">
+                                            @foreach (var estado in Model.EstadosOrdem)
+                                            {
+                                                if (estado.Value == ordem.Estado)
+                                                {
+                                                    <option value="@estado.Value" selected>@estado.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@estado.Value">@estado.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+
+                                    <div class="painel-form-row">
+                                        <div class="painel-form-group">
+                                            <label class="painel-label">Mão de obra</label>
+                                            <input name="atualizacaoOrdem.MaoDeObra"
+                                                   class="painel-input"
+                                                   type="text"
+                                                   inputmode="decimal"
+                                                   value="@ordem.MaoDeObra.ToString("0.00")"
+                                                   placeholder="0,00" />
+                                        </div>
+
+                                        <div class="painel-form-group">
+                                            <label class="painel-label">Peças</label>
+                                            <input name="atualizacaoOrdem.Pecas"
+                                                   class="painel-input"
+                                                   type="text"
+                                                   inputmode="decimal"
+                                                   value="@ordem.Pecas.ToString("0.00")"
+                                                   placeholder="0,00" />
+                                        </div>
+                                    </div>
+
+                                    <div class="painel-form-group">
+                                        <label class="painel-label">Observações internas</label>
+                                        <textarea name="atualizacaoOrdem.Observacoes"
+                                          class="painel-textarea"
+                                          rows="4"
+                                          placeholder="Observações internas"></textarea>
+                                    </div>
+
+                                    <small class="painel-helper-text">
+                                        Total atual registado: @ordem.Total.ToString("C")
+                                    </small>
+
+                                    <button type="submit" class="painel-btn painel-btn-primary">
+                                        Guardar alterações da ordem
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="painel-inner-section mt-4">
+                            <div class="painel-section-header small">
+                                <div>
+                                    <h4>Produtos associados à ordem</h4>
+                                    <p>Peças e produtos usados nesta reparação.</p>
+                                </div>
+                            </div>
+
+                            <div class="painel-table-wrapper">
+                                <table class="painel-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Produto</th>
+                                            <th>Quantidade</th>
+                                            <th>Preço</th>
+                                            <th>Subtotal</th>
+                                            <th>Ação</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (ordem.Produtos != null && ordem.Produtos.Any())
+                                        {
+                                            foreach (var itemProduto in ordem.Produtos)
+                                            {
+                                                <tr>
+                                                    <td>@itemProduto.ProdutoNome</td>
+                                                    <td>@itemProduto.Quantidade</td>
+                                                    <td>@itemProduto.Preco.ToString("C")</td>
+                                                    <td>@itemProduto.Subtotal.ToString("C")</td>
+                                                    <td>
+                                                        <form method="post"
+                                                              asp-page-handler="EliminarProdutoOrdem"
+                                                              class="painel-inline-form"
+                                                              onsubmit="return confirm('Tens a certeza que queres remover este produto da ordem?');">
+                                                            @Html.AntiForgeryToken()
+
+                                                            <input type="hidden" name="input.OrdemProdutoId" value="@itemProduto.Id" />
+                                                            <input type="hidden" name="input.OrdemId" value="@ordem.Id" />
+
+                                                            <button type="submit" class="painel-btn painel-btn-danger painel-btn-sm">
+                                                                Eliminar
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="5">Ainda não existem produtos associados a esta ordem.</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="painel-add-item-box mt-3">
+                                <h5>Adicionar produto à ordem</h5>
+
+                                <form method="post" asp-page-handler="AdicionarProdutoOrdem" class="painel-inline-form">
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden" name="input.OrdemId" value="@ordem.Id" />
+
+                                    <div class="painel-form-row">
+                                        <div class="painel-form-group flex-grow-1">
+                                            <label class="painel-label">Produto</label>
+                                            <select name="input.ProdutoId" class="painel-select">
+                                                <option value="">Selecionar produto</option>
+                                                @if (Model.ProdutosDisponiveis != null && Model.ProdutosDisponiveis.Any())
+                                                {
+                                                    foreach (var produtoDisponivel in Model.ProdutosDisponiveis)
+                                                    {
+                                                        <option value="@produtoDisponivel.Value">@produtoDisponivel.Text</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="painel-form-group">
+                                            <label class="painel-label">Quantidade</label>
+                                            <input name="input.Quantidade"
+                                                   class="painel-input"
+                                                   type="number"
+                                                   min="1"
+                                                   step="1"
+                                                   value="1" />
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="painel-btn painel-btn-primary painel-btn-sm">
+                                        Adicionar produto
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty-state-panel">
+                    Não existem ordens de reparação registadas.
+                </div>
+            }
+        </div>
+
+        <div class="painel-section-card">
+            <div class="painel-section-header">
+                <div>
+                    <h2>Orçamentos</h2>
+                    <p>Consulta e atualização do estado, valor estimado e observações internas.</p>
+                </div>
+                <span class="painel-section-counter">
+                    @(Model.Painel.Orcamentos?.Count ?? 0) registos
+                </span>
+            </div>
+
+            <div class="painel-table-wrapper">
+                <table class="painel-table painel-table-expanded">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cliente</th>
+                            <th>Veículo</th>
+                            <th>Descrição</th>
+                            <th>Estado</th>
+                            <th>Valor estimado</th>
+                            <th>Data</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Painel.Orcamentos != null && Model.Painel.Orcamentos.Any())
+                        {
+                            foreach (var orcamento in Model.Painel.Orcamentos)
+                            {
+                                <tr>
+                                    <td>#@orcamento.Id</td>
+                                    <td>@orcamento.ClienteNome</td>
+                                    <td>@orcamento.VeiculoDescricao</td>
+                                    <td>@orcamento.Descricao</td>
+                                    <td>
+                                        <span class="status-badge @GetEstadoClass(orcamento.Estado)">
+                                            @orcamento.Estado
+                                        </span>
+                                    </td>
+                                    <td>@(orcamento.ValorEstimado.HasValue? orcamento.ValorEstimado.Value.ToString("C") : "—")</td>
+                                    <td>@(orcamento.DataCriacao.HasValue? orcamento.DataCriacao.Value.ToString("dd/MM/yyyy") : "—")</td>
+                                    <td>
+                                        <form method="post" asp-page-handler="AtualizarOrcamento" class="painel-inline-form painel-form-compact">
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden"
+                                                   name="atualizacaoOrcamento.OrcamentoId"
+                                                   value="@orcamento.Id" />
+
+                                            <label class="painel-label">Estado</label>
+                                            <select name="atualizacaoOrcamento.NovoEstado" class="painel-select">
+                                                @foreach (var estado in Model.EstadosOrcamento)
+                                                {
+                                                    if (estado.Value == orcamento.Estado)
+                                                    {
+                                                        <option value="@estado.Value" selected>@estado.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@estado.Value">@estado.Text</option>
+                                                    }
+                                                }
+                                            </select>
+
+                                            <label class="painel-label">Valor estimado</label>
+                                            <input name="atualizacaoOrcamento.ValorEstimado"
+                                                   class="painel-input"
+                                                   type="text"
+                                                   inputmode="decimal"
+                                                   value="@(orcamento.ValorEstimado.HasValue? orcamento.ValorEstimado.Value.ToString("0.00") : "")"
+                                                   placeholder="0,00" />
+
+                                            <label class="painel-label">Descrição adicional / observações</label>
+                                            <textarea name="atualizacaoOrcamento.DescricaoAdicional"
+                                              class="painel-textarea"
+                                              rows="3"
+                                              placeholder="Descrição adicional / observações internas">@orcamento.Descricao</textarea>
+
+                                            <button type="submit" class="painel-btn painel-btn-primary painel-btn-sm">
+                                                Guardar orçamento
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8">Não existem orçamentos registados.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="painel-section-card">
+            <div class="painel-section-header">
+                <div>
+                    <h2>Histórico de vendas</h2>
+                    <p>Resumo dos registos de venda existentes.</p>
+                </div>
+                <span class="painel-section-counter">
+                    @(Model.Painel.Vendas?.Count ?? 0) registos
+                </span>
+            </div>
+
+            <div class="painel-table-wrapper">
+                <table class="painel-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cliente</th>
+                            <th>Data</th>
+                            <th>Tipo</th>
+                            <th>Itens</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Painel.Vendas != null && Model.Painel.Vendas.Any())
+                        {
+                            foreach (var venda in Model.Painel.Vendas)
+                            {
+                                <tr>
+                                    <td>#@venda.Id</td>
+                                    <td>@venda.ClienteNome</td>
+                                    <td>@venda.DataVenda.ToString("dd/MM/yyyy")</td>
+                                    <td>@venda.Tipo</td>
+                                    <td>@venda.ItensResumo</td>
+                                    <td>@venda.Total.ToString("C")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6">Não existem vendas registadas.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="painel-section-card">
+            <div class="painel-section-header">
+                <div>
+                    <h2>Carrinhos dos clientes</h2>
+                    <p>Consulta interna dos carrinhos ativos e respetivos produtos, serviços e veículos do stand.</p>
+                </div>
+                <span class="painel-section-counter">
+                    @(Model.Painel.Carrinhos?.Count ?? 0) registos
+                </span>
+            </div>
+
+            @if (Model.Painel.Carrinhos != null && Model.Painel.Carrinhos.Any())
+            {
+                foreach (var carrinho in Model.Painel.Carrinhos)
+                {
+                    <div class="painel-subcard mb-4">
+                        <div class="painel-subcard-header">
+                            <div>
+                                <h3 class="painel-subcard-title">Carrinho #@carrinho.Id</h3>
+                                <p class="painel-subcard-subtitle">
+                                    Cliente: @carrinho.ClienteNome · Criado em @carrinho.DataCriacao.ToString("dd/MM/yyyy HH:mm")
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="painel-inner-section mt-3">
+                            <h4 class="painel-mini-title">Produtos</h4>
+                            <div class="painel-table-wrapper">
+                                <table class="painel-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Produto</th>
+                                            <th>Quantidade</th>
+                                            <th>Preço no momento</th>
+                                            <th>Data de adição</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (carrinho.Produtos != null && carrinho.Produtos.Any())
+                                        {
+                                            foreach (var produtoCarrinho in carrinho.Produtos)
+                                            {
+                                                <tr>
+                                                    <td>@produtoCarrinho.NomeProduto</td>
+                                                    <td>@produtoCarrinho.Quantidade</td>
+                                                    <td>@produtoCarrinho.PrecoNoMomento.ToString("C")</td>
+                                                    <td>@produtoCarrinho.DataAdicao.ToString("dd/MM/yyyy HH:mm")</td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="4">Sem produtos neste carrinho.</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="painel-inner-section mt-3">
+                            <h4 class="painel-mini-title">Serviços</h4>
+                            <div class="painel-table-wrapper">
+                                <table class="painel-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Serviço</th>
+                                            <th>Preço no momento</th>
+                                            <th>Data de adição</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (carrinho.Servicos != null && carrinho.Servicos.Any())
+                                        {
+                                            foreach (var servicoCarrinho in carrinho.Servicos)
+                                            {
+                                                <tr>
+                                                    <td>@servicoCarrinho.NomeServico</td>
+                                                    <td>@servicoCarrinho.PrecoNoMomento.ToString("C")</td>
+                                                    <td>@servicoCarrinho.DataAdicao.ToString("dd/MM/yyyy HH:mm")</td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="3">Sem serviços neste carrinho.</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="painel-inner-section mt-3">
+                            <h4 class="painel-mini-title">Veículos do stand</h4>
+                            <div class="painel-table-wrapper">
+                                <table class="painel-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Veículo</th>
+                                            <th>Preço no momento</th>
+                                            <th>Data de adição</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (carrinho.Veiculos != null && carrinho.Veiculos.Any())
+                                        {
+                                            foreach (var veiculoCarrinho in carrinho.Veiculos)
+                                            {
+                                                <tr>
+                                                    <td>@veiculoCarrinho.VeiculoDescricao</td>
+                                                    <td>@veiculoCarrinho.PrecoNoMomento.ToString("C")</td>
+                                                    <td>@veiculoCarrinho.DataAdicao.ToString("dd/MM/yyyy HH:mm")</td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="3">Sem veículos do stand neste carrinho.</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty-state-panel">
+                    Não existem carrinhos de clientes para mostrar.
+                </div>
+            }
+        </div>
+
+    </div>
+</section>
+
+<style>
+    .dashboard-page {
+        padding: 2rem 0 4rem;
+        background:
+            radial-gradient(circle at top right, rgba(15, 118, 110, 0.08), transparent 24rem),
+            linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+        min-height: 100vh;
+    }
+
+    .dashboard-container {
+        width: min(1400px, 94%);
+        margin: 0 auto;
+    }
+
+    .page-header-block {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 2rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+        padding: 2rem;
+        border-radius: 1.25rem;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: #fff;
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+    }
+
+    .page-eyebrow {
+        margin: 0 0 0.5rem;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: rgba(255,255,255,0.72);
+    }
+
+    .page-title {
+        margin: 0;
+        font-size: clamp(2rem, 3vw, 3rem);
+        font-weight: 800;
+        line-height: 1.05;
+    }
+
+    .page-subtitle {
+        max-width: 760px;
+        margin: 1rem 0 0;
+        color: rgba(255,255,255,0.82);
+        font-size: 1rem;
+    }
+
+    .page-header-side {
+        display: flex;
+        align-items: center;
+    }
+
+    .page-header-chip {
+        padding: 0.8rem 1rem;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.16);
+        color: #e2e8f0;
+        font-size: 0.92rem;
+        white-space: nowrap;
+    }
+
+    .painel-alert {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.9rem;
+        padding: 1rem 1.1rem;
+        border-radius: 1rem;
+        border: 1px solid transparent;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    .painel-alert-icon {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        flex-shrink: 0;
+    }
+
+    .painel-alert-success {
+        background: #ecfdf5;
+        border-color: #a7f3d0;
+        color: #065f46;
+    }
+
+    .painel-alert-success .painel-alert-icon {
+        background: #10b981;
+        color: white;
+    }
+
+    .painel-alert-danger {
+        background: #fef2f2;
+        border-color: #fecaca;
+        color: #991b1b;
+    }
+
+    .painel-alert-danger .painel-alert-icon {
+        background: #ef4444;
+        color: white;
+    }
+
+    .painel-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .painel-kpi-card {
+        background: rgba(255,255,255,0.92);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 1rem;
+        padding: 1.25rem;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+        backdrop-filter: blur(6px);
+    }
+
+    .painel-kpi-label {
+        display: block;
+        color: #64748b;
+        font-size: 0.92rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .painel-kpi-value {
+        display: block;
+        font-size: 1.85rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.1;
+    }
+
+    .painel-kpi-helper {
+        display: block;
+        margin-top: 0.4rem;
+        color: #94a3b8;
+        font-size: 0.88rem;
+    }
+
+    .painel-section-card {
+        background: rgba(255,255,255,0.94);
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        border-radius: 1.25rem;
+        padding: 1.4rem;
+        box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+        margin-bottom: 1.5rem;
+    }
+
+    .painel-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .painel-section-header h2,
+    .painel-section-header h4 {
+        margin: 0;
+        color: #0f172a;
+        font-weight: 800;
+    }
+
+    .painel-section-header p {
+        margin: 0.35rem 0 0;
+        color: #64748b;
+    }
+
+    .painel-section-header.small {
+        margin-bottom: 1rem;
+    }
+
+    .painel-section-counter {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 0.85rem;
+        border-radius: 999px;
+        background: #eff6ff;
+        color: #1d4ed8;
+        font-size: 0.88rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .painel-subcard {
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 1.1rem;
+        background: #f8fafc;
+        padding: 1.2rem;
+    }
+
+    .painel-subcard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .painel-subcard-title {
+        margin: 0;
+        font-size: 1.15rem;
+        color: #0f172a;
+        font-weight: 800;
+    }
+
+    .painel-subcard-subtitle {
+        margin: 0.35rem 0 0;
+        color: #64748b;
+    }
+
+    .painel-ordem-grid {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 1.25rem;
+    }
+
+    .painel-metric-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.85rem;
+    }
+
+    .painel-metric-box {
+        background: white;
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        border-radius: 0.9rem;
+        padding: 0.9rem 1rem;
+    }
+
+    .painel-metric-box-highlight {
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        border-color: #bfdbfe;
+    }
+
+    .painel-metric-label {
+        display: block;
+        color: #64748b;
+        font-size: 0.84rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .painel-metric-box strong {
+        color: #0f172a;
+        font-size: 1rem;
+    }
+
+    .painel-note-box {
+        background: white;
+        border-left: 4px solid #0f766e;
+        border-radius: 0.9rem;
+        padding: 1rem 1rem 1rem 1.1rem;
+        box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.12);
+    }
+
+    .painel-note-label {
+        display: block;
+        font-size: 0.84rem;
+        font-weight: 700;
+        color: #0f766e;
+        margin-bottom: 0.35rem;
+    }
+
+    .painel-ordem-form,
+    .painel-add-item-box,
+    .painel-inner-section {
+        background: white;
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        border-radius: 1rem;
+        padding: 1rem;
+    }
+
+    .painel-inline-form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+    }
+
+    .painel-form-compact {
+        min-width: 260px;
+    }
+
+    .painel-form-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.85rem;
+    }
+
+    .painel-form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    .painel-label {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #334155;
+    }
+
+    .painel-input,
+    .painel-select,
+    .painel-textarea {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 0.8rem;
+        background: #fff;
+        padding: 0.8rem 0.9rem;
+        font-size: 0.95rem;
+        color: #0f172a;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .painel-input:focus,
+    .painel-select:focus,
+    .painel-textarea:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    .painel-textarea {
+        resize: vertical;
+        min-height: 110px;
+    }
+
+    .painel-helper-text {
+        display: block;
+        color: #64748b;
+        font-size: 0.88rem;
+        margin-top: -0.2rem;
+    }
+
+    .painel-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        border: none;
+        border-radius: 0.85rem;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    }
+
+    .painel-btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .painel-btn-primary {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: white;
+        padding: 0.9rem 1rem;
+        box-shadow: 0 10px 24px rgba(37, 99, 235, 0.24);
+    }
+
+    .painel-btn-danger {
+        background: #fee2e2;
+        color: #b91c1c;
+        border: 1px solid #fecaca;
+        padding: 0.7rem 0.9rem;
+    }
+
+    .painel-btn-sm {
+        padding: 0.75rem 0.95rem;
+        font-size: 0.9rem;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        padding: 0.45rem 0.8rem;
+        font-size: 0.82rem;
+        font-weight: 800;
+        white-space: nowrap;
+        border: 1px solid transparent;
+    }
+
+    .status-neutral {
+        background: #e2e8f0;
+        color: #334155;
+    }
+
+    .status-info {
+        background: #dbeafe;
+        color: #1d4ed8;
+        border-color: #bfdbfe;
+    }
+
+    .status-warning {
+        background: #fef3c7;
+        color: #92400e;
+        border-color: #fde68a;
+    }
+
+    .status-success {
+        background: #dcfce7;
+        color: #166534;
+        border-color: #bbf7d0;
+    }
+
+    .status-danger {
+        background: #fee2e2;
+        color: #991b1b;
+        border-color: #fecaca;
+    }
+
+    .painel-table-wrapper {
+        overflow-x: auto;
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        border-radius: 1rem;
+        background: white;
+    }
+
+    .painel-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 720px;
+    }
+
+    .painel-table-expanded {
+        min-width: 1080px;
+    }
+
+    .painel-table thead th {
+        text-align: left;
+        background: #f8fafc;
+        color: #475569;
+        font-size: 0.85rem;
+        font-weight: 800;
+        padding: 0.95rem 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        white-space: nowrap;
+    }
+
+    .painel-table tbody td {
+        padding: 0.95rem 1rem;
+        border-bottom: 1px solid #eef2f7;
+        color: #0f172a;
+        vertical-align: top;
+    }
+
+    .painel-table tbody tr:hover {
+        background: #f8fbff;
+    }
+
+    .painel-mini-title {
+        margin: 0 0 0.85rem;
+        font-size: 1rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .empty-state-panel {
+        padding: 1.25rem;
+        border-radius: 1rem;
+        background: #f8fafc;
+        border: 1px dashed #cbd5e1;
+        color: #64748b;
+        text-align: center;
+    }
+
+    .mb-0 {
+        margin-bottom: 0;
+    }
+
+    .mb-4 {
+        margin-bottom: 1.5rem;
+    }
+
+    .mt-2 {
+        margin-top: 0.5rem;
+    }
+
+    .mt-3 {
+        margin-top: 1rem;
+    }
+
+    .mt-4 {
+        margin-top: 1.5rem;
+    }
+
+    .d-block {
+        display: block;
+    }
+
+    .text-danger {
+        color: #b91c1c;
+    }
+
+    .flex-grow-1 {
+        flex-grow: 1;
+    }
+
+    @@media (max-width: 1200px) {
+        .painel-kpi-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .painel-ordem-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .dashboard-page {
+            padding-top: 1rem;
+        }
+
+        .page-header-block,
+        .painel-section-card,
+        .painel-subcard {
+            padding: 1rem;
+        }
+
+        .painel-kpi-grid,
+        .painel-metric-grid,
+        .painel-form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .page-title {
+            font-size: 1.9rem;
+        }
+
+        .page-header-chip {
+            white-space: normal;
+        }
+
+        .painel-table {
+            min-width: 640px;
+        }
+    }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,101 @@
+﻿@page
+@model Versao1TrabalhoFinal.Pages.Colaboradores.CreateModel
+@{
+    ViewData["Title"] = "Criar Colaborador";
+}
+
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="page-header-block">
+            <p class="page-eyebrow">Administração</p>
+            <h1 class="page-title">Criar colaborador</h1>
+            <p class="page-subtitle">Crie a conta, associe os dados e defina a role.</p>
+        </div>
+
+        <div class="client-form-card">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="auth-validation mb-4"></div>
+
+                <div class="client-form-grid">
+                    <div class="client-field">
+                        <label asp-for="Input.Nome" class="client-label">Nome</label>
+                        <input asp-for="Input.Nome" class="client-input" />
+                        <span asp-validation-for="Input.Nome" class="text-danger"></span>
+                    </div>
+
+                    <div class="client-field">
+                        <label asp-for="Input.Telefone" class="client-label">Telefone</label>
+                        <input asp-for="Input.Telefone" class="client-input" />
+                        <span asp-validation-for="Input.Telefone" class="text-danger"></span>
+                    </div>
+
+                    <div class="client-field client-field-full">
+                        <label asp-for="Input.Email" class="client-label">Email</label>
+                        <input asp-for="Input.Email" class="client-input" />
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="client-field">
+                        <label asp-for="Input.Password" class="client-label">Password</label>
+                        <input asp-for="Input.Password" class="client-input" />
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="client-field">
+                        <label asp-for="Input.ConfirmPassword" class="client-label">Confirmar password</label>
+                        <input asp-for="Input.ConfirmPassword" class="client-input" />
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                    </div>
+
+                    <div class="client-field">
+                        <label asp-for="Input.Role" class="client-label">Role</label>
+                        <select asp-for="Input.Role" asp-items="Model.RolesDisponiveis" class="client-input">
+                            <option value="">Selecione uma role</option>
+                        </select>
+                        <span asp-validation-for="Input.Role" class="text-danger"></span>
+                    </div>
+
+                    <div class="client-field">
+                        <label asp-for="Input.Cargo" class="client-label">Cargo</label>
+                        <input asp-for="Input.Cargo" class="client-input" />
+                        <span asp-validation-for="Input.Cargo" class="text-danger"></span>
+                    </div>
+
+                    <div class="client-field">
+                        <label asp-for="Input.NIF" class="client-label">NIF</label>
+                        <input asp-for="Input.NIF" class="client-input" />
+                        <span asp-validation-for="Input.NIF" class="text-danger"></span>
+                    </div>
+
+                    <div class="client-field">
+                        <label asp-for="Input.ImagemUrl" class="client-label">Imagem</label>
+                        <input asp-for="Input.ImagemUrl" class="client-input" />
+                        <span asp-validation-for="Input.ImagemUrl" class="text-danger"></span>
+                    </div>
+
+                    <div class="client-field client-field-full">
+                        <label asp-for="Input.Morada" class="client-label">Morada</label>
+                        <input asp-for="Input.Morada" class="client-input" />
+                        <span asp-validation-for="Input.Morada" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="client-form-actions">
+                    <button class="auth-button" type="submit">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Criar colaborador</span>
+                    </button>
+
+                    <a asp-page="./Index" class="auth-button auth-button-secondary">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Cancelar</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

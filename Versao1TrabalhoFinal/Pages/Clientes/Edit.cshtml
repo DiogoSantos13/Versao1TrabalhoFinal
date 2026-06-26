@@ -9,7 +9,7 @@
         <div class="page-header-block">
             <p class="page-eyebrow">Administração</p>
             <h1 class="page-title">Editar cliente</h1>
-            <p class="page-subtitle">Atualize os dados do cliente e mantenha a conta associada sincronizada.</p>
+            <p class="page-subtitle">Atualize os dados do cliente, a conta associada e a respetiva role.</p>
         </div>
 
         <div class="client-edit-layout">
@@ -45,6 +45,12 @@
                                 <label asp-for="Input.Email" class="client-label"></label>
                                 <input asp-for="Input.Email" class="client-input" placeholder="email@exemplo.pt" />
                                 <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="client-field">
+                                <label asp-for="Input.Role" class="client-label"></label>
+                                <select asp-for="Input.Role" asp-items="Model.RolesDisponiveis" class="client-input"></select>
+                                <span asp-validation-for="Input.Role" class="text-danger"></span>
                             </div>
 
                             <div class="client-field">
@@ -111,6 +117,11 @@
                     <div class="client-summary-item">
                         <span class="client-summary-label">Conta associada</span>
                         <strong>@(string.IsNullOrWhiteSpace(Model.Input.IdentityUserId) ? "Sem ligação" : "Ligada ao Identity")</strong>
+                    </div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">Role</span>
+                        <strong>@Model.Input.Role</strong>
                     </div>
                 </div>
             </aside>

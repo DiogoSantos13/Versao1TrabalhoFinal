@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Versao1TrabalhoFinal.Data;
-using Versao1TrabalhoFinal.Models;
 
 namespace Versao1TrabalhoFinal.Pages.Clientes
 {
@@ -17,36 +17,44 @@ namespace Versao1TrabalhoFinal.Pages.Clientes
     {
         private readonly StandDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        /// <summary>
-        /// Inicializa uma nova instância da página de edição de clientes.
-        /// </summary>
-        /// <param name="context">Contexto da base de dados da aplicação.</param>
-        /// <param name="userManager">Serviço de gestão de utilizadores do ASP.NET Core Identity.</param>
-        public EditModel(StandDbContext context, UserManager<IdentityUser> userManager)
+        public EditModel(
+            StandDbContext context,
+            UserManager<IdentityUser> userManager,
+            RoleManager<IdentityRole> roleManager)
         {
             _context = context;
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
-        /// <summary>
-        /// Dados utilizados no formulário de edição.
-        /// </summary>
         [BindProperty]
         public InputModel Input { get; set; } = new();
 
-        /// <summary>
-        /// Carrega os dados do cliente para edição.
-        /// </summary>
-        /// <param name="id">Identificador do cliente.</param>
-        /// <returns>Resultado da execução da página.</returns>
+        public List<SelectListItem> RolesDisponiveis { get; set; } = new();
+
         public async Task<IActionResult> OnGetAsync(int id)
         {
+            await LoadRolesAsync();
+
             var cliente = await _context.Clientes.FirstOrDefaultAsync(c => c.Id == id);
 
             if (cliente == null)
             {
                 return NotFound();
+            }
+
+            string roleAtual = "Cliente";
+
+            if (!string.IsNullOrWhiteSpace(cliente.IdentityUserId))
+            {
+                var user = await _userManager.FindByIdAsync(cliente.IdentityUserId);
+                if (user != null)
+                {
+                    var roles = await _userManager.GetRolesAsync(user);
+                    roleAtual = roles.FirstOrDefault() ?? "Cliente";
+                }
             }
 
             Input = new InputModel
@@ -58,18 +66,17 @@ namespace Versao1TrabalhoFinal.Pages.Clientes
                 Email = cliente.Email,
                 NIF = cliente.NIF,
                 Morada = cliente.Morada,
-                ImagemUrl = cliente.ImagemUrl
+                ImagemUrl = cliente.ImagemUrl,
+                Role = roleAtual
             };
 
             return Page();
         }
 
-        /// <summary>
-        /// Processa a submissão do formulário e atualiza os dados do cliente e da conta associada.
-        /// </summary>
-        /// <returns>Redireciona para a listagem em caso de sucesso; caso contrário, devolve a página com erros.</returns>
         public async Task<IActionResult> OnPostAsync()
         {
+            await LoadRolesAsync();
+
             if (!ModelState.IsValid)
             {
                 return Page();
@@ -131,6 +138,43 @@ namespace Versao1TrabalhoFinal.Pages.Clientes
 
                     return Page();
                 }
+
+                if (!string.IsNullOrWhiteSpace(Input.Role))
+                {
+                    var roleExiste = await _roleManager.RoleExistsAsync(Input.Role);
+                    if (!roleExiste)
+                    {
+                        ModelState.AddModelError("Input.Role", "A role selecionada não existe.");
+                        return Page();
+                    }
+
+                    var rolesAtuais = await _userManager.GetRolesAsync(user);
+
+                    if (rolesAtuais.Any())
+                    {
+                        var removeRolesResult = await _userManager.RemoveFromRolesAsync(user, rolesAtuais);
+                        if (!removeRolesResult.Succeeded)
+                        {
+                            foreach (var error in removeRolesResult.Errors)
+                            {
+                                ModelState.AddModelError(string.Empty, error.Description);
+                            }
+
+                            return Page();
+                        }
+                    }
+
+                    var addRoleResult = await _userManager.AddToRoleAsync(user, Input.Role);
+                    if (!addRoleResult.Succeeded)
+                    {
+                        foreach (var error in addRoleResult.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+
+                        return Page();
+                    }
+                }
             }
 
             await _context.SaveChangesAsync();
@@ -139,64 +183,52 @@ namespace Versao1TrabalhoFinal.Pages.Clientes
             return RedirectToPage("./Index");
         }
 
-        /// <summary>
-        /// Modelo de dados utilizado no formulário de edição de clientes.
-        /// </summary>
+        private async Task LoadRolesAsync()
+        {
+            RolesDisponiveis = await _roleManager.Roles
+                .OrderBy(r => r.Name)
+                .Select(r => new SelectListItem
+                {
+                    Value = r.Name!,
+                    Text = r.Name!
+                })
+                .ToListAsync();
+        }
+
         public class InputModel
         {
-            /// <summary>
-            /// Identificador do cliente.
-            /// </summary>
             public int Id { get; set; }
 
-            /// <summary>
-            /// Identificador do utilizador Identity associado ao cliente.
-            /// </summary>
             public string? IdentityUserId { get; set; }
 
-            /// <summary>
-            /// Nome do cliente.
-            /// </summary>
             [Required(ErrorMessage = "O nome é obrigatório.")]
             [StringLength(100)]
             [Display(Name = "Nome")]
             public string Nome { get; set; } = string.Empty;
 
-            /// <summary>
-            /// Telefone do cliente.
-            /// </summary>
             [Phone(ErrorMessage = "Introduza um número de telefone válido.")]
             [Display(Name = "Telefone")]
             public string? Telefone { get; set; }
 
-            /// <summary>
-            /// Email do cliente e da conta associada.
-            /// </summary>
             [Required(ErrorMessage = "O email é obrigatório.")]
             [EmailAddress(ErrorMessage = "Introduza um email válido.")]
             [Display(Name = "Email")]
             public string Email { get; set; } = string.Empty;
 
-            /// <summary>
-            /// Número de identificação fiscal do cliente.
-            /// </summary>
             [Display(Name = "NIF")]
             [StringLength(20)]
             public string? NIF { get; set; }
 
-            /// <summary>
-            /// Morada do cliente.
-            /// </summary>
             [Display(Name = "Morada")]
             [StringLength(250)]
             public string? Morada { get; set; }
 
-            /// <summary>
-            /// URL da imagem do cliente.
-            /// </summary>
             [Display(Name = "Imagem")]
             [StringLength(500)]
             public string? ImagemUrl { get; set; }
+
+            [Display(Name = "Role")]
+            public string Role { get; set; } = "Cliente";
         }
     }
 }

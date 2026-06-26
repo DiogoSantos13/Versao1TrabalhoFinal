@@ -91,5 +91,7 @@ namespace Versao1TrabalhoFinal.Models
         /// Relação com itens de carrinho de produtos (tabela de ligação).
         /// </summary>
         public ICollection<CarrinhoProdutos> CarrinhoProdutos { get; set; } = new List<CarrinhoProdutos>();
+    
+    
     }
 }

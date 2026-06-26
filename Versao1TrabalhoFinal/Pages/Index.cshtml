@@ -1,242 +1,360 @@
 ﻿@page
-@model Versao1TrabalhoFinal.Pages.VeiculosStand.IndexModel
+@model Versao1TrabalhoFinal.Pages.PainelEmpresa.IndexModel
 @{
-    ViewData["Title"] = "Veículos do Stand";
+    ViewData["Title"] = "Painel da Empresa";
 }
+
+@*
+    Página principal do painel interno.
+
+    Esta vista apresenta:
+    - cartões KPI com métricas gerais;
+    - tabela de ordens de reparação;
+    - tabela de orçamentos;
+    - tabela de vendas/histórico.
+
+    IMPORTANTE:
+    Cada linha tem o seu próprio formulário.
+    Para evitar conflitos de model binding em loops, os campos usam name=""
+    manualmente com prefixos que batem certo com os parâmetros dos handlers:
+    - AtualizacaoOrdem.*
+    - AtualizacaoOrcamento.*
+
+    ALTERAÇÕES IMPORTANTES:
+    - A ordem de reparação passa a guardar colaborador, mão de obra e peças.
+    - O formulário volta a mostrar os valores persistidos.
+    - O select do mecânico envia ColaboradorId em vez do nome.
+*@
 
 <section class="dashboard-page">
     <div class="dashboard-container">
-        <div class="list-header">
-            <div>
-                <p class="page-eyebrow">Stand automóvel</p>
-                <h1 class="page-title">Veículos disponíveis</h1>
-                <p class="page-subtitle">Explore o stock atualmente disponível no stand.</p>
-            </div>
 
-            @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
-            {
-                <a asp-page="/VeiculosStand/Create" class="auth-button list-header-button">
-                    Novo veículo do stand
-                </a>
-            }
+        <div class="page-header-block">
+            <p class="page-eyebrow">Centro Operacional</p>
+            <h1 class="page-title">Painel de trabalho da empresa</h1>
+            <p class="page-subtitle">
+                Área interna para acompanhar ordens de reparação, orçamentos e histórico de vendas.
+            </p>
         </div>
 
         @if (TempData["SuccessMessage"] != null)
         {
-            <div class="success-banner">
+            <div class="alert alert-success mb-4">
                 @TempData["SuccessMessage"]
             </div>
         }
 
-        @if (TempData["ErrorMessage"] != null)
+        @if (!ViewContext.ModelState.IsValid && ViewContext.ModelState.ErrorCount > 0)
         {
-            <div class="error-banner">
-                @TempData["ErrorMessage"]
+            <div class="alert alert-danger mb-4">
+                <strong>Foram encontrados erros:</strong>
+                <div asp-validation-summary="All" class="text-danger mt-2"></div>
             </div>
         }
 
-        @if (Model.VeiculosStand != null && Model.VeiculosStand.Any())
-        {
-            <div class="vehicle-grid">
-                @foreach (var item in Model.VeiculosStand)
-                {
-                    var imagens = item.Imagens?
-                    .OrderByDescending(i => i.Principal)
-                    .ThenBy(i => i.Ordem)
-                    .ToList() ?? new List<Versao1TrabalhoFinal.Models.ImagemEntidade>();
+        <div class="painel-kpi-grid">
+            <div class="painel-kpi-card">
+                <span class="painel-kpi-label">Total de vendas</span>
+                <strong class="painel-kpi-value">@Model.Painel.TotalVendas.ToString("C")</strong>
+                <small class="painel-kpi-helper">Valor acumulado registado</small>
+            </div>
 
-                    if (!imagens.Any() && !string.IsNullOrWhiteSpace(item.Veiculo?.ImagemUrl))
-                    {
-                        imagens.Add(new Versao1TrabalhoFinal.Models.ImagemEntidade
+            <div class="painel-kpi-card">
+                <span class="painel-kpi-label">Vendas finalizadas</span>
+                <strong class="painel-kpi-value">@Model.Painel.TotalVendasFinalizadas</strong>
+                <small class="painel-kpi-helper">Total de registos de venda</small>
+            </div>
+
+            <div class="painel-kpi-card">
+                <span class="painel-kpi-label">Orçamentos pendentes</span>
+                <strong class="painel-kpi-value">@Model.Painel.TotalOrcamentosPendentes</strong>
+                <small class="painel-kpi-helper">Aguardam análise</small>
+            </div>
+
+            <div class="painel-kpi-card">
+                <span class="painel-kpi-label">Ordens em aberto</span>
+                <strong class="painel-kpi-value">@Model.Painel.TotalOrdensAbertas</strong>
+                <small class="painel-kpi-helper">Ainda não concluídas</small>
+            </div>
+        </div>
+
+        <div class="painel-section-card">
+            <div class="painel-section-header">
+                <h2>Ordens de reparação</h2>
+                <p>Gestão dos trabalhos de oficina em curso.</p>
+            </div>
+
+            <div class="painel-table-wrapper">
+                <table class="painel-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cliente</th>
+                            <th>Veículo</th>
+                            <th>Serviços pedidos</th>
+                            <th>Mecânico</th>
+                            <th>Estado</th>
+                            <th>Entrada</th>
+                            <th>Total</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Painel.OrdensReparacao != null && Model.Painel.OrdensReparacao.Any())
                         {
-                            Url = item.Veiculo.ImagemUrl,
-                            Alt = $"{item.Veiculo?.Marca} {item.Veiculo?.Modelo}",
-                            Principal = true,
-                            Ordem = 0
-                        });
-                    }
-
-                    if (!imagens.Any())
-                    {
-                        imagens.Add(new Versao1TrabalhoFinal.Models.ImagemEntidade
-                        {
-                            Url = Url.Content("~/images/cars/default-car.jpg"),
-                            Alt = "Imagem por defeito",
-                            Principal = true,
-                            Ordem = 0
-                        });
-                    }
-
-                    var titulo = $"{item.Veiculo?.Marca ?? "Veículo"} {item.Veiculo?.Modelo ?? ""}".Trim();
-                    var combustivel = string.IsNullOrWhiteSpace(item.Veiculo?.Combustivel) ? "-" : item.Veiculo?.Combustivel;
-                    var estado = string.IsNullOrWhiteSpace(item.Estado) ? "Disponível" : item.Estado;
-                    var carouselId = $"carousel-{item.Id}";
-                    <article class="vehicle-admin-card">
-                        <div class="vehicle-carousel" id="@carouselId">
-                            <div class="vehicle-carousel-track">
-                                @for (int i = 0; i < imagens.Count; i++)
-                                {
-                                    var imagem = imagens[i];
-                                    <div class="vehicle-carousel-slide @(i == 0 ? "active" : "")" data-index="@i">
-                                        <img src="@imagem.Url"
-                                             class="vehicle-admin-image"
-                                             alt="@(string.IsNullOrWhiteSpace(imagem.Alt) ? titulo : imagem.Alt)"
-                                             onerror="this.onerror=null;this.src='@Url.Content("~/images/cars/default-car.jpg")';" />
-                                    </div>
-                                }
-                            </div>
-
-                            @if (imagens.Count > 1)
+                            foreach (var ordem in Model.Painel.OrdensReparacao)
                             {
-                                <button type="button" class="carousel-arrow carousel-arrow-left" data-direction="prev" aria-label="Imagem anterior">
-                                    &#8249;
-                                </button>
+                                <tr>
+                                    <td>#@ordem.Id</td>
+                                    <td>@ordem.ClienteNome</td>
+                                    <td>@ordem.VeiculoDescricao</td>
+                                    <td>@ordem.ServicosPedidos</td>
+                                    <td>@ordem.MecanicoResponsavel</td>
+                                    <td>
+                                        <span class="status-badge status-neutral">@ordem.Estado</span>
+                                    </td>
+                                    <td>@ordem.DataEntrada.ToString("dd/MM/yyyy")</td>
+                                    <td>@ordem.Total.ToString("C")</td>
+                                    <td>
+                                        <form method="post" asp-page-handler="AtualizarOrdem" class="painel-inline-form">
+                                            @Html.AntiForgeryToken()
 
-                                <button type="button" class="carousel-arrow carousel-arrow-right" data-direction="next" aria-label="Imagem seguinte">
-                                    &#8250;
-                                </button>
+                                            @*
+                                                Identificador da ordem que vai ser atualizada.
+                                            *@
+                                            <input type="hidden"
+                                                   name="AtualizacaoOrdem.OrdemReparacaoId"
+                                                   value="@ordem.Id" />
 
-                                <div class="carousel-counter">
-                                    <span class="current-slide">1</span>/<span class="total-slides">@imagens.Count</span>
-                                </div>
+                                            @*
+                                                Dropdown do colaborador.
+                                                Agora usa ColaboradorId para persistir corretamente a FK.
+                                            *@
+                                            <select name="AtualizacaoOrdem.ColaboradorId" class="painel-select">
+                                                <option value="">Selecionar mecânico</option>
+                                                @foreach (var colaborador in Model.ColaboradoresDisponiveis)
+                                                {
+                                                    if (colaborador.Value == ordem.ColaboradorId?.ToString())
+                                                    {
+                                                        <option value="@colaborador.Value" selected>@colaborador.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@colaborador.Value">@colaborador.Text</option>
+                                                    }
+                                                }
+                                            </select>
+
+                                            @*
+                                                Estado atual da ordem.
+                                                O valor persistido volta a aparecer selecionado.
+                                            *@
+                                            <select name="AtualizacaoOrdem.NovoEstado" class="painel-select">
+                                                @foreach (var estado in Model.EstadosOrdem)
+                                                {
+                                                    if (estado.Value == ordem.Estado)
+                                                    {
+                                                        <option value="@estado.Value" selected>@estado.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@estado.Value">@estado.Text</option>
+                                                    }
+                                                }
+                                            </select>
+
+                                            @*
+                                                Mão de obra persistida na ordem.
+                                                O input volta a aparecer preenchido.
+                                            *@
+                                            <input name="AtualizacaoOrdem.MaoDeObra"
+                                                   class="painel-input"
+                                                   type="number"
+                                                   step="0.01"
+                                                   min="0"
+                                                   value="@ordem.MaoDeObra.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                                                   placeholder="Mão de obra" />
+
+                                            @*
+                                                Peças persistidas na ordem.
+                                                O input volta a aparecer preenchido.
+                                            *@
+                                            <input name="AtualizacaoOrdem.Pecas"
+                                                   class="painel-input"
+                                                   type="number"
+                                                   step="0.01"
+                                                   min="0"
+                                                   value="@ordem.Pecas.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                                                   placeholder="Peças" />
+
+                                            @*
+                                                Observações da intervenção.
+                                                Este campo serve para alimentar o histórico da reparação.
+                                            *@
+                                            <textarea name="AtualizacaoOrdem.Observacoes"
+                                              class="painel-textarea"
+                                              rows="3"
+                                              placeholder="Observações do serviço"></textarea>
+
+                                            <small class="text-muted">
+                                                Total atual registado: @ordem.Total.ToString("C")
+                                            </small>
+
+                                            <button type="submit" class="auth-button btn-sm">
+                                                Guardar
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
                             }
-                        </div>
-
-                        <div class="vehicle-admin-body">
-                            <h3 class="vehicle-admin-title">@titulo</h3>
-
-                            <p class="vehicle-admin-status @(estado.ToLower().Contains("vendido") ? "status-sold" : "status-available")">
-                                @estado
-                            </p>
-
-                            <div class="vehicle-admin-meta">
-                                <div class="vehicle-admin-meta-item">
-                                    <span class="vehicle-admin-meta-label">Preço</span>
-                                    <strong>€ @item.Preco.ToString("N2")</strong>
-                                </div>
-
-                                <div class="vehicle-admin-meta-item">
-                                    <span class="vehicle-admin-meta-label">Quilómetros</span>
-                                    <strong>@item.Quilometros.ToString("N0")</strong>
-                                </div>
-                            </div>
-
-                            <div class="vehicle-admin-meta">
-                                <div class="vehicle-admin-meta-item">
-                                    <span class="vehicle-admin-meta-label">Ano</span>
-                                    <strong>@(item.Veiculo?.Ano)</strong>
-                                </div>
-
-                                <div class="vehicle-admin-meta-item">
-                                    <span class="vehicle-admin-meta-label">Combustível</span>
-                                    <strong>@combustivel</strong>
-                                </div>
-                            </div>
-
-                            <div class="vehicle-admin-actions">
-                                <a asp-page="/VeiculosStand/Details"
-                                   asp-route-id="@item.Id"
-                                   class="action-link action-link-primary">
-                                    Detalhes
-                                </a>
-
-                                @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
-                                {
-                                    <a asp-page="/VeiculosStand/Edit"
-                                       asp-route-id="@item.Id"
-                                       class="action-link action-link-primary">
-                                        Editar
-                                    </a>
-
-                                    <a asp-page="/VeiculosStand/Delete"
-                                       asp-route-id="@item.Id"
-                                       class="action-link action-link-danger">
-                                        Eliminar
-                                    </a>
-                                }
-                                else
-                                {
-                                    if (User.Identity != null && User.Identity.IsAuthenticated)
-                                    {
-                                        <a asp-page="/Carrinho/Adicionar"
-                                           asp-route-veiculoStandId="@item.Id"
-                                           class="action-link action-link-primary">
-                                            Adicionar ao carrinho
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <a asp-page="/Account/Login"
-                                           asp-route-returnUrl="@Url.Page("/VeiculosStand/Index")"
-                                           class="action-link action-link-primary">
-                                            Iniciar sessão
-                                        </a>
-                                    }
-                                }
-                            </div>
-                        </div>
-                    </article>
-                }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="9">Não existem ordens de reparação registadas.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
-        }
-        else
-        {
-            <div class="empty-state-card">
-                <h3>Sem veículos em stock</h3>
-                <p>Não existem viaturas disponíveis para mostrar neste momento.</p>
+        </div>
 
-                @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
-                {
-                    <a asp-page="/VeiculosStand/Create" class="auth-button">
-                        Adicionar veículo ao stand
-                    </a>
-                }
+        <div class="painel-section-card">
+            <div class="painel-section-header">
+                <h2>Orçamentos</h2>
+                <p>Consulta e atualização do estado e valor estimado.</p>
             </div>
-        }
+
+            <div class="painel-table-wrapper">
+                <table class="painel-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cliente</th>
+                            <th>Veículo</th>
+                            <th>Descrição</th>
+                            <th>Estado</th>
+                            <th>Valor estimado</th>
+                            <th>Data</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Painel.Orcamentos != null && Model.Painel.Orcamentos.Any())
+                        {
+                            foreach (var orcamento in Model.Painel.Orcamentos)
+                            {
+                                <tr>
+                                    <td>#@orcamento.Id</td>
+                                    <td>@orcamento.ClienteNome</td>
+                                    <td>@orcamento.VeiculoDescricao</td>
+                                    <td>@orcamento.Descricao</td>
+                                    <td>
+                                        <span class="status-badge status-warning">@orcamento.Estado</span>
+                                    </td>
+                                    <td>@(orcamento.ValorEstimado.HasValue? orcamento.ValorEstimado.Value.ToString("C") : "—")</td>
+                                    <td>@(orcamento.DataCriacao.HasValue? orcamento.DataCriacao.Value.ToString("dd/MM/yyyy") : "—")</td>
+                                    <td>
+                                        <form method="post" asp-page-handler="AtualizarOrcamento" class="painel-inline-form">
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden"
+                                                   name="AtualizacaoOrcamento.OrcamentoId"
+                                                   value="@orcamento.Id" />
+
+                                            <select name="AtualizacaoOrcamento.NovoEstado" class="painel-select">
+                                                @foreach (var estado in Model.EstadosOrdem)
+                                                {
+                                                    if (estado.Value == orcamento.Estado)
+                                                    {
+                                                        <option value="@estado.Value" selected>@estado.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@estado.Value">@estado.Text</option>
+                                                    }
+                                                }
+                                            </select>
+
+                                            <input name="AtualizacaoOrcamento.ValorEstimado"
+                                                   class="painel-input"
+                                                   type="number"
+                                                   step="0.01"
+                                                   min="0"
+                                                   value="@(orcamento.ValorEstimado.HasValue? orcamento.ValorEstimado.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "")"
+                                                   placeholder="Valor estimado" />
+
+                                            <textarea name="AtualizacaoOrcamento.DescricaoAdicional"
+                                              class="painel-textarea"
+                                              rows="3"
+                                              placeholder="Descrição adicional / observações internas">@orcamento.Descricao</textarea>
+
+                                            <button type="submit" class="auth-button btn-sm">
+                                                Guardar
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8">Não existem orçamentos registados.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="painel-section-card">
+            <div class="painel-section-header">
+                <h2>Histórico de vendas</h2>
+                <p>Resumo dos registos de venda existentes.</p>
+            </div>
+
+            <div class="painel-table-wrapper">
+                <table class="painel-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cliente</th>
+                            <th>Data</th>
+                            <th>Tipo</th>
+                            <th>Itens</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Painel.Vendas != null && Model.Painel.Vendas.Any())
+                        {
+                            foreach (var venda in Model.Painel.Vendas)
+                            {
+                                <tr>
+                                    <td>#@venda.Id</td>
+                                    <td>@venda.ClienteNome</td>
+                                    <td>@venda.DataVenda.ToString("dd/MM/yyyy")</td>
+                                    <td>@venda.Tipo</td>
+                                    <td>@venda.ItensResumo</td>
+                                    <td>@venda.Total.ToString("C")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6">Não existem vendas registadas.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 </section>
 
 @section Scripts {
-    <script>
-        (function () {
-            const carousels = document.querySelectorAll('.vehicle-carousel');
-
-            carousels.forEach(carousel => {
-                const slides = carousel.querySelectorAll('.vehicle-carousel-slide');
-                const prevButton = carousel.querySelector('.carousel-arrow-left');
-                const nextButton = carousel.querySelector('.carousel-arrow-right');
-                const currentSlideElement = carousel.querySelector('.current-slide');
-
-                if (!slides.length) return;
-
-                let currentIndex = 0;
-
-                function updateCarousel() {
-                    slides.forEach((slide, index) => {
-                        slide.classList.toggle('active', index === currentIndex);
-                    });
-
-                    if (currentSlideElement) {
-                        currentSlideElement.textContent = (currentIndex + 1).toString();
-                    }
-                }
-
-                if (prevButton) {
-                    prevButton.addEventListener('click', function () {
-                        currentIndex = (currentIndex - 1 + slides.length) % slides.length;
-                        updateCarousel();
-                    });
-                }
-
-                if (nextButton) {
-                    nextButton.addEventListener('click', function () {
-                        currentIndex = (currentIndex + 1) % slides.length;
-                        updateCarousel();
-                    });
-                }
-
-                updateCarousel();
-            });
-        })();
-    </script>
+    <partial name="_ValidationScriptsPartial" />
 }

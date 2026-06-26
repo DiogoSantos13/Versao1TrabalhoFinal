@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Versao1TrabalhoFinal.Data;
@@ -5,6 +6,7 @@ using Versao1TrabalhoFinal.Models;
 
 namespace Versao1TrabalhoFinal.Pages.Servicos
 {
+    [Authorize(Roles = "Cliente,Admin")]
     /// <summary>
     /// Página responsável pela listagem de serviços.
     /// </summary>

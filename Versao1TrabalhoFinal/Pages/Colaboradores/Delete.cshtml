@@ -1,0 +1,81 @@
+﻿@page "{id:int}"
+@model Versao1TrabalhoFinal.Pages.Colaboradores.DeleteModel
+@{
+    ViewData["Title"] = "Eliminar Colaborador";
+}
+
+<section class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="page-header-block">
+            <p class="page-eyebrow">Administração</p>
+            <h1 class="page-title">Eliminar colaborador</h1>
+            <p class="page-subtitle">Confirme a eliminação do colaborador e da conta associada.</p>
+        </div>
+
+        <div class="client-form-card">
+            @if (Model.Colaborador != null)
+            {
+                <div class="client-summary-list">
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">Nome</span>
+                        <strong>@Model.Colaborador.Nome</strong>
+                    </div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">Email</span>
+                        <strong>@Model.Colaborador.Email</strong>
+                    </div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">Telefone</span>
+                        <strong>@(string.IsNullOrWhiteSpace(Model.Colaborador.Telefone) ? "—" : Model.Colaborador.Telefone)</strong>
+                    </div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">Cargo</span>
+                        <strong>@(string.IsNullOrWhiteSpace(Model.Colaborador.Cargo) ? "—" : Model.Colaborador.Cargo)</strong>
+                    </div>
+
+                    <div class="client-summary-item">
+                        <span class="client-summary-label">NIF</span>
+                        <strong>@(string.IsNullOrWhiteSpace(Model.Colaborador.NIF) ? "—" : Model.Colaborador.NIF)</strong>
+                    </div>
+                </div>
+
+                <div class="alert alert-danger mt-4">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>Esta ação vai remover o colaborador e a conta de acesso associada.</span>
+                </div>
+
+                <form method="post" class="mt-4">
+                    @* 
+                        Mantém o id na rota/pedido POST.
+                        Como a página está em /Delete/{id}, o handler também o recebe.
+                    *@
+                    <button type="submit" class="auth-button">
+                        <i class="fa-solid fa-trash"></i>
+                        <span>Confirmar eliminação</span>
+                    </button>
+
+                    <a asp-page="./Index" class="auth-button auth-button-secondary">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Cancelar</span>
+                    </a>
+                </form>
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    Não foi possível carregar o colaborador selecionado.
+                </div>
+
+                <div class="client-form-actions">
+                    <a asp-page="./Index" class="auth-button auth-button-secondary">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Voltar à listagem</span>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>

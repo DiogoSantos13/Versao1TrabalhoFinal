@@ -2,21 +2,30 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
+using Versao1TrabalhoFinal.Cliente.Extensions;
 using Versao1TrabalhoFinal.Data;
 using Versao1TrabalhoFinal.Seed;
 using Versao1TrabalhoFinal.Services;
-using Versao1TrabalhoFinal.Cliente.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuração da base de dados da aplicação.
+/// <summary>
+/// Configuração da base de dados da aplicação.
+/// Usa SQL Server com a connection string definida no appsettings.json.
+/// </summary>
 builder.Services.AddDbContext<StandDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("StandOficinaDB")));
 
-// Configuração da cache em memória para suporte à sessão.
+/// <summary>
+/// Configuração da cache em memória.
+/// Necessária para suporte à sessão.
+/// </summary>
 builder.Services.AddDistributedMemoryCache();
 
-// Configuração da sessão da aplicação.
+/// <summary>
+/// Configuração da sessão da aplicação.
+/// Define o tempo limite e propriedades do cookie de sessão.
+/// </summary>
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -24,15 +33,21 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Registo de serviços auxiliares do ASP.NET Core.
+/// <summary>
+/// Registo de serviços auxiliares do ASP.NET Core.
+/// </summary>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 
-// Configuração do Identity com utilizadores e roles.
+/// <summary>
+/// Configuração do ASP.NET Core Identity com utilizadores e roles.
+/// As passwords estão simplificadas para ambiente académico/desenvolvimento.
+/// </summary>
 builder.Services
     .AddIdentity<IdentityUser, IdentityRole>(options =>
     {
         options.SignIn.RequireConfirmedAccount = false;
+
         options.Password.RequireDigit = false;
         options.Password.RequireNonAlphanumeric = false;
         options.Password.RequireUppercase = false;
@@ -43,7 +58,10 @@ builder.Services
     .AddEntityFrameworkStores<StandDbContext>()
     .AddDefaultTokenProviders();
 
-// Configuração do cookie de autenticação.
+/// <summary>
+/// Configuração do cookie de autenticação.
+/// Define páginas de login, logout e acesso negado.
+/// </summary>
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
@@ -54,80 +72,144 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.HttpOnly = true;
 });
 
-// Configuração das policies de autorização por perfis.
+/// <summary>
+/// Configuração das policies de autorização por perfis.
+/// Estas policies podem ser usadas em Razor Pages ou controllers.
+/// </summary>
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("ClienteOnly", policy =>
         policy.RequireRole("Cliente"));
 
     options.AddPolicy("StaffOnly", policy =>
-        policy.RequireRole("Admin", "Mecanico", "Colaborador", "Vendedor", "Rececionista"));
+        policy.RequireRole("Admin", "Mecanico", "Colaborador", "Vendedor", "Rececionista", "Funcionario"));
 
     options.AddPolicy("AdminOnly", policy =>
         policy.RequireRole("Admin"));
 
     options.AddPolicy("ProdutosAccess", policy =>
         policy.RequireRole("Cliente", "Admin", "Colaborador"));
+
+    options.AddPolicy("ColaboradoresView", policy =>
+        policy.RequireRole("Admin", "Colaborador"));
 });
 
-// Configuração das Razor Pages e respetivas regras de acesso.
+/// <summary>
+/// Configuração das Razor Pages e das regras de acesso por página.
+/// </summary>
 builder.Services.AddRazorPages(options =>
 {
+    /// <summary>
+    /// Páginas públicas.
+    /// </summary>
     options.Conventions.AllowAnonymousToPage("/Index");
     options.Conventions.AllowAnonymousToPage("/Account/Login");
     options.Conventions.AllowAnonymousToPage("/Account/Registar");
+    options.Conventions.AllowAnonymousToPage("/Contactos");
 
+    /// <summary>
+    /// Área interna do staff.
+    /// </summary>
+    options.Conventions.AuthorizeFolder("/PainelEmpresa", "StaffOnly");
+
+    /// <summary>
+    /// Páginas públicas do stand.
+    /// </summary>
     options.Conventions.AllowAnonymousToPage("/VeiculosStand/Index");
     options.Conventions.AllowAnonymousToPage("/VeiculosStand/Details");
 
+    /// <summary>
+    /// Gestão de viaturas do stand: apenas staff.
+    /// </summary>
     options.Conventions.AuthorizePage("/VeiculosStand/Create", "StaffOnly");
     options.Conventions.AuthorizePage("/VeiculosStand/Edit", "StaffOnly");
     options.Conventions.AuthorizePage("/VeiculosStand/Delete", "StaffOnly");
 
+    /// <summary>
+    /// Pasta reservada a clientes.
+    /// </summary>
     options.Conventions.AuthorizeFolder("/ClienteArea", "ClienteOnly");
+
+    /// <summary>
+    /// Dashboard reservado a administradores.
+    /// </summary>
     options.Conventions.AuthorizeFolder("/Dashboard", "AdminOnly");
+
+    /// <summary>
+    /// Produtos acessíveis conforme a policy definida.
+    /// </summary>
     options.Conventions.AuthorizeFolder("/Produtos", "ProdutosAccess");
+
+    /// <summary>
+    /// Colaboradores:
+    /// - Index pode ser visto por Admin e Colaborador
+    /// - Create/Edit/Delete apenas por Admin
+    /// </summary>
+    options.Conventions.AuthorizePage("/Colaboradores/Index", "ColaboradoresView");
+    options.Conventions.AuthorizePage("/Colaboradores/Create", "AdminOnly");
+    options.Conventions.AuthorizePage("/Colaboradores/Edit", "AdminOnly");
+    options.Conventions.AuthorizePage("/Colaboradores/Delete", "AdminOnly");
 });
 
-// Registo dos controllers com views, caso existam páginas MVC no projeto.
+/// <summary>
+/// Registo de controllers com views, caso existam componentes MVC no projeto.
+/// </summary>
 builder.Services.AddControllersWithViews();
 
-// Registo dos serviços da aplicação.
+/// <summary>
+/// Registo de serviços próprios da aplicação.
+/// </summary>
 builder.Services.AddScoped<OrcamentoService>();
 
-// Registo dos serviços de integração com a API.
+/// <summary>
+/// Registo dos serviços de integração com APIs externas.
+/// </summary>
 builder.Services.AddApiIntegration(builder.Configuration);
 
 var app = builder.Build();
 
-// Configuração do pipeline HTTP para ambiente não desenvolvimento.
+/// <summary>
+/// Configuração do pipeline HTTP para ambiente não desenvolvimento.
+/// </summary>
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
 
-// Middleware base da aplicação.
+/// <summary>
+/// Middleware base da aplicação.
+/// </summary>
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-// Middleware de sessão. Deve ser chamado após o routing.
+/// <summary>
+/// Middleware de sessão.
+/// </summary>
 app.UseSession();
 
-// Middleware de autenticação e autorização.
+/// <summary>
+/// Middleware de autenticação e autorização.
+/// </summary>
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Mapeamento das Razor Pages.
+/// <summary>
+/// Mapeamento das Razor Pages.
+/// </summary>
 app.MapRazorPages();
 
-// Mapeamento de controllers MVC, caso existam.
+/// <summary>
+/// Mapeamento de rotas MVC, caso existam controllers.
+/// </summary>
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// Aplicar migrações e executar o seed inicial de roles e utilizadores.
+/// <summary>
+/// Aplicação de migrações e execução do seed inicial.
+/// </summary>
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;

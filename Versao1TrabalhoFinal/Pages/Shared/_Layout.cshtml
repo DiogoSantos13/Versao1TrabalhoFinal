@@ -23,14 +23,39 @@
     var isMecanico = isAuthenticated && User.IsInRole("Mecanico");
 
     /// <summary>
-    /// Indica se o utilizador atual pertence ao perfil de colaborador.
+    /// Indica se o utilizador atual pertence ao perfil base de colaborador.
     /// </summary>
     var isColaborador = isAuthenticated && User.IsInRole("Colaborador");
 
     /// <summary>
+    /// Indica se o utilizador atual pertence ao perfil de rececionista.
+    /// </summary>
+    var isRececionista = isAuthenticated && User.IsInRole("Rececionista");
+
+    /// <summary>
+    /// Indica se o utilizador atual pertence ao perfil de vendedor.
+    /// </summary>
+    var isVendedor = isAuthenticated && User.IsInRole("Vendedor");
+
+    /// <summary>
+    /// Indica se o utilizador atual pertence ao perfil de funcionário.
+    /// </summary>
+    var isFuncionario = isAuthenticated && User.IsInRole("Funcionario");
+
+    /// <summary>
     /// Indica se o utilizador atual pertence ao staff.
     /// </summary>
-    var isStaff = isAdmin || isMecanico || isColaborador;
+   
+    var isStaff = User.Identity != null &&
+        User.Identity.IsAuthenticated &&
+        (
+            User.IsInRole("Admin") ||
+            User.IsInRole("Mecanico") ||
+            User.IsInRole("Colaborador") ||
+            User.IsInRole("Vendedor") ||
+            User.IsInRole("Rececionista") ||
+            User.IsInRole("Funcionario")
+        );
 
     /// <summary>
     /// Indica se o utilizador atual pode aceder à área de produtos.
@@ -51,6 +76,12 @@
     /// Indica se o utilizador atual pode ver os orçamentos.
     /// </summary>
     var canSeeOrcamentos = isStaff || isCliente;
+
+    /// <summary>
+    /// Indica se o utilizador atual pode aceder à listagem de colaboradores.
+    /// Apenas Admin e Colaborador podem ver esta entrada.
+    /// </summary>
+    var canAccessColaboradores = isAdmin || isColaborador;
 }
 
 @functions {
@@ -212,12 +243,31 @@
                 </a>
             }
 
+            @if (canAccessColaboradores)
+            {
+                <a asp-page="/Colaboradores/Index"
+                   class="@NavClass("/Colaboradores")"
+                   aria-current="@AriaCurrent("/Colaboradores")">
+                    <i class="fa-solid fa-id-badge"></i>
+                    <span>Colaboradores</span>
+                </a>
+            }
+
             <a asp-page="/Contactos"
                class="@NavClass("/Contactos", true)"
                aria-current="@AriaCurrent("/Contactos", true)">
                 <i class="fa-solid fa-envelope"></i>
                 <span>Contactos</span>
             </a>
+            @if (isStaff )
+            {
+                <a asp-page="/PainelEmpresa/Index"
+                   class="@NavClass("/PainelEmpresa")"
+                   aria-current="@AriaCurrent("/PainelEmpresa")">
+                    <i class="fa-solid fa-screwdriver-wrench"></i>
+                    <span>Painel Empresa</span>
+                </a>
+            }
 
             @if (isAuthenticated)
             {
@@ -342,6 +392,16 @@
                    aria-current="@AriaCurrent("/Clientes")">
                     <i class="fa-solid fa-users"></i>
                     <span>Clientes</span>
+                </a>
+            }
+
+            @if (canAccessColaboradores)
+            {
+                <a asp-page="/Colaboradores/Index"
+                   class="@NavClass("/Colaboradores")"
+                   aria-current="@AriaCurrent("/Colaboradores")">
+                    <i class="fa-solid fa-id-badge"></i>
+                    <span>Colaboradores</span>
                 </a>
             }
 
